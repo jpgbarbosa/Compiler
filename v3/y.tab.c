@@ -1993,10 +1993,17 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-      
+        case 18:
 
 /* Line 1455 of yacc.c  */
-#line 2000 "y.tab.c"
+#line 63 "pJava.y"
+    {printf("Hello World\n");}
+    break;
+
+
+
+/* Line 1455 of yacc.c  */
+#line 2007 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2210,4 +2217,10 @@ yyreturn:
 /* Line 1675 of yacc.c  */
 #line 491 "pJava.y"
 
+
+int main()
+{
+yyparse();
+return 0;
+}
 

@@ -60,7 +60,7 @@ CompilationUnit
 ProgramFile
 	: ImportStatements TypeDeclarations
 	| ImportStatements
-	|                  TypeDeclarations
+	|                  TypeDeclarations {printf("Hello World\n");}
 	;
 
 TypeDeclarations
@@ -489,3 +489,9 @@ ConstantExpression
 	;
 
 %%
+
+int main()
+{
+yyparse();
+return 0;
+}
