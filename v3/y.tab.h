@@ -64,35 +64,34 @@
      LONG = 280,
      NEW = 281,
      OPERATOR = 282,
-     PACKAGE = 283,
-     PUBLIC = 284,
-     RETURN = 285,
-     SHORT = 286,
-     STATIC = 287,
-     SWITCH = 288,
-     THIS = 289,
-     VAR = 290,
-     VOID = 291,
-     WHILE = 292,
-     OP_INC = 293,
-     OP_DEC = 294,
-     OP_SHL = 295,
-     OP_SHR = 296,
-     OP_SHRR = 297,
-     OP_GREATER_EQUAL = 298,
-     OP_LESS_EQUAL = 299,
-     OP_EQUAL = 300,
-     OP_DIFFERENT = 301,
-     OP_AND = 302,
-     OP_OR = 303,
-     OP_DIM = 304,
-     ASS_MUL = 305,
-     ASS_DIV = 306,
-     ASS_ADD = 307,
-     ASS_SUB = 308,
-     IDENTIFIER = 309,
-     LITERAL = 310,
-     BOOLLIT = 311
+     PUBLIC = 283,
+     RETURN = 284,
+     SHORT = 285,
+     STATIC = 286,
+     SWITCH = 287,
+     THIS = 288,
+     VAR = 289,
+     VOID = 290,
+     WHILE = 291,
+     OP_INC = 292,
+     OP_DEC = 293,
+     OP_SHL = 294,
+     OP_SHR = 295,
+     OP_SHRR = 296,
+     OP_GREATER_EQUAL = 297,
+     OP_LESS_EQUAL = 298,
+     OP_EQUAL = 299,
+     OP_DIFFERENT = 300,
+     OP_AND = 301,
+     OP_OR = 302,
+     OP_DIM = 303,
+     ASS_MUL = 304,
+     ASS_DIV = 305,
+     ASS_ADD = 306,
+     ASS_SUB = 307,
+     IDENTIFIER = 308,
+     LITERAL = 309,
+     BOOLLIT = 310
    };
 #endif
 /* Tokens.  */
@@ -121,35 +120,34 @@
 #define LONG 280
 #define NEW 281
 #define OPERATOR 282
-#define PACKAGE 283
-#define PUBLIC 284
-#define RETURN 285
-#define SHORT 286
-#define STATIC 287
-#define SWITCH 288
-#define THIS 289
-#define VAR 290
-#define VOID 291
-#define WHILE 292
-#define OP_INC 293
-#define OP_DEC 294
-#define OP_SHL 295
-#define OP_SHR 296
-#define OP_SHRR 297
-#define OP_GREATER_EQUAL 298
-#define OP_LESS_EQUAL 299
-#define OP_EQUAL 300
-#define OP_DIFFERENT 301
-#define OP_AND 302
-#define OP_OR 303
-#define OP_DIM 304
-#define ASS_MUL 305
-#define ASS_DIV 306
-#define ASS_ADD 307
-#define ASS_SUB 308
-#define IDENTIFIER 309
-#define LITERAL 310
-#define BOOLLIT 311
+#define PUBLIC 283
+#define RETURN 284
+#define SHORT 285
+#define STATIC 286
+#define SWITCH 287
+#define THIS 288
+#define VAR 289
+#define VOID 290
+#define WHILE 291
+#define OP_INC 292
+#define OP_DEC 293
+#define OP_SHL 294
+#define OP_SHR 295
+#define OP_SHRR 296
+#define OP_GREATER_EQUAL 297
+#define OP_LESS_EQUAL 298
+#define OP_EQUAL 299
+#define OP_DIFFERENT 300
+#define OP_AND 301
+#define OP_OR 302
+#define OP_DIM 303
+#define ASS_MUL 304
+#define ASS_DIV 305
+#define ASS_ADD 306
+#define ASS_SUB 307
+#define IDENTIFIER 308
+#define LITERAL 309
+#define BOOLLIT 310
 
 
 

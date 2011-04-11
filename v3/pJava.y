@@ -13,7 +13,7 @@
 %token LONG
 %token NEW
 %token OPERATOR
-%token PACKAGE PUBLIC
+%token PUBLIC
 %token RETURN
 %token SHORT STATIC SWITCH
 %token THIS
@@ -58,17 +58,9 @@ CompilationUnit
         ;
 
 ProgramFile
-	: PackageStatement ImportStatements TypeDeclarations
-	| PackageStatement ImportStatements
-	| PackageStatement                  TypeDeclarations
-	|                  ImportStatements TypeDeclarations
-	| PackageStatement
-	|                  ImportStatements
-	|                                   TypeDeclarations
-	;
-
-PackageStatement
-	: PACKAGE QualifiedName ';'
+	: ImportStatements TypeDeclarations
+	| ImportStatements
+	|                  TypeDeclarations
 	;
 
 TypeDeclarations

@@ -81,7 +81,6 @@ Literal		({Numeric}|{Character}|{String})
 "/="		{return ASS_DIV;}
 
 "do"            {return DO;}
-"package"	{return PACKAGE;}
 "boolean"	{return BOOLEAN;}
 "double"	{return DOUBLE;}
 "import"	{return IMPORT;}
