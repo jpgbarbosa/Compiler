@@ -51,16 +51,26 @@
 
 /* It can be a single variable or an array. */
 TypeSpecifier
-	: TypeName
-	| TypeName DimExprs
+	: PrimitiveType
+	| PrimitiveType TypeDimExprs
 	;
 
-/* Accepts a primitive type or another class. */
+TypeDimExprs
+	: '[' ']'
+	| TypeDimExprs '[' ']'
+	;
+
+
+/* TODO: We are keeping this in case we want to expand
+ * our gramatic to accept types other than the basic ones.
+ * In that case, up there, we have to change the PrimitiveType
+ * to TypeName.
+
 TypeName
 	: PrimitiveType
-	| QualifiedName
 	;
 
+*/
 PrimitiveType
 	: BOOLEAN
 	| CHAR
@@ -75,23 +85,7 @@ PrimitiveType
 
 /* We can have imports or only a class. */
 ProgramFile
-	: ImportStatements ClassHeader '{' FieldDeclarations '}'
-	|                  ClassHeader '{' FieldDeclarations '}'
-	;
-
-ImportStatements
-	: ImportStatement
-	| ImportStatements ImportStatement
-	;
-
-ImportStatement
-	: IMPORT QualifiedName ';'
-	| IMPORT QualifiedName '.' '*' ';'
-	;
-
-QualifiedName
-	: ID
-	| QualifiedName '.' ID
+	: ClassHeader '{' FieldDeclarations '}'
 	;
 
 ClassHeader
@@ -130,10 +124,29 @@ VariableInitializer
         | '{' ArrayInitializers '}'
         ;
 
+NewAllocationExpression
+    	: ArrayAllocationExpression
+    	| ArrayAllocationExpression '{' '}'
+    	| ArrayAllocationExpression '{' ArrayInitializers '}'
+    	;
+
+ArrayAllocationExpression
+	: NEW PrimitiveType DimExprs
+	;
+
 ArrayInitializers
 	: VariableInitializer
 	| ArrayInitializers ',' VariableInitializer
 	| ArrayInitializers ','
+	;
+
+DimExprs
+	: DimExpr
+	| DimExprs DimExpr
+	;
+
+DimExpr
+	: '[' ArithmeticExpression ']'
 	;
 
 /* Declaration of methods. */
@@ -242,23 +255,13 @@ JumpStatement
 	;
 
 MethodCall
-	: QualifiedName '(' ArgumentList ')'
-	| QualifiedName '(' ')'
+	: ID '(' ArgumentList ')'
+	| ID '(' ')'
 	;
 
 ArgumentList
 	: Expression
 	| ArgumentList ',' Expression
-	;
-
-DimExprs
-	: DimExpr
-	| DimExprs DimExpr
-	;
-
-DimExpr
-	: '[' ArithmeticExpression ']'
-	| '[' ']'
 	;
 
 UnaryExpression
@@ -282,7 +285,7 @@ BasicElement
 	;
 
 ArrayAccess
-	: QualifiedName '[' ArithmeticExpression ']'
+	: ID '[' ArithmeticExpression ']'
 	;
 
 /* TODO: is the third correct? */
@@ -343,16 +346,6 @@ AssignmentExpression
 	| ID ASS_MOD Expression
 	| ID ASS_SHL Expression
 	| ID ASS_SHR Expression
-	;
-
-NewAllocationExpression
-    	: ArrayAllocationExpression
-    	| ArrayAllocationExpression '{' '}'
-    	| ArrayAllocationExpression '{' ArrayInitializers '}'
-    	;
-
-ArrayAllocationExpression
-	: NEW TypeName DimExprs
 	;
 
 
