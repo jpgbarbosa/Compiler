@@ -184,10 +184,6 @@ LocalVariableDeclarationStatement
 	;
 
 Statement
-	: ';'
-	;
-
-/*Statement
 	: LabeledStatement
 	| Expression ';'
         | SelectionStatement
@@ -229,7 +225,7 @@ ForExpr
 
 ForIncr
 	: Expressions
-	;/*
+	;
 
 Expressions
 	: Expression
@@ -245,6 +241,7 @@ JumpStatement
 	| RETURN            ';'
 	;
 
+/*
 PrimaryExpression
 	: QualifiedName
 	| NotJustName
@@ -270,7 +267,7 @@ ArrayAccess
 	: QualifiedName '[' Expression ']'
 	| ComplexPrimary '[' Expression ']'
 	;
-
+*/
 MethodCall
 	: ID '(' ArgumentList ')'
 	| ID '(' ')'
@@ -280,7 +277,7 @@ ArgumentList
 	: Expression
 	| ArgumentList ',' Expression
 	;
-
+/*
 NewAllocationExpression
     	: ArrayAllocationExpression
     	| ArrayAllocationExpression '{' '}'
@@ -290,6 +287,7 @@ NewAllocationExpression
 ArrayAllocationExpression
 	: NEW TypeName DimExprs
 	;
+
 */
 
 /* TODO: Corrigir isto. */

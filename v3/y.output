@@ -1,22 +1,26 @@
+Nonterminals useless in grammar
+
+   MethodCall
+   ArgumentList
+
+
 Terminals unused in grammar
 
-   BREAK
-   CASE
-   CONTINUE
-   DEFAULT
-   DO
-   ELSE
-   FOR
-   IF
    JNULL
    NEW
    OPERATOR
-   RETURN
-   SWITCH
-   WHILE
    ASS_AND
    ASS_OR
    '~'
+
+
+Rules useless in grammar
+
+  135 MethodCall: ID '(' ArgumentList ')'
+  136           | ID '(' ')'
+
+  137 ArgumentList: Expression
+  138             | ArgumentList ',' Expression
 
 
 Grammar
@@ -103,108 +107,146 @@ Grammar
 
    56 LocalVariableDeclarationStatement: TypeSpecifier VariableDeclarators ';'
 
-   57 Statement: ';'
+   57 Statement: LabeledStatement
+   58          | Expression ';'
+   59          | SelectionStatement
+   60          | IterationStatement
+   61          | JumpStatement
+   62          | Block
+   63          | ';'
 
-   58 DimExprs: DimExpr
-   59         | DimExprs DimExpr
+   64 LabeledStatement: ID ':' LocalVariableDeclarationOrStatement
+   65                 | CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement
+   66                 | DEFAULT ':' LocalVariableDeclarationOrStatement
 
-   60 DimExpr: '[' Expression ']'
-   61        | '[' ']'
+   67 SelectionStatement: IF '(' Expression ')' Statement
+   68                   | IF '(' Expression ')' Statement ELSE Statement
+   69                   | SWITCH '(' Expression ')' Block
 
-   62 UnaryExpression: OP_INC ID
-   63                | OP_DEC ID
-   64                | ID OP_INC
-   65                | ID OP_DEC
-   66                | BasicElement
-   67                | '!' ID
+   70 IterationStatement: WHILE '(' Expression ')' Statement
+   71                   | DO Statement WHILE '(' Expression ')' ';'
+   72                   | FOR '(' ForInit ForExpr ForIncr ')' Statement
+   73                   | FOR '(' ForInit ForExpr ')' Statement
 
-   68 BasicElement: ID
-   69             | LITERAL
+   74 ForInit: Expressions ';'
+   75        | LocalVariableDeclarationStatement
+   76        | ';'
 
-   70 CastExpression: UnaryExpression
-   71               | '(' PrimitiveType ')' UnaryExpression
+   77 ForExpr: Expression ';'
+   78        | ';'
 
-   72 ArithmeticExpression: CastExpression
-   73                     | ArithmeticExpression '+' ArithmeticExpression
-   74                     | ArithmeticExpression '-' ArithmeticExpression
-   75                     | ArithmeticExpression '/' ArithmeticExpression
-   76                     | ArithmeticExpression '*' ArithmeticExpression
-   77                     | ArithmeticExpression '%' ArithmeticExpression
-   78                     | ArithmeticExpression OP_SHL ArithmeticExpression
-   79                     | ArithmeticExpression OP_SHR ArithmeticExpression
+   79 ForIncr: Expressions
 
-   80 RelationalExpression: ArithmeticExpression
-   81                     | ArithmeticExpression '<' RelationalExpression
-   82                     | ArithmeticExpression '>' RelationalExpression
-   83                     | ArithmeticExpression OP_LESS_EQUAL RelationalExpression
-   84                     | ArithmeticExpression OP_GREATER_EQUAL RelationalExpression
-   85                     | ArithmeticExpression OP_EQUAL RelationalExpression
-   86                     | ArithmeticExpression OP_DIFFERENT RelationalExpression
-   87                     | ArithmeticExpression '&' RelationalExpression
-   88                     | ArithmeticExpression '^' RelationalExpression
-   89                     | ArithmeticExpression '|' RelationalExpression
-   90                     | ArithmeticExpression OP_AND RelationalExpression
-   91                     | ArithmeticExpression OP_OR RelationalExpression
+   80 Expressions: Expression
+   81            | Expressions ',' Expression
 
-   92 Expression: ConditionalExpression
-   93           | AssignmentExpression
+   82 JumpStatement: BREAK ID ';'
+   83              | BREAK ';'
+   84              | CONTINUE ID ';'
+   85              | CONTINUE ';'
+   86              | RETURN Expression ';'
+   87              | RETURN ';'
 
-   94 ConditionalExpression: RelationalExpression
-   95                      | RelationalExpression '?' Expression ':' Expression
+   88 DimExprs: DimExpr
+   89         | DimExprs DimExpr
 
-   96 AssignmentExpression: ID '=' Expression
-   97                     | ID ASS_MUL Expression
-   98                     | ID ASS_DIV Expression
-   99                     | ID ASS_ADD Expression
-  100                     | ID ASS_SUB Expression
-  101                     | ID ASS_XOR Expression
-  102                     | ID ASS_MOD Expression
-  103                     | ID ASS_SHL Expression
-  104                     | ID ASS_SHR Expression
+   90 DimExpr: '[' Expression ']'
+   91        | '[' ']'
+
+   92 UnaryExpression: OP_INC ID
+   93                | OP_DEC ID
+   94                | ID OP_INC
+   95                | ID OP_DEC
+   96                | BasicElement
+   97                | '!' ID
+
+   98 BasicElement: ID
+   99             | LITERAL
+
+  100 CastExpression: UnaryExpression
+  101               | '(' PrimitiveType ')' UnaryExpression
+
+  102 ArithmeticExpression: CastExpression
+  103                     | ArithmeticExpression '+' ArithmeticExpression
+  104                     | ArithmeticExpression '-' ArithmeticExpression
+  105                     | ArithmeticExpression '/' ArithmeticExpression
+  106                     | ArithmeticExpression '*' ArithmeticExpression
+  107                     | ArithmeticExpression '%' ArithmeticExpression
+  108                     | ArithmeticExpression OP_SHL ArithmeticExpression
+  109                     | ArithmeticExpression OP_SHR ArithmeticExpression
+
+  110 RelationalExpression: ArithmeticExpression
+  111                     | ArithmeticExpression '<' RelationalExpression
+  112                     | ArithmeticExpression '>' RelationalExpression
+  113                     | ArithmeticExpression OP_LESS_EQUAL RelationalExpression
+  114                     | ArithmeticExpression OP_GREATER_EQUAL RelationalExpression
+  115                     | ArithmeticExpression OP_EQUAL RelationalExpression
+  116                     | ArithmeticExpression OP_DIFFERENT RelationalExpression
+  117                     | ArithmeticExpression '&' RelationalExpression
+  118                     | ArithmeticExpression '^' RelationalExpression
+  119                     | ArithmeticExpression '|' RelationalExpression
+  120                     | ArithmeticExpression OP_AND RelationalExpression
+  121                     | ArithmeticExpression OP_OR RelationalExpression
+
+  122 Expression: ConditionalExpression
+  123           | AssignmentExpression
+
+  124 ConditionalExpression: RelationalExpression
+  125                      | RelationalExpression '?' Expression ':' Expression
+
+  126 AssignmentExpression: ID '=' Expression
+  127                     | ID ASS_MUL Expression
+  128                     | ID ASS_DIV Expression
+  129                     | ID ASS_ADD Expression
+  130                     | ID ASS_SUB Expression
+  131                     | ID ASS_XOR Expression
+  132                     | ID ASS_MOD Expression
+  133                     | ID ASS_SHL Expression
+  134                     | ID ASS_SHR Expression
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
-'!' (33) 67
-'%' (37) 77
-'&' (38) 87
-'(' (40) 42 43 71
-')' (41) 42 43 71
-'*' (42) 19 76
-'+' (43) 73
-',' (44) 31 38 39 46
-'-' (45) 74
+'!' (33) 97
+'%' (37) 107
+'&' (38) 117
+'(' (40) 42 43 67 68 69 70 71 72 73 101
+')' (41) 42 43 67 68 69 70 71 72 73 101
+'*' (42) 19 106
+'+' (43) 103
+',' (44) 31 38 39 46 81
+'-' (45) 104
 '.' (46) 19 21
-'/' (47) 75
-':' (58) 95
-';' (59) 18 19 26 56 57
-'<' (60) 81
-'=' (61) 33 96
-'>' (62) 82
-'?' (63) 95
-'[' (91) 60 61
-']' (93) 60 61
-'^' (94) 88
+'/' (47) 105
+':' (58) 64 65 66 125
+';' (59) 18 19 26 56 58 63 71 74 76 77 78 82 83 84 85 86 87
+'<' (60) 111
+'=' (61) 33 126
+'>' (62) 112
+'?' (63) 125
+'[' (91) 90 91
+']' (93) 90 91
+'^' (94) 118
 '{' (123) 14 15 35 36 50 51
-'|' (124) 89
+'|' (124) 119
 '}' (125) 14 15 35 36 50 51
 '~' (126)
 error (256)
 BOOLEAN (258) 5
-BREAK (259)
+BREAK (259) 82 83
 BYTE (260) 7
-CASE (261)
+CASE (261) 65
 CHAR (262) 6
 CLASS (263) 22 23
-CONTINUE (264)
-DEFAULT (265)
-DO (266)
+CONTINUE (264) 84 85
+DEFAULT (265) 66
+DO (266) 71
 DOUBLE (267) 12
-ELSE (268)
+ELSE (268) 68
 FLOAT (269) 11
-FOR (270)
-IF (271)
+FOR (270) 72 73
+IF (271) 67 68
 IMPORT (272) 18 19
 INT (273) 9
 JNULL (274)
@@ -212,36 +254,36 @@ LONG (275) 10
 NEW (276)
 OPERATOR (277)
 PUBLIC (278) 22 28 40
-RETURN (279)
+RETURN (279) 86 87
 SHORT (280) 8
 STATIC (281) 28 29 40 41
-SWITCH (282)
+SWITCH (282) 69
 VOID (283) 13
-WHILE (284)
-OP_INC (285) 62 64
-OP_DEC (286) 63 65
-OP_SHL (287) 78
-OP_SHR (288) 79
-OP_GREATER_EQUAL (289) 84
-OP_LESS_EQUAL (290) 83
-OP_EQUAL (291) 85
-OP_DIFFERENT (292) 86
-OP_AND (293) 90
-OP_OR (294) 91
+WHILE (284) 70 71
+OP_INC (285) 92 94
+OP_DEC (286) 93 95
+OP_SHL (287) 108
+OP_SHR (288) 109
+OP_GREATER_EQUAL (289) 114
+OP_LESS_EQUAL (290) 113
+OP_EQUAL (291) 115
+OP_DIFFERENT (292) 116
+OP_AND (293) 120
+OP_OR (294) 121
 OP_DIM (295) 44 49
-ASS_MUL (296) 97
-ASS_DIV (297) 98
-ASS_ADD (298) 99
-ASS_SUB (299) 100
-ASS_XOR (300) 101
-ASS_MOD (301) 102
-ASS_SHL (302) 103
-ASS_SHR (303) 104
+ASS_MUL (296) 127
+ASS_DIV (297) 128
+ASS_ADD (298) 129
+ASS_SUB (299) 130
+ASS_XOR (300) 131
+ASS_MOD (301) 132
+ASS_SHL (302) 133
+ASS_SHR (303) 134
 ASS_AND (304)
 ASS_OR (305)
-ID (306) 20 21 22 23 48 62 63 64 65 67 68 96 97 98 99 100 101 102 103
-    104
-LITERAL (307) 69
+ID (306) 20 21 22 23 48 64 82 84 92 93 94 95 97 98 126 127 128 129
+    130 131 132 133 134
+LITERAL (307) 99
 
 
 Nonterminals, with rules where they appear
@@ -253,7 +295,7 @@ TypeSpecifier (78)
 TypeName (79)
     on left: 3 4, on right: 1 2
 PrimitiveType (80)
-    on left: 5 6 7 8 9 10 11 12 13, on right: 3 71
+    on left: 5 6 7 8 9 10 11 12 13, on right: 3 101
 ProgramFile (81)
     on left: 14 15, on right: 0
 ImportStatements (82)
@@ -289,38 +331,54 @@ Parameter (96)
 DeclaratorName (97)
     on left: 48 49, on right: 32 33 42 43 47 49
 Block (98)
-    on left: 50 51, on right: 40 41
+    on left: 50 51, on right: 40 41 62 69
 LocalVariableDeclarationsAndStatements (99)
     on left: 52 53, on right: 50 53
 LocalVariableDeclarationOrStatement (100)
-    on left: 54 55, on right: 52 53
+    on left: 54 55, on right: 52 53 64 65 66
 LocalVariableDeclarationStatement (101)
-    on left: 56, on right: 54
+    on left: 56, on right: 54 75
 Statement (102)
-    on left: 57, on right: 55
-DimExprs (103)
-    on left: 58 59, on right: 2 59
-DimExpr (104)
-    on left: 60 61, on right: 58 59
-UnaryExpression (105)
-    on left: 62 63 64 65 66 67, on right: 70 71
-BasicElement (106)
-    on left: 68 69, on right: 66
-CastExpression (107)
-    on left: 70 71, on right: 72
-ArithmeticExpression (108)
-    on left: 72 73 74 75 76 77 78 79, on right: 73 74 75 76 77 78 79
-    80 81 82 83 84 85 86 87 88 89 90 91
-RelationalExpression (109)
-    on left: 80 81 82 83 84 85 86 87 88 89 90 91, on right: 81 82 83
-    84 85 86 87 88 89 90 91 94 95
-Expression (110)
-    on left: 92 93, on right: 34 60 95 96 97 98 99 100 101 102 103
-    104
-ConditionalExpression (111)
-    on left: 94 95, on right: 92
-AssignmentExpression (112)
-    on left: 96 97 98 99 100 101 102 103 104, on right: 93
+    on left: 57 58 59 60 61 62 63, on right: 55 67 68 70 71 72 73
+LabeledStatement (103)
+    on left: 64 65 66, on right: 57
+SelectionStatement (104)
+    on left: 67 68 69, on right: 59
+IterationStatement (105)
+    on left: 70 71 72 73, on right: 60
+ForInit (106)
+    on left: 74 75 76, on right: 72 73
+ForExpr (107)
+    on left: 77 78, on right: 72 73
+ForIncr (108)
+    on left: 79, on right: 72
+Expressions (109)
+    on left: 80 81, on right: 74 79 81
+JumpStatement (110)
+    on left: 82 83 84 85 86 87, on right: 61
+DimExprs (111)
+    on left: 88 89, on right: 2 89
+DimExpr (112)
+    on left: 90 91, on right: 88 89
+UnaryExpression (113)
+    on left: 92 93 94 95 96 97, on right: 100 101
+BasicElement (114)
+    on left: 98 99, on right: 96
+CastExpression (115)
+    on left: 100 101, on right: 102
+ArithmeticExpression (116)
+    on left: 102 103 104 105 106 107 108 109, on right: 103 104 105
+    106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121
+RelationalExpression (117)
+    on left: 110 111 112 113 114 115 116 117 118 119 120 121, on right:
+    111 112 113 114 115 116 117 118 119 120 121 124 125
+Expression (118)
+    on left: 122 123, on right: 34 58 67 68 69 70 71 77 80 81 86 90
+    125 126 127 128 129 130 131 132 133 134
+ConditionalExpression (119)
+    on left: 124 125, on right: 65 122
+AssignmentExpression (120)
+    on left: 126 127 128 129 130 131 132 133 134, on right: 123
 
 
 state 0
@@ -817,8 +875,8 @@ state 53
 
 state 54
 
-   60 DimExpr: '[' . Expression ']'
-   61        | '[' . ']'
+   90 DimExpr: '[' . Expression ']'
+   91        | '[' . ']'
 
     OP_INC   shift, and go to state 67
     OP_DEC   shift, and go to state 68
@@ -841,7 +899,7 @@ state 54
 state 55
 
     2 TypeSpecifier: TypeName DimExprs .
-   59 DimExprs: DimExprs . DimExpr
+   89 DimExprs: DimExprs . DimExpr
 
     '['  shift, and go to state 54
 
@@ -852,9 +910,9 @@ state 55
 
 state 56
 
-   58 DimExprs: DimExpr .
+   88 DimExprs: DimExpr .
 
-    $default  reduce using rule 58 (DimExprs)
+    $default  reduce using rule 88 (DimExprs)
 
 
 state 57
@@ -907,27 +965,56 @@ state 62
    50 Block: '{' . LocalVariableDeclarationsAndStatements '}'
    51      | '{' . '}'
 
-    BOOLEAN  shift, and go to state 30
-    BYTE     shift, and go to state 31
-    CHAR     shift, and go to state 32
-    DOUBLE   shift, and go to state 33
-    FLOAT    shift, and go to state 34
-    INT      shift, and go to state 35
-    LONG     shift, and go to state 36
-    SHORT    shift, and go to state 37
-    VOID     shift, and go to state 38
-    ID       shift, and go to state 9
-    '}'      shift, and go to state 86
-    ';'      shift, and go to state 87
+    BOOLEAN   shift, and go to state 30
+    BREAK     shift, and go to state 86
+    BYTE      shift, and go to state 31
+    CASE      shift, and go to state 87
+    CHAR      shift, and go to state 32
+    CONTINUE  shift, and go to state 88
+    DEFAULT   shift, and go to state 89
+    DO        shift, and go to state 90
+    DOUBLE    shift, and go to state 33
+    FLOAT     shift, and go to state 34
+    FOR       shift, and go to state 91
+    IF        shift, and go to state 92
+    INT       shift, and go to state 35
+    LONG      shift, and go to state 36
+    RETURN    shift, and go to state 93
+    SHORT     shift, and go to state 37
+    SWITCH    shift, and go to state 94
+    VOID      shift, and go to state 38
+    WHILE     shift, and go to state 95
+    OP_INC    shift, and go to state 67
+    OP_DEC    shift, and go to state 68
+    ID        shift, and go to state 96
+    LITERAL   shift, and go to state 70
+    '('       shift, and go to state 71
+    '!'       shift, and go to state 72
+    '{'       shift, and go to state 62
+    '}'       shift, and go to state 97
+    ';'       shift, and go to state 98
 
-    TypeSpecifier                           go to state 88
+    TypeSpecifier                           go to state 99
     TypeName                                go to state 40
     PrimitiveType                           go to state 41
     QualifiedName                           go to state 42
-    LocalVariableDeclarationsAndStatements  go to state 89
-    LocalVariableDeclarationOrStatement     go to state 90
-    LocalVariableDeclarationStatement       go to state 91
-    Statement                               go to state 92
+    Block                                   go to state 100
+    LocalVariableDeclarationsAndStatements  go to state 101
+    LocalVariableDeclarationOrStatement     go to state 102
+    LocalVariableDeclarationStatement       go to state 103
+    Statement                               go to state 104
+    LabeledStatement                        go to state 105
+    SelectionStatement                      go to state 106
+    IterationStatement                      go to state 107
+    JumpStatement                           go to state 108
+    UnaryExpression                         go to state 74
+    BasicElement                            go to state 75
+    CastExpression                          go to state 76
+    ArithmeticExpression                    go to state 77
+    RelationalExpression                    go to state 78
+    Expression                              go to state 109
+    ConditionalExpression                   go to state 80
+    AssignmentExpression                    go to state 81
 
 
 state 63
@@ -954,15 +1041,15 @@ state 65
     LITERAL  shift, and go to state 70
     '('      shift, and go to state 71
     '!'      shift, and go to state 72
-    '{'      shift, and go to state 93
+    '{'      shift, and go to state 110
 
-    VariableInitializer    go to state 94
+    VariableInitializer    go to state 111
     UnaryExpression        go to state 74
     BasicElement           go to state 75
     CastExpression         go to state 76
     ArithmeticExpression   go to state 77
     RelationalExpression   go to state 78
-    Expression             go to state 95
+    Expression             go to state 112
     ConditionalExpression  go to state 80
     AssignmentExpression   go to state 81
 
@@ -982,70 +1069,70 @@ state 66
     SHORT    shift, and go to state 37
     VOID     shift, and go to state 38
     ID       shift, and go to state 9
-    ')'      shift, and go to state 96
+    ')'      shift, and go to state 113
 
-    TypeSpecifier  go to state 97
+    TypeSpecifier  go to state 114
     TypeName       go to state 40
     PrimitiveType  go to state 41
     QualifiedName  go to state 42
-    ParameterList  go to state 98
-    Parameter      go to state 99
+    ParameterList  go to state 115
+    Parameter      go to state 116
 
 
 state 67
 
-   62 UnaryExpression: OP_INC . ID
+   92 UnaryExpression: OP_INC . ID
 
-    ID  shift, and go to state 100
+    ID  shift, and go to state 117
 
 
 state 68
 
-   63 UnaryExpression: OP_DEC . ID
+   93 UnaryExpression: OP_DEC . ID
 
-    ID  shift, and go to state 101
+    ID  shift, and go to state 118
 
 
 state 69
 
-   64 UnaryExpression: ID . OP_INC
-   65                | ID . OP_DEC
-   68 BasicElement: ID .
-   96 AssignmentExpression: ID . '=' Expression
-   97                     | ID . ASS_MUL Expression
-   98                     | ID . ASS_DIV Expression
-   99                     | ID . ASS_ADD Expression
-  100                     | ID . ASS_SUB Expression
-  101                     | ID . ASS_XOR Expression
-  102                     | ID . ASS_MOD Expression
-  103                     | ID . ASS_SHL Expression
-  104                     | ID . ASS_SHR Expression
+   94 UnaryExpression: ID . OP_INC
+   95                | ID . OP_DEC
+   98 BasicElement: ID .
+  126 AssignmentExpression: ID . '=' Expression
+  127                     | ID . ASS_MUL Expression
+  128                     | ID . ASS_DIV Expression
+  129                     | ID . ASS_ADD Expression
+  130                     | ID . ASS_SUB Expression
+  131                     | ID . ASS_XOR Expression
+  132                     | ID . ASS_MOD Expression
+  133                     | ID . ASS_SHL Expression
+  134                     | ID . ASS_SHR Expression
 
-    OP_INC   shift, and go to state 102
-    OP_DEC   shift, and go to state 103
-    ASS_MUL  shift, and go to state 104
-    ASS_DIV  shift, and go to state 105
-    ASS_ADD  shift, and go to state 106
-    ASS_SUB  shift, and go to state 107
-    ASS_XOR  shift, and go to state 108
-    ASS_MOD  shift, and go to state 109
-    ASS_SHL  shift, and go to state 110
-    ASS_SHR  shift, and go to state 111
-    '='      shift, and go to state 112
+    OP_INC   shift, and go to state 119
+    OP_DEC   shift, and go to state 120
+    ASS_MUL  shift, and go to state 121
+    ASS_DIV  shift, and go to state 122
+    ASS_ADD  shift, and go to state 123
+    ASS_SUB  shift, and go to state 124
+    ASS_XOR  shift, and go to state 125
+    ASS_MOD  shift, and go to state 126
+    ASS_SHL  shift, and go to state 127
+    ASS_SHR  shift, and go to state 128
+    '='      shift, and go to state 129
 
-    $default  reduce using rule 68 (BasicElement)
+    $default  reduce using rule 98 (BasicElement)
 
 
 state 70
 
-   69 BasicElement: LITERAL .
+   99 BasicElement: LITERAL .
 
-    $default  reduce using rule 69 (BasicElement)
+    $default  reduce using rule 99 (BasicElement)
 
 
 state 71
 
-   71 CastExpression: '(' . PrimitiveType ')' UnaryExpression
+  101 CastExpression: '(' . PrimitiveType ')' UnaryExpression
 
     BOOLEAN  shift, and go to state 30
     BYTE     shift, and go to state 31
@@ -1057,124 +1144,124 @@ state 71
     SHORT    shift, and go to state 37
     VOID     shift, and go to state 38
 
-    PrimitiveType  go to state 113
+    PrimitiveType  go to state 130
 
 
 state 72
 
-   67 UnaryExpression: '!' . ID
+   97 UnaryExpression: '!' . ID
 
-    ID  shift, and go to state 114
+    ID  shift, and go to state 131
 
 
 state 73
 
-   61 DimExpr: '[' ']' .
+   91 DimExpr: '[' ']' .
 
-    $default  reduce using rule 61 (DimExpr)
+    $default  reduce using rule 91 (DimExpr)
 
 
 state 74
 
-   70 CastExpression: UnaryExpression .
+  100 CastExpression: UnaryExpression .
 
-    $default  reduce using rule 70 (CastExpression)
+    $default  reduce using rule 100 (CastExpression)
 
 
 state 75
 
-   66 UnaryExpression: BasicElement .
+   96 UnaryExpression: BasicElement .
 
-    $default  reduce using rule 66 (UnaryExpression)
+    $default  reduce using rule 96 (UnaryExpression)
 
 
 state 76
 
-   72 ArithmeticExpression: CastExpression .
+  102 ArithmeticExpression: CastExpression .
 
-    $default  reduce using rule 72 (ArithmeticExpression)
+    $default  reduce using rule 102 (ArithmeticExpression)
 
 
 state 77
 
-   73 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
-   74                     | ArithmeticExpression . '-' ArithmeticExpression
-   75                     | ArithmeticExpression . '/' ArithmeticExpression
-   76                     | ArithmeticExpression . '*' ArithmeticExpression
-   77                     | ArithmeticExpression . '%' ArithmeticExpression
-   78                     | ArithmeticExpression . OP_SHL ArithmeticExpression
-   79                     | ArithmeticExpression . OP_SHR ArithmeticExpression
-   80 RelationalExpression: ArithmeticExpression .
-   81                     | ArithmeticExpression . '<' RelationalExpression
-   82                     | ArithmeticExpression . '>' RelationalExpression
-   83                     | ArithmeticExpression . OP_LESS_EQUAL RelationalExpression
-   84                     | ArithmeticExpression . OP_GREATER_EQUAL RelationalExpression
-   85                     | ArithmeticExpression . OP_EQUAL RelationalExpression
-   86                     | ArithmeticExpression . OP_DIFFERENT RelationalExpression
-   87                     | ArithmeticExpression . '&' RelationalExpression
-   88                     | ArithmeticExpression . '^' RelationalExpression
-   89                     | ArithmeticExpression . '|' RelationalExpression
-   90                     | ArithmeticExpression . OP_AND RelationalExpression
-   91                     | ArithmeticExpression . OP_OR RelationalExpression
+  103 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
+  104                     | ArithmeticExpression . '-' ArithmeticExpression
+  105                     | ArithmeticExpression . '/' ArithmeticExpression
+  106                     | ArithmeticExpression . '*' ArithmeticExpression
+  107                     | ArithmeticExpression . '%' ArithmeticExpression
+  108                     | ArithmeticExpression . OP_SHL ArithmeticExpression
+  109                     | ArithmeticExpression . OP_SHR ArithmeticExpression
+  110 RelationalExpression: ArithmeticExpression .
+  111                     | ArithmeticExpression . '<' RelationalExpression
+  112                     | ArithmeticExpression . '>' RelationalExpression
+  113                     | ArithmeticExpression . OP_LESS_EQUAL RelationalExpression
+  114                     | ArithmeticExpression . OP_GREATER_EQUAL RelationalExpression
+  115                     | ArithmeticExpression . OP_EQUAL RelationalExpression
+  116                     | ArithmeticExpression . OP_DIFFERENT RelationalExpression
+  117                     | ArithmeticExpression . '&' RelationalExpression
+  118                     | ArithmeticExpression . '^' RelationalExpression
+  119                     | ArithmeticExpression . '|' RelationalExpression
+  120                     | ArithmeticExpression . OP_AND RelationalExpression
+  121                     | ArithmeticExpression . OP_OR RelationalExpression
 
-    OP_SHL            shift, and go to state 115
-    OP_SHR            shift, and go to state 116
-    OP_GREATER_EQUAL  shift, and go to state 117
-    OP_LESS_EQUAL     shift, and go to state 118
-    OP_EQUAL          shift, and go to state 119
-    OP_DIFFERENT      shift, and go to state 120
-    OP_AND            shift, and go to state 121
-    OP_OR             shift, and go to state 122
-    '|'               shift, and go to state 123
-    '^'               shift, and go to state 124
-    '&'               shift, and go to state 125
-    '>'               shift, and go to state 126
-    '<'               shift, and go to state 127
-    '-'               shift, and go to state 128
-    '+'               shift, and go to state 129
-    '*'               shift, and go to state 130
-    '/'               shift, and go to state 131
-    '%'               shift, and go to state 132
+    OP_SHL            shift, and go to state 132
+    OP_SHR            shift, and go to state 133
+    OP_GREATER_EQUAL  shift, and go to state 134
+    OP_LESS_EQUAL     shift, and go to state 135
+    OP_EQUAL          shift, and go to state 136
+    OP_DIFFERENT      shift, and go to state 137
+    OP_AND            shift, and go to state 138
+    OP_OR             shift, and go to state 139
+    '|'               shift, and go to state 140
+    '^'               shift, and go to state 141
+    '&'               shift, and go to state 142
+    '>'               shift, and go to state 143
+    '<'               shift, and go to state 144
+    '-'               shift, and go to state 145
+    '+'               shift, and go to state 146
+    '*'               shift, and go to state 147
+    '/'               shift, and go to state 148
+    '%'               shift, and go to state 149
 
-    $default  reduce using rule 80 (RelationalExpression)
+    $default  reduce using rule 110 (RelationalExpression)
 
 
 state 78
 
-   94 ConditionalExpression: RelationalExpression .
-   95                      | RelationalExpression . '?' Expression ':' Expression
+  124 ConditionalExpression: RelationalExpression .
+  125                      | RelationalExpression . '?' Expression ':' Expression
 
-    '?'  shift, and go to state 133
+    '?'  shift, and go to state 150
 
-    $default  reduce using rule 94 (ConditionalExpression)
+    $default  reduce using rule 124 (ConditionalExpression)
 
 
 state 79
 
-   60 DimExpr: '[' Expression . ']'
+   90 DimExpr: '[' Expression . ']'
 
-    ']'  shift, and go to state 134
+    ']'  shift, and go to state 151
 
 
 state 80
 
-   92 Expression: ConditionalExpression .
+  122 Expression: ConditionalExpression .
 
-    $default  reduce using rule 92 (Expression)
+    $default  reduce using rule 122 (Expression)
 
 
 state 81
 
-   93 Expression: AssignmentExpression .
+  123 Expression: AssignmentExpression .
 
-    $default  reduce using rule 93 (Expression)
+    $default  reduce using rule 123 (Expression)
 
 
 state 82
 
-   59 DimExprs: DimExprs DimExpr .
+   89 DimExprs: DimExprs DimExpr .
 
-    $default  reduce using rule 59 (DimExprs)
+    $default  reduce using rule 89 (DimExprs)
 
 
 state 83
@@ -1205,78 +1292,321 @@ state 85
 
 state 86
 
+   82 JumpStatement: BREAK . ID ';'
+   83              | BREAK . ';'
+
+    ID   shift, and go to state 152
+    ';'  shift, and go to state 153
+
+
+state 87
+
+   65 LabeledStatement: CASE . ConditionalExpression ':' LocalVariableDeclarationOrStatement
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    ConditionalExpression  go to state 155
+
+
+state 88
+
+   84 JumpStatement: CONTINUE . ID ';'
+   85              | CONTINUE . ';'
+
+    ID   shift, and go to state 156
+    ';'  shift, and go to state 157
+
+
+state 89
+
+   66 LabeledStatement: DEFAULT . ':' LocalVariableDeclarationOrStatement
+
+    ':'  shift, and go to state 158
+
+
+state 90
+
+   71 IterationStatement: DO . Statement WHILE '(' Expression ')' ';'
+
+    BREAK     shift, and go to state 86
+    CASE      shift, and go to state 87
+    CONTINUE  shift, and go to state 88
+    DEFAULT   shift, and go to state 89
+    DO        shift, and go to state 90
+    FOR       shift, and go to state 91
+    IF        shift, and go to state 92
+    RETURN    shift, and go to state 93
+    SWITCH    shift, and go to state 94
+    WHILE     shift, and go to state 95
+    OP_INC    shift, and go to state 67
+    OP_DEC    shift, and go to state 68
+    ID        shift, and go to state 159
+    LITERAL   shift, and go to state 70
+    '('       shift, and go to state 71
+    '!'       shift, and go to state 72
+    '{'       shift, and go to state 62
+    ';'       shift, and go to state 98
+
+    Block                  go to state 100
+    Statement              go to state 160
+    LabeledStatement       go to state 105
+    SelectionStatement     go to state 106
+    IterationStatement     go to state 107
+    JumpStatement          go to state 108
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 109
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 91
+
+   72 IterationStatement: FOR . '(' ForInit ForExpr ForIncr ')' Statement
+   73                   | FOR . '(' ForInit ForExpr ')' Statement
+
+    '('  shift, and go to state 161
+
+
+state 92
+
+   67 SelectionStatement: IF . '(' Expression ')' Statement
+   68                   | IF . '(' Expression ')' Statement ELSE Statement
+
+    '('  shift, and go to state 162
+
+
+state 93
+
+   86 JumpStatement: RETURN . Expression ';'
+   87              | RETURN . ';'
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+    ';'      shift, and go to state 163
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 164
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 94
+
+   69 SelectionStatement: SWITCH . '(' Expression ')' Block
+
+    '('  shift, and go to state 165
+
+
+state 95
+
+   70 IterationStatement: WHILE . '(' Expression ')' Statement
+
+    '('  shift, and go to state 166
+
+
+state 96
+
+   20 QualifiedName: ID .
+   64 LabeledStatement: ID . ':' LocalVariableDeclarationOrStatement
+   94 UnaryExpression: ID . OP_INC
+   95                | ID . OP_DEC
+   98 BasicElement: ID .
+  126 AssignmentExpression: ID . '=' Expression
+  127                     | ID . ASS_MUL Expression
+  128                     | ID . ASS_DIV Expression
+  129                     | ID . ASS_ADD Expression
+  130                     | ID . ASS_SUB Expression
+  131                     | ID . ASS_XOR Expression
+  132                     | ID . ASS_MOD Expression
+  133                     | ID . ASS_SHL Expression
+  134                     | ID . ASS_SHR Expression
+
+    OP_INC   shift, and go to state 119
+    OP_DEC   shift, and go to state 120
+    ASS_MUL  shift, and go to state 121
+    ASS_DIV  shift, and go to state 122
+    ASS_ADD  shift, and go to state 123
+    ASS_SUB  shift, and go to state 124
+    ASS_XOR  shift, and go to state 125
+    ASS_MOD  shift, and go to state 126
+    ASS_SHL  shift, and go to state 127
+    ASS_SHR  shift, and go to state 128
+    '='      shift, and go to state 129
+    ':'      shift, and go to state 167
+
+    ID        reduce using rule 20 (QualifiedName)
+    '.'       reduce using rule 20 (QualifiedName)
+    '['       reduce using rule 20 (QualifiedName)
+    $default  reduce using rule 98 (BasicElement)
+
+
+state 97
+
    51 Block: '{' '}' .
 
     $default  reduce using rule 51 (Block)
 
 
-state 87
+state 98
 
-   57 Statement: ';' .
+   63 Statement: ';' .
 
-    $default  reduce using rule 57 (Statement)
+    $default  reduce using rule 63 (Statement)
 
 
-state 88
+state 99
 
    56 LocalVariableDeclarationStatement: TypeSpecifier . VariableDeclarators ';'
 
     ID  shift, and go to state 49
 
-    VariableDeclarators  go to state 135
+    VariableDeclarators  go to state 168
     VariableDeclarator   go to state 51
     DeclaratorName       go to state 85
 
 
-state 89
+state 100
+
+   62 Statement: Block .
+
+    $default  reduce using rule 62 (Statement)
+
+
+state 101
 
    50 Block: '{' LocalVariableDeclarationsAndStatements . '}'
    53 LocalVariableDeclarationsAndStatements: LocalVariableDeclarationsAndStatements . LocalVariableDeclarationOrStatement
 
-    BOOLEAN  shift, and go to state 30
-    BYTE     shift, and go to state 31
-    CHAR     shift, and go to state 32
-    DOUBLE   shift, and go to state 33
-    FLOAT    shift, and go to state 34
-    INT      shift, and go to state 35
-    LONG     shift, and go to state 36
-    SHORT    shift, and go to state 37
-    VOID     shift, and go to state 38
-    ID       shift, and go to state 9
-    '}'      shift, and go to state 136
-    ';'      shift, and go to state 87
+    BOOLEAN   shift, and go to state 30
+    BREAK     shift, and go to state 86
+    BYTE      shift, and go to state 31
+    CASE      shift, and go to state 87
+    CHAR      shift, and go to state 32
+    CONTINUE  shift, and go to state 88
+    DEFAULT   shift, and go to state 89
+    DO        shift, and go to state 90
+    DOUBLE    shift, and go to state 33
+    FLOAT     shift, and go to state 34
+    FOR       shift, and go to state 91
+    IF        shift, and go to state 92
+    INT       shift, and go to state 35
+    LONG      shift, and go to state 36
+    RETURN    shift, and go to state 93
+    SHORT     shift, and go to state 37
+    SWITCH    shift, and go to state 94
+    VOID      shift, and go to state 38
+    WHILE     shift, and go to state 95
+    OP_INC    shift, and go to state 67
+    OP_DEC    shift, and go to state 68
+    ID        shift, and go to state 96
+    LITERAL   shift, and go to state 70
+    '('       shift, and go to state 71
+    '!'       shift, and go to state 72
+    '{'       shift, and go to state 62
+    '}'       shift, and go to state 169
+    ';'       shift, and go to state 98
 
-    TypeSpecifier                        go to state 88
+    TypeSpecifier                        go to state 99
     TypeName                             go to state 40
     PrimitiveType                        go to state 41
     QualifiedName                        go to state 42
-    LocalVariableDeclarationOrStatement  go to state 137
-    LocalVariableDeclarationStatement    go to state 91
-    Statement                            go to state 92
+    Block                                go to state 100
+    LocalVariableDeclarationOrStatement  go to state 170
+    LocalVariableDeclarationStatement    go to state 103
+    Statement                            go to state 104
+    LabeledStatement                     go to state 105
+    SelectionStatement                   go to state 106
+    IterationStatement                   go to state 107
+    JumpStatement                        go to state 108
+    UnaryExpression                      go to state 74
+    BasicElement                         go to state 75
+    CastExpression                       go to state 76
+    ArithmeticExpression                 go to state 77
+    RelationalExpression                 go to state 78
+    Expression                           go to state 109
+    ConditionalExpression                go to state 80
+    AssignmentExpression                 go to state 81
 
 
-state 90
+state 102
 
    52 LocalVariableDeclarationsAndStatements: LocalVariableDeclarationOrStatement .
 
     $default  reduce using rule 52 (LocalVariableDeclarationsAndStatements)
 
 
-state 91
+state 103
 
    54 LocalVariableDeclarationOrStatement: LocalVariableDeclarationStatement .
 
     $default  reduce using rule 54 (LocalVariableDeclarationOrStatement)
 
 
-state 92
+state 104
 
    55 LocalVariableDeclarationOrStatement: Statement .
 
     $default  reduce using rule 55 (LocalVariableDeclarationOrStatement)
 
 
-state 93
+state 105
+
+   57 Statement: LabeledStatement .
+
+    $default  reduce using rule 57 (Statement)
+
+
+state 106
+
+   59 Statement: SelectionStatement .
+
+    $default  reduce using rule 59 (Statement)
+
+
+state 107
+
+   60 Statement: IterationStatement .
+
+    $default  reduce using rule 60 (Statement)
+
+
+state 108
+
+   61 Statement: JumpStatement .
+
+    $default  reduce using rule 61 (Statement)
+
+
+state 109
+
+   58 Statement: Expression . ';'
+
+    ';'  shift, and go to state 171
+
+
+state 110
 
    35 VariableInitializer: '{' . '}'
    36                    | '{' . ArrayInitializers '}'
@@ -1287,1077 +1617,161 @@ state 93
     LITERAL  shift, and go to state 70
     '('      shift, and go to state 71
     '!'      shift, and go to state 72
-    '{'      shift, and go to state 93
-    '}'      shift, and go to state 138
+    '{'      shift, and go to state 110
+    '}'      shift, and go to state 172
 
-    VariableInitializer    go to state 139
-    ArrayInitializers      go to state 140
+    VariableInitializer    go to state 173
+    ArrayInitializers      go to state 174
     UnaryExpression        go to state 74
     BasicElement           go to state 75
     CastExpression         go to state 76
     ArithmeticExpression   go to state 77
     RelationalExpression   go to state 78
-    Expression             go to state 95
-    ConditionalExpression  go to state 80
-    AssignmentExpression   go to state 81
-
-
-state 94
-
-   33 VariableDeclarator: DeclaratorName '=' VariableInitializer .
-
-    $default  reduce using rule 33 (VariableDeclarator)
-
-
-state 95
-
-   34 VariableInitializer: Expression .
-
-    $default  reduce using rule 34 (VariableInitializer)
-
-
-state 96
-
-   43 MethodDeclarator: DeclaratorName '(' ')' .
-
-    $default  reduce using rule 43 (MethodDeclarator)
-
-
-state 97
-
-   47 Parameter: TypeSpecifier . DeclaratorName
-
-    ID  shift, and go to state 49
-
-    DeclaratorName  go to state 141
-
-
-state 98
-
-   42 MethodDeclarator: DeclaratorName '(' ParameterList . ')'
-   46 ParameterList: ParameterList . ',' Parameter
-
-    ')'  shift, and go to state 142
-    ','  shift, and go to state 143
-
-
-state 99
-
-   45 ParameterList: Parameter .
-
-    $default  reduce using rule 45 (ParameterList)
-
-
-state 100
-
-   62 UnaryExpression: OP_INC ID .
-
-    $default  reduce using rule 62 (UnaryExpression)
-
-
-state 101
-
-   63 UnaryExpression: OP_DEC ID .
-
-    $default  reduce using rule 63 (UnaryExpression)
-
-
-state 102
-
-   64 UnaryExpression: ID OP_INC .
-
-    $default  reduce using rule 64 (UnaryExpression)
-
-
-state 103
-
-   65 UnaryExpression: ID OP_DEC .
-
-    $default  reduce using rule 65 (UnaryExpression)
-
-
-state 104
-
-   97 AssignmentExpression: ID ASS_MUL . Expression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 69
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression        go to state 74
-    BasicElement           go to state 75
-    CastExpression         go to state 76
-    ArithmeticExpression   go to state 77
-    RelationalExpression   go to state 78
-    Expression             go to state 144
-    ConditionalExpression  go to state 80
-    AssignmentExpression   go to state 81
-
-
-state 105
-
-   98 AssignmentExpression: ID ASS_DIV . Expression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 69
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression        go to state 74
-    BasicElement           go to state 75
-    CastExpression         go to state 76
-    ArithmeticExpression   go to state 77
-    RelationalExpression   go to state 78
-    Expression             go to state 145
-    ConditionalExpression  go to state 80
-    AssignmentExpression   go to state 81
-
-
-state 106
-
-   99 AssignmentExpression: ID ASS_ADD . Expression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 69
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression        go to state 74
-    BasicElement           go to state 75
-    CastExpression         go to state 76
-    ArithmeticExpression   go to state 77
-    RelationalExpression   go to state 78
-    Expression             go to state 146
-    ConditionalExpression  go to state 80
-    AssignmentExpression   go to state 81
-
-
-state 107
-
-  100 AssignmentExpression: ID ASS_SUB . Expression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 69
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression        go to state 74
-    BasicElement           go to state 75
-    CastExpression         go to state 76
-    ArithmeticExpression   go to state 77
-    RelationalExpression   go to state 78
-    Expression             go to state 147
-    ConditionalExpression  go to state 80
-    AssignmentExpression   go to state 81
-
-
-state 108
-
-  101 AssignmentExpression: ID ASS_XOR . Expression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 69
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression        go to state 74
-    BasicElement           go to state 75
-    CastExpression         go to state 76
-    ArithmeticExpression   go to state 77
-    RelationalExpression   go to state 78
-    Expression             go to state 148
-    ConditionalExpression  go to state 80
-    AssignmentExpression   go to state 81
-
-
-state 109
-
-  102 AssignmentExpression: ID ASS_MOD . Expression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 69
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression        go to state 74
-    BasicElement           go to state 75
-    CastExpression         go to state 76
-    ArithmeticExpression   go to state 77
-    RelationalExpression   go to state 78
-    Expression             go to state 149
-    ConditionalExpression  go to state 80
-    AssignmentExpression   go to state 81
-
-
-state 110
-
-  103 AssignmentExpression: ID ASS_SHL . Expression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 69
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression        go to state 74
-    BasicElement           go to state 75
-    CastExpression         go to state 76
-    ArithmeticExpression   go to state 77
-    RelationalExpression   go to state 78
-    Expression             go to state 150
+    Expression             go to state 112
     ConditionalExpression  go to state 80
     AssignmentExpression   go to state 81
 
 
 state 111
 
-  104 AssignmentExpression: ID ASS_SHR . Expression
+   33 VariableDeclarator: DeclaratorName '=' VariableInitializer .
 
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 69
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression        go to state 74
-    BasicElement           go to state 75
-    CastExpression         go to state 76
-    ArithmeticExpression   go to state 77
-    RelationalExpression   go to state 78
-    Expression             go to state 151
-    ConditionalExpression  go to state 80
-    AssignmentExpression   go to state 81
+    $default  reduce using rule 33 (VariableDeclarator)
 
 
 state 112
 
-   96 AssignmentExpression: ID '=' . Expression
+   34 VariableInitializer: Expression .
 
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 69
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression        go to state 74
-    BasicElement           go to state 75
-    CastExpression         go to state 76
-    ArithmeticExpression   go to state 77
-    RelationalExpression   go to state 78
-    Expression             go to state 152
-    ConditionalExpression  go to state 80
-    AssignmentExpression   go to state 81
+    $default  reduce using rule 34 (VariableInitializer)
 
 
 state 113
 
-   71 CastExpression: '(' PrimitiveType . ')' UnaryExpression
+   43 MethodDeclarator: DeclaratorName '(' ')' .
 
-    ')'  shift, and go to state 153
+    $default  reduce using rule 43 (MethodDeclarator)
 
 
 state 114
 
-   67 UnaryExpression: '!' ID .
+   47 Parameter: TypeSpecifier . DeclaratorName
 
-    $default  reduce using rule 67 (UnaryExpression)
+    ID  shift, and go to state 49
+
+    DeclaratorName  go to state 175
 
 
 state 115
 
-   78 ArithmeticExpression: ArithmeticExpression OP_SHL . ArithmeticExpression
+   42 MethodDeclarator: DeclaratorName '(' ParameterList . ')'
+   46 ParameterList: ParameterList . ',' Parameter
 
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 155
+    ')'  shift, and go to state 176
+    ','  shift, and go to state 177
 
 
 state 116
 
-   79 ArithmeticExpression: ArithmeticExpression OP_SHR . ArithmeticExpression
+   45 ParameterList: Parameter .
 
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 156
+    $default  reduce using rule 45 (ParameterList)
 
 
 state 117
 
-   84 RelationalExpression: ArithmeticExpression OP_GREATER_EQUAL . RelationalExpression
+   92 UnaryExpression: OP_INC ID .
 
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 77
-    RelationalExpression  go to state 157
+    $default  reduce using rule 92 (UnaryExpression)
 
 
 state 118
 
-   83 RelationalExpression: ArithmeticExpression OP_LESS_EQUAL . RelationalExpression
+   93 UnaryExpression: OP_DEC ID .
 
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 77
-    RelationalExpression  go to state 158
+    $default  reduce using rule 93 (UnaryExpression)
 
 
 state 119
 
-   85 RelationalExpression: ArithmeticExpression OP_EQUAL . RelationalExpression
+   94 UnaryExpression: ID OP_INC .
 
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 77
-    RelationalExpression  go to state 159
+    $default  reduce using rule 94 (UnaryExpression)
 
 
 state 120
 
-   86 RelationalExpression: ArithmeticExpression OP_DIFFERENT . RelationalExpression
+   95 UnaryExpression: ID OP_DEC .
 
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 77
-    RelationalExpression  go to state 160
+    $default  reduce using rule 95 (UnaryExpression)
 
 
 state 121
 
-   90 RelationalExpression: ArithmeticExpression OP_AND . RelationalExpression
+  127 AssignmentExpression: ID ASS_MUL . Expression
 
     OP_INC   shift, and go to state 67
     OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
+    ID       shift, and go to state 69
     LITERAL  shift, and go to state 70
     '('      shift, and go to state 71
     '!'      shift, and go to state 72
 
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 77
-    RelationalExpression  go to state 161
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 178
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
 
 
 state 122
 
-   91 RelationalExpression: ArithmeticExpression OP_OR . RelationalExpression
+  128 AssignmentExpression: ID ASS_DIV . Expression
 
     OP_INC   shift, and go to state 67
     OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
+    ID       shift, and go to state 69
     LITERAL  shift, and go to state 70
     '('      shift, and go to state 71
     '!'      shift, and go to state 72
 
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 77
-    RelationalExpression  go to state 162
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 179
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
 
 
 state 123
 
-   89 RelationalExpression: ArithmeticExpression '|' . RelationalExpression
+  129 AssignmentExpression: ID ASS_ADD . Expression
 
     OP_INC   shift, and go to state 67
     OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
+    ID       shift, and go to state 69
     LITERAL  shift, and go to state 70
     '('      shift, and go to state 71
     '!'      shift, and go to state 72
 
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 77
-    RelationalExpression  go to state 163
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 180
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
 
 
 state 124
 
-   88 RelationalExpression: ArithmeticExpression '^' . RelationalExpression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 77
-    RelationalExpression  go to state 164
-
-
-state 125
-
-   87 RelationalExpression: ArithmeticExpression '&' . RelationalExpression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 77
-    RelationalExpression  go to state 165
-
-
-state 126
-
-   82 RelationalExpression: ArithmeticExpression '>' . RelationalExpression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 77
-    RelationalExpression  go to state 166
-
-
-state 127
-
-   81 RelationalExpression: ArithmeticExpression '<' . RelationalExpression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 77
-    RelationalExpression  go to state 167
-
-
-state 128
-
-   74 ArithmeticExpression: ArithmeticExpression '-' . ArithmeticExpression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 168
-
-
-state 129
-
-   73 ArithmeticExpression: ArithmeticExpression '+' . ArithmeticExpression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 169
-
-
-state 130
-
-   76 ArithmeticExpression: ArithmeticExpression '*' . ArithmeticExpression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 170
-
-
-state 131
-
-   75 ArithmeticExpression: ArithmeticExpression '/' . ArithmeticExpression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 171
-
-
-state 132
-
-   77 ArithmeticExpression: ArithmeticExpression '%' . ArithmeticExpression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression       go to state 74
-    BasicElement          go to state 75
-    CastExpression        go to state 76
-    ArithmeticExpression  go to state 172
-
-
-state 133
-
-   95 ConditionalExpression: RelationalExpression '?' . Expression ':' Expression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 69
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-
-    UnaryExpression        go to state 74
-    BasicElement           go to state 75
-    CastExpression         go to state 76
-    ArithmeticExpression   go to state 77
-    RelationalExpression   go to state 78
-    Expression             go to state 173
-    ConditionalExpression  go to state 80
-    AssignmentExpression   go to state 81
-
-
-state 134
-
-   60 DimExpr: '[' Expression ']' .
-
-    $default  reduce using rule 60 (DimExpr)
-
-
-state 135
-
-   31 VariableDeclarators: VariableDeclarators . ',' VariableDeclarator
-   56 LocalVariableDeclarationStatement: TypeSpecifier VariableDeclarators . ';'
-
-    ';'  shift, and go to state 174
-    ','  shift, and go to state 60
-
-
-state 136
-
-   50 Block: '{' LocalVariableDeclarationsAndStatements '}' .
-
-    $default  reduce using rule 50 (Block)
-
-
-state 137
-
-   53 LocalVariableDeclarationsAndStatements: LocalVariableDeclarationsAndStatements LocalVariableDeclarationOrStatement .
-
-    $default  reduce using rule 53 (LocalVariableDeclarationsAndStatements)
-
-
-state 138
-
-   35 VariableInitializer: '{' '}' .
-
-    $default  reduce using rule 35 (VariableInitializer)
-
-
-state 139
-
-   37 ArrayInitializers: VariableInitializer .
-
-    $default  reduce using rule 37 (ArrayInitializers)
-
-
-state 140
-
-   36 VariableInitializer: '{' ArrayInitializers . '}'
-   38 ArrayInitializers: ArrayInitializers . ',' VariableInitializer
-   39                  | ArrayInitializers . ','
-
-    '}'  shift, and go to state 175
-    ','  shift, and go to state 176
-
-
-state 141
-
-   47 Parameter: TypeSpecifier DeclaratorName .
-   49 DeclaratorName: DeclaratorName . OP_DIM
-
-    OP_DIM  shift, and go to state 64
-
-    $default  reduce using rule 47 (Parameter)
-
-
-state 142
-
-   42 MethodDeclarator: DeclaratorName '(' ParameterList ')' .
-
-    $default  reduce using rule 42 (MethodDeclarator)
-
-
-state 143
-
-   46 ParameterList: ParameterList ',' . Parameter
-
-    BOOLEAN  shift, and go to state 30
-    BYTE     shift, and go to state 31
-    CHAR     shift, and go to state 32
-    DOUBLE   shift, and go to state 33
-    FLOAT    shift, and go to state 34
-    INT      shift, and go to state 35
-    LONG     shift, and go to state 36
-    SHORT    shift, and go to state 37
-    VOID     shift, and go to state 38
-    ID       shift, and go to state 9
-
-    TypeSpecifier  go to state 97
-    TypeName       go to state 40
-    PrimitiveType  go to state 41
-    QualifiedName  go to state 42
-    Parameter      go to state 177
-
-
-state 144
-
-   97 AssignmentExpression: ID ASS_MUL Expression .
-
-    $default  reduce using rule 97 (AssignmentExpression)
-
-
-state 145
-
-   98 AssignmentExpression: ID ASS_DIV Expression .
-
-    $default  reduce using rule 98 (AssignmentExpression)
-
-
-state 146
-
-   99 AssignmentExpression: ID ASS_ADD Expression .
-
-    $default  reduce using rule 99 (AssignmentExpression)
-
-
-state 147
-
-  100 AssignmentExpression: ID ASS_SUB Expression .
-
-    $default  reduce using rule 100 (AssignmentExpression)
-
-
-state 148
-
-  101 AssignmentExpression: ID ASS_XOR Expression .
-
-    $default  reduce using rule 101 (AssignmentExpression)
-
-
-state 149
-
-  102 AssignmentExpression: ID ASS_MOD Expression .
-
-    $default  reduce using rule 102 (AssignmentExpression)
-
-
-state 150
-
-  103 AssignmentExpression: ID ASS_SHL Expression .
-
-    $default  reduce using rule 103 (AssignmentExpression)
-
-
-state 151
-
-  104 AssignmentExpression: ID ASS_SHR Expression .
-
-    $default  reduce using rule 104 (AssignmentExpression)
-
-
-state 152
-
-   96 AssignmentExpression: ID '=' Expression .
-
-    $default  reduce using rule 96 (AssignmentExpression)
-
-
-state 153
-
-   71 CastExpression: '(' PrimitiveType ')' . UnaryExpression
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 154
-    LITERAL  shift, and go to state 70
-    '!'      shift, and go to state 72
-
-    UnaryExpression  go to state 178
-    BasicElement     go to state 75
-
-
-state 154
-
-   64 UnaryExpression: ID . OP_INC
-   65                | ID . OP_DEC
-   68 BasicElement: ID .
-
-    OP_INC  shift, and go to state 102
-    OP_DEC  shift, and go to state 103
-
-    $default  reduce using rule 68 (BasicElement)
-
-
-state 155
-
-   73 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
-   74                     | ArithmeticExpression . '-' ArithmeticExpression
-   75                     | ArithmeticExpression . '/' ArithmeticExpression
-   76                     | ArithmeticExpression . '*' ArithmeticExpression
-   77                     | ArithmeticExpression . '%' ArithmeticExpression
-   78                     | ArithmeticExpression . OP_SHL ArithmeticExpression
-   78                     | ArithmeticExpression OP_SHL ArithmeticExpression .
-   79                     | ArithmeticExpression . OP_SHR ArithmeticExpression
-
-    '-'  shift, and go to state 128
-    '+'  shift, and go to state 129
-    '*'  shift, and go to state 130
-    '/'  shift, and go to state 131
-    '%'  shift, and go to state 132
-
-    $default  reduce using rule 78 (ArithmeticExpression)
-
-
-state 156
-
-   73 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
-   74                     | ArithmeticExpression . '-' ArithmeticExpression
-   75                     | ArithmeticExpression . '/' ArithmeticExpression
-   76                     | ArithmeticExpression . '*' ArithmeticExpression
-   77                     | ArithmeticExpression . '%' ArithmeticExpression
-   78                     | ArithmeticExpression . OP_SHL ArithmeticExpression
-   79                     | ArithmeticExpression . OP_SHR ArithmeticExpression
-   79                     | ArithmeticExpression OP_SHR ArithmeticExpression .
-
-    '-'  shift, and go to state 128
-    '+'  shift, and go to state 129
-    '*'  shift, and go to state 130
-    '/'  shift, and go to state 131
-    '%'  shift, and go to state 132
-
-    $default  reduce using rule 79 (ArithmeticExpression)
-
-
-state 157
-
-   84 RelationalExpression: ArithmeticExpression OP_GREATER_EQUAL RelationalExpression .
-
-    $default  reduce using rule 84 (RelationalExpression)
-
-
-state 158
-
-   83 RelationalExpression: ArithmeticExpression OP_LESS_EQUAL RelationalExpression .
-
-    $default  reduce using rule 83 (RelationalExpression)
-
-
-state 159
-
-   85 RelationalExpression: ArithmeticExpression OP_EQUAL RelationalExpression .
-
-    $default  reduce using rule 85 (RelationalExpression)
-
-
-state 160
-
-   86 RelationalExpression: ArithmeticExpression OP_DIFFERENT RelationalExpression .
-
-    $default  reduce using rule 86 (RelationalExpression)
-
-
-state 161
-
-   90 RelationalExpression: ArithmeticExpression OP_AND RelationalExpression .
-
-    $default  reduce using rule 90 (RelationalExpression)
-
-
-state 162
-
-   91 RelationalExpression: ArithmeticExpression OP_OR RelationalExpression .
-
-    $default  reduce using rule 91 (RelationalExpression)
-
-
-state 163
-
-   89 RelationalExpression: ArithmeticExpression '|' RelationalExpression .
-
-    $default  reduce using rule 89 (RelationalExpression)
-
-
-state 164
-
-   88 RelationalExpression: ArithmeticExpression '^' RelationalExpression .
-
-    $default  reduce using rule 88 (RelationalExpression)
-
-
-state 165
-
-   87 RelationalExpression: ArithmeticExpression '&' RelationalExpression .
-
-    $default  reduce using rule 87 (RelationalExpression)
-
-
-state 166
-
-   82 RelationalExpression: ArithmeticExpression '>' RelationalExpression .
-
-    $default  reduce using rule 82 (RelationalExpression)
-
-
-state 167
-
-   81 RelationalExpression: ArithmeticExpression '<' RelationalExpression .
-
-    $default  reduce using rule 81 (RelationalExpression)
-
-
-state 168
-
-   73 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
-   74                     | ArithmeticExpression . '-' ArithmeticExpression
-   74                     | ArithmeticExpression '-' ArithmeticExpression .
-   75                     | ArithmeticExpression . '/' ArithmeticExpression
-   76                     | ArithmeticExpression . '*' ArithmeticExpression
-   77                     | ArithmeticExpression . '%' ArithmeticExpression
-   78                     | ArithmeticExpression . OP_SHL ArithmeticExpression
-   79                     | ArithmeticExpression . OP_SHR ArithmeticExpression
-
-    '*'  shift, and go to state 130
-    '/'  shift, and go to state 131
-    '%'  shift, and go to state 132
-
-    $default  reduce using rule 74 (ArithmeticExpression)
-
-
-state 169
-
-   73 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
-   73                     | ArithmeticExpression '+' ArithmeticExpression .
-   74                     | ArithmeticExpression . '-' ArithmeticExpression
-   75                     | ArithmeticExpression . '/' ArithmeticExpression
-   76                     | ArithmeticExpression . '*' ArithmeticExpression
-   77                     | ArithmeticExpression . '%' ArithmeticExpression
-   78                     | ArithmeticExpression . OP_SHL ArithmeticExpression
-   79                     | ArithmeticExpression . OP_SHR ArithmeticExpression
-
-    '*'  shift, and go to state 130
-    '/'  shift, and go to state 131
-    '%'  shift, and go to state 132
-
-    $default  reduce using rule 73 (ArithmeticExpression)
-
-
-state 170
-
-   73 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
-   74                     | ArithmeticExpression . '-' ArithmeticExpression
-   75                     | ArithmeticExpression . '/' ArithmeticExpression
-   76                     | ArithmeticExpression . '*' ArithmeticExpression
-   76                     | ArithmeticExpression '*' ArithmeticExpression .
-   77                     | ArithmeticExpression . '%' ArithmeticExpression
-   78                     | ArithmeticExpression . OP_SHL ArithmeticExpression
-   79                     | ArithmeticExpression . OP_SHR ArithmeticExpression
-
-    $default  reduce using rule 76 (ArithmeticExpression)
-
-
-state 171
-
-   73 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
-   74                     | ArithmeticExpression . '-' ArithmeticExpression
-   75                     | ArithmeticExpression . '/' ArithmeticExpression
-   75                     | ArithmeticExpression '/' ArithmeticExpression .
-   76                     | ArithmeticExpression . '*' ArithmeticExpression
-   77                     | ArithmeticExpression . '%' ArithmeticExpression
-   78                     | ArithmeticExpression . OP_SHL ArithmeticExpression
-   79                     | ArithmeticExpression . OP_SHR ArithmeticExpression
-
-    $default  reduce using rule 75 (ArithmeticExpression)
-
-
-state 172
-
-   73 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
-   74                     | ArithmeticExpression . '-' ArithmeticExpression
-   75                     | ArithmeticExpression . '/' ArithmeticExpression
-   76                     | ArithmeticExpression . '*' ArithmeticExpression
-   77                     | ArithmeticExpression . '%' ArithmeticExpression
-   77                     | ArithmeticExpression '%' ArithmeticExpression .
-   78                     | ArithmeticExpression . OP_SHL ArithmeticExpression
-   79                     | ArithmeticExpression . OP_SHR ArithmeticExpression
-
-    $default  reduce using rule 77 (ArithmeticExpression)
-
-
-state 173
-
-   95 ConditionalExpression: RelationalExpression '?' Expression . ':' Expression
-
-    ':'  shift, and go to state 179
-
-
-state 174
-
-   56 LocalVariableDeclarationStatement: TypeSpecifier VariableDeclarators ';' .
-
-    $default  reduce using rule 56 (LocalVariableDeclarationStatement)
-
-
-state 175
-
-   36 VariableInitializer: '{' ArrayInitializers '}' .
-
-    $default  reduce using rule 36 (VariableInitializer)
-
-
-state 176
-
-   38 ArrayInitializers: ArrayInitializers ',' . VariableInitializer
-   39                  | ArrayInitializers ',' .
-
-    OP_INC   shift, and go to state 67
-    OP_DEC   shift, and go to state 68
-    ID       shift, and go to state 69
-    LITERAL  shift, and go to state 70
-    '('      shift, and go to state 71
-    '!'      shift, and go to state 72
-    '{'      shift, and go to state 93
-
-    $default  reduce using rule 39 (ArrayInitializers)
-
-    VariableInitializer    go to state 180
-    UnaryExpression        go to state 74
-    BasicElement           go to state 75
-    CastExpression         go to state 76
-    ArithmeticExpression   go to state 77
-    RelationalExpression   go to state 78
-    Expression             go to state 95
-    ConditionalExpression  go to state 80
-    AssignmentExpression   go to state 81
-
-
-state 177
-
-   46 ParameterList: ParameterList ',' Parameter .
-
-    $default  reduce using rule 46 (ParameterList)
-
-
-state 178
-
-   71 CastExpression: '(' PrimitiveType ')' UnaryExpression .
-
-    $default  reduce using rule 71 (CastExpression)
-
-
-state 179
-
-   95 ConditionalExpression: RelationalExpression '?' Expression ':' . Expression
+  130 AssignmentExpression: ID ASS_SUB . Expression
 
     OP_INC   shift, and go to state 67
     OP_DEC   shift, and go to state 68
@@ -2376,15 +1790,1840 @@ state 179
     AssignmentExpression   go to state 81
 
 
+state 125
+
+  131 AssignmentExpression: ID ASS_XOR . Expression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 182
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 126
+
+  132 AssignmentExpression: ID ASS_MOD . Expression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 183
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 127
+
+  133 AssignmentExpression: ID ASS_SHL . Expression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 184
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 128
+
+  134 AssignmentExpression: ID ASS_SHR . Expression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 185
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 129
+
+  126 AssignmentExpression: ID '=' . Expression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 186
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 130
+
+  101 CastExpression: '(' PrimitiveType . ')' UnaryExpression
+
+    ')'  shift, and go to state 187
+
+
+state 131
+
+   97 UnaryExpression: '!' ID .
+
+    $default  reduce using rule 97 (UnaryExpression)
+
+
+state 132
+
+  108 ArithmeticExpression: ArithmeticExpression OP_SHL . ArithmeticExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 188
+
+
+state 133
+
+  109 ArithmeticExpression: ArithmeticExpression OP_SHR . ArithmeticExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 189
+
+
+state 134
+
+  114 RelationalExpression: ArithmeticExpression OP_GREATER_EQUAL . RelationalExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 77
+    RelationalExpression  go to state 190
+
+
+state 135
+
+  113 RelationalExpression: ArithmeticExpression OP_LESS_EQUAL . RelationalExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 77
+    RelationalExpression  go to state 191
+
+
+state 136
+
+  115 RelationalExpression: ArithmeticExpression OP_EQUAL . RelationalExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 77
+    RelationalExpression  go to state 192
+
+
+state 137
+
+  116 RelationalExpression: ArithmeticExpression OP_DIFFERENT . RelationalExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 77
+    RelationalExpression  go to state 193
+
+
+state 138
+
+  120 RelationalExpression: ArithmeticExpression OP_AND . RelationalExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 77
+    RelationalExpression  go to state 194
+
+
+state 139
+
+  121 RelationalExpression: ArithmeticExpression OP_OR . RelationalExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 77
+    RelationalExpression  go to state 195
+
+
+state 140
+
+  119 RelationalExpression: ArithmeticExpression '|' . RelationalExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 77
+    RelationalExpression  go to state 196
+
+
+state 141
+
+  118 RelationalExpression: ArithmeticExpression '^' . RelationalExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 77
+    RelationalExpression  go to state 197
+
+
+state 142
+
+  117 RelationalExpression: ArithmeticExpression '&' . RelationalExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 77
+    RelationalExpression  go to state 198
+
+
+state 143
+
+  112 RelationalExpression: ArithmeticExpression '>' . RelationalExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 77
+    RelationalExpression  go to state 199
+
+
+state 144
+
+  111 RelationalExpression: ArithmeticExpression '<' . RelationalExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 77
+    RelationalExpression  go to state 200
+
+
+state 145
+
+  104 ArithmeticExpression: ArithmeticExpression '-' . ArithmeticExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 201
+
+
+state 146
+
+  103 ArithmeticExpression: ArithmeticExpression '+' . ArithmeticExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 202
+
+
+state 147
+
+  106 ArithmeticExpression: ArithmeticExpression '*' . ArithmeticExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 203
+
+
+state 148
+
+  105 ArithmeticExpression: ArithmeticExpression '/' . ArithmeticExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 204
+
+
+state 149
+
+  107 ArithmeticExpression: ArithmeticExpression '%' . ArithmeticExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression       go to state 74
+    BasicElement          go to state 75
+    CastExpression        go to state 76
+    ArithmeticExpression  go to state 205
+
+
+state 150
+
+  125 ConditionalExpression: RelationalExpression '?' . Expression ':' Expression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 206
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 151
+
+   90 DimExpr: '[' Expression ']' .
+
+    $default  reduce using rule 90 (DimExpr)
+
+
+state 152
+
+   82 JumpStatement: BREAK ID . ';'
+
+    ';'  shift, and go to state 207
+
+
+state 153
+
+   83 JumpStatement: BREAK ';' .
+
+    $default  reduce using rule 83 (JumpStatement)
+
+
+state 154
+
+   94 UnaryExpression: ID . OP_INC
+   95                | ID . OP_DEC
+   98 BasicElement: ID .
+
+    OP_INC  shift, and go to state 119
+    OP_DEC  shift, and go to state 120
+
+    $default  reduce using rule 98 (BasicElement)
+
+
+state 155
+
+   65 LabeledStatement: CASE ConditionalExpression . ':' LocalVariableDeclarationOrStatement
+
+    ':'  shift, and go to state 208
+
+
+state 156
+
+   84 JumpStatement: CONTINUE ID . ';'
+
+    ';'  shift, and go to state 209
+
+
+state 157
+
+   85 JumpStatement: CONTINUE ';' .
+
+    $default  reduce using rule 85 (JumpStatement)
+
+
+state 158
+
+   66 LabeledStatement: DEFAULT ':' . LocalVariableDeclarationOrStatement
+
+    BOOLEAN   shift, and go to state 30
+    BREAK     shift, and go to state 86
+    BYTE      shift, and go to state 31
+    CASE      shift, and go to state 87
+    CHAR      shift, and go to state 32
+    CONTINUE  shift, and go to state 88
+    DEFAULT   shift, and go to state 89
+    DO        shift, and go to state 90
+    DOUBLE    shift, and go to state 33
+    FLOAT     shift, and go to state 34
+    FOR       shift, and go to state 91
+    IF        shift, and go to state 92
+    INT       shift, and go to state 35
+    LONG      shift, and go to state 36
+    RETURN    shift, and go to state 93
+    SHORT     shift, and go to state 37
+    SWITCH    shift, and go to state 94
+    VOID      shift, and go to state 38
+    WHILE     shift, and go to state 95
+    OP_INC    shift, and go to state 67
+    OP_DEC    shift, and go to state 68
+    ID        shift, and go to state 96
+    LITERAL   shift, and go to state 70
+    '('       shift, and go to state 71
+    '!'       shift, and go to state 72
+    '{'       shift, and go to state 62
+    ';'       shift, and go to state 98
+
+    TypeSpecifier                        go to state 99
+    TypeName                             go to state 40
+    PrimitiveType                        go to state 41
+    QualifiedName                        go to state 42
+    Block                                go to state 100
+    LocalVariableDeclarationOrStatement  go to state 210
+    LocalVariableDeclarationStatement    go to state 103
+    Statement                            go to state 104
+    LabeledStatement                     go to state 105
+    SelectionStatement                   go to state 106
+    IterationStatement                   go to state 107
+    JumpStatement                        go to state 108
+    UnaryExpression                      go to state 74
+    BasicElement                         go to state 75
+    CastExpression                       go to state 76
+    ArithmeticExpression                 go to state 77
+    RelationalExpression                 go to state 78
+    Expression                           go to state 109
+    ConditionalExpression                go to state 80
+    AssignmentExpression                 go to state 81
+
+
+state 159
+
+   64 LabeledStatement: ID . ':' LocalVariableDeclarationOrStatement
+   94 UnaryExpression: ID . OP_INC
+   95                | ID . OP_DEC
+   98 BasicElement: ID .
+  126 AssignmentExpression: ID . '=' Expression
+  127                     | ID . ASS_MUL Expression
+  128                     | ID . ASS_DIV Expression
+  129                     | ID . ASS_ADD Expression
+  130                     | ID . ASS_SUB Expression
+  131                     | ID . ASS_XOR Expression
+  132                     | ID . ASS_MOD Expression
+  133                     | ID . ASS_SHL Expression
+  134                     | ID . ASS_SHR Expression
+
+    OP_INC   shift, and go to state 119
+    OP_DEC   shift, and go to state 120
+    ASS_MUL  shift, and go to state 121
+    ASS_DIV  shift, and go to state 122
+    ASS_ADD  shift, and go to state 123
+    ASS_SUB  shift, and go to state 124
+    ASS_XOR  shift, and go to state 125
+    ASS_MOD  shift, and go to state 126
+    ASS_SHL  shift, and go to state 127
+    ASS_SHR  shift, and go to state 128
+    '='      shift, and go to state 129
+    ':'      shift, and go to state 167
+
+    $default  reduce using rule 98 (BasicElement)
+
+
+state 160
+
+   71 IterationStatement: DO Statement . WHILE '(' Expression ')' ';'
+
+    WHILE  shift, and go to state 211
+
+
+state 161
+
+   72 IterationStatement: FOR '(' . ForInit ForExpr ForIncr ')' Statement
+   73                   | FOR '(' . ForInit ForExpr ')' Statement
+
+    BOOLEAN  shift, and go to state 30
+    BYTE     shift, and go to state 31
+    CHAR     shift, and go to state 32
+    DOUBLE   shift, and go to state 33
+    FLOAT    shift, and go to state 34
+    INT      shift, and go to state 35
+    LONG     shift, and go to state 36
+    SHORT    shift, and go to state 37
+    VOID     shift, and go to state 38
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 212
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+    ';'      shift, and go to state 213
+
+    TypeSpecifier                      go to state 99
+    TypeName                           go to state 40
+    PrimitiveType                      go to state 41
+    QualifiedName                      go to state 42
+    LocalVariableDeclarationStatement  go to state 214
+    ForInit                            go to state 215
+    Expressions                        go to state 216
+    UnaryExpression                    go to state 74
+    BasicElement                       go to state 75
+    CastExpression                     go to state 76
+    ArithmeticExpression               go to state 77
+    RelationalExpression               go to state 78
+    Expression                         go to state 217
+    ConditionalExpression              go to state 80
+    AssignmentExpression               go to state 81
+
+
+state 162
+
+   67 SelectionStatement: IF '(' . Expression ')' Statement
+   68                   | IF '(' . Expression ')' Statement ELSE Statement
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 218
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 163
+
+   87 JumpStatement: RETURN ';' .
+
+    $default  reduce using rule 87 (JumpStatement)
+
+
+state 164
+
+   86 JumpStatement: RETURN Expression . ';'
+
+    ';'  shift, and go to state 219
+
+
+state 165
+
+   69 SelectionStatement: SWITCH '(' . Expression ')' Block
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 220
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 166
+
+   70 IterationStatement: WHILE '(' . Expression ')' Statement
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 221
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 167
+
+   64 LabeledStatement: ID ':' . LocalVariableDeclarationOrStatement
+
+    BOOLEAN   shift, and go to state 30
+    BREAK     shift, and go to state 86
+    BYTE      shift, and go to state 31
+    CASE      shift, and go to state 87
+    CHAR      shift, and go to state 32
+    CONTINUE  shift, and go to state 88
+    DEFAULT   shift, and go to state 89
+    DO        shift, and go to state 90
+    DOUBLE    shift, and go to state 33
+    FLOAT     shift, and go to state 34
+    FOR       shift, and go to state 91
+    IF        shift, and go to state 92
+    INT       shift, and go to state 35
+    LONG      shift, and go to state 36
+    RETURN    shift, and go to state 93
+    SHORT     shift, and go to state 37
+    SWITCH    shift, and go to state 94
+    VOID      shift, and go to state 38
+    WHILE     shift, and go to state 95
+    OP_INC    shift, and go to state 67
+    OP_DEC    shift, and go to state 68
+    ID        shift, and go to state 96
+    LITERAL   shift, and go to state 70
+    '('       shift, and go to state 71
+    '!'       shift, and go to state 72
+    '{'       shift, and go to state 62
+    ';'       shift, and go to state 98
+
+    TypeSpecifier                        go to state 99
+    TypeName                             go to state 40
+    PrimitiveType                        go to state 41
+    QualifiedName                        go to state 42
+    Block                                go to state 100
+    LocalVariableDeclarationOrStatement  go to state 222
+    LocalVariableDeclarationStatement    go to state 103
+    Statement                            go to state 104
+    LabeledStatement                     go to state 105
+    SelectionStatement                   go to state 106
+    IterationStatement                   go to state 107
+    JumpStatement                        go to state 108
+    UnaryExpression                      go to state 74
+    BasicElement                         go to state 75
+    CastExpression                       go to state 76
+    ArithmeticExpression                 go to state 77
+    RelationalExpression                 go to state 78
+    Expression                           go to state 109
+    ConditionalExpression                go to state 80
+    AssignmentExpression                 go to state 81
+
+
+state 168
+
+   31 VariableDeclarators: VariableDeclarators . ',' VariableDeclarator
+   56 LocalVariableDeclarationStatement: TypeSpecifier VariableDeclarators . ';'
+
+    ';'  shift, and go to state 223
+    ','  shift, and go to state 60
+
+
+state 169
+
+   50 Block: '{' LocalVariableDeclarationsAndStatements '}' .
+
+    $default  reduce using rule 50 (Block)
+
+
+state 170
+
+   53 LocalVariableDeclarationsAndStatements: LocalVariableDeclarationsAndStatements LocalVariableDeclarationOrStatement .
+
+    $default  reduce using rule 53 (LocalVariableDeclarationsAndStatements)
+
+
+state 171
+
+   58 Statement: Expression ';' .
+
+    $default  reduce using rule 58 (Statement)
+
+
+state 172
+
+   35 VariableInitializer: '{' '}' .
+
+    $default  reduce using rule 35 (VariableInitializer)
+
+
+state 173
+
+   37 ArrayInitializers: VariableInitializer .
+
+    $default  reduce using rule 37 (ArrayInitializers)
+
+
+state 174
+
+   36 VariableInitializer: '{' ArrayInitializers . '}'
+   38 ArrayInitializers: ArrayInitializers . ',' VariableInitializer
+   39                  | ArrayInitializers . ','
+
+    '}'  shift, and go to state 224
+    ','  shift, and go to state 225
+
+
+state 175
+
+   47 Parameter: TypeSpecifier DeclaratorName .
+   49 DeclaratorName: DeclaratorName . OP_DIM
+
+    OP_DIM  shift, and go to state 64
+
+    $default  reduce using rule 47 (Parameter)
+
+
+state 176
+
+   42 MethodDeclarator: DeclaratorName '(' ParameterList ')' .
+
+    $default  reduce using rule 42 (MethodDeclarator)
+
+
+state 177
+
+   46 ParameterList: ParameterList ',' . Parameter
+
+    BOOLEAN  shift, and go to state 30
+    BYTE     shift, and go to state 31
+    CHAR     shift, and go to state 32
+    DOUBLE   shift, and go to state 33
+    FLOAT    shift, and go to state 34
+    INT      shift, and go to state 35
+    LONG     shift, and go to state 36
+    SHORT    shift, and go to state 37
+    VOID     shift, and go to state 38
+    ID       shift, and go to state 9
+
+    TypeSpecifier  go to state 114
+    TypeName       go to state 40
+    PrimitiveType  go to state 41
+    QualifiedName  go to state 42
+    Parameter      go to state 226
+
+
+state 178
+
+  127 AssignmentExpression: ID ASS_MUL Expression .
+
+    $default  reduce using rule 127 (AssignmentExpression)
+
+
+state 179
+
+  128 AssignmentExpression: ID ASS_DIV Expression .
+
+    $default  reduce using rule 128 (AssignmentExpression)
+
+
 state 180
+
+  129 AssignmentExpression: ID ASS_ADD Expression .
+
+    $default  reduce using rule 129 (AssignmentExpression)
+
+
+state 181
+
+  130 AssignmentExpression: ID ASS_SUB Expression .
+
+    $default  reduce using rule 130 (AssignmentExpression)
+
+
+state 182
+
+  131 AssignmentExpression: ID ASS_XOR Expression .
+
+    $default  reduce using rule 131 (AssignmentExpression)
+
+
+state 183
+
+  132 AssignmentExpression: ID ASS_MOD Expression .
+
+    $default  reduce using rule 132 (AssignmentExpression)
+
+
+state 184
+
+  133 AssignmentExpression: ID ASS_SHL Expression .
+
+    $default  reduce using rule 133 (AssignmentExpression)
+
+
+state 185
+
+  134 AssignmentExpression: ID ASS_SHR Expression .
+
+    $default  reduce using rule 134 (AssignmentExpression)
+
+
+state 186
+
+  126 AssignmentExpression: ID '=' Expression .
+
+    $default  reduce using rule 126 (AssignmentExpression)
+
+
+state 187
+
+  101 CastExpression: '(' PrimitiveType ')' . UnaryExpression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 154
+    LITERAL  shift, and go to state 70
+    '!'      shift, and go to state 72
+
+    UnaryExpression  go to state 227
+    BasicElement     go to state 75
+
+
+state 188
+
+  103 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
+  104                     | ArithmeticExpression . '-' ArithmeticExpression
+  105                     | ArithmeticExpression . '/' ArithmeticExpression
+  106                     | ArithmeticExpression . '*' ArithmeticExpression
+  107                     | ArithmeticExpression . '%' ArithmeticExpression
+  108                     | ArithmeticExpression . OP_SHL ArithmeticExpression
+  108                     | ArithmeticExpression OP_SHL ArithmeticExpression .
+  109                     | ArithmeticExpression . OP_SHR ArithmeticExpression
+
+    '-'  shift, and go to state 145
+    '+'  shift, and go to state 146
+    '*'  shift, and go to state 147
+    '/'  shift, and go to state 148
+    '%'  shift, and go to state 149
+
+    $default  reduce using rule 108 (ArithmeticExpression)
+
+
+state 189
+
+  103 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
+  104                     | ArithmeticExpression . '-' ArithmeticExpression
+  105                     | ArithmeticExpression . '/' ArithmeticExpression
+  106                     | ArithmeticExpression . '*' ArithmeticExpression
+  107                     | ArithmeticExpression . '%' ArithmeticExpression
+  108                     | ArithmeticExpression . OP_SHL ArithmeticExpression
+  109                     | ArithmeticExpression . OP_SHR ArithmeticExpression
+  109                     | ArithmeticExpression OP_SHR ArithmeticExpression .
+
+    '-'  shift, and go to state 145
+    '+'  shift, and go to state 146
+    '*'  shift, and go to state 147
+    '/'  shift, and go to state 148
+    '%'  shift, and go to state 149
+
+    $default  reduce using rule 109 (ArithmeticExpression)
+
+
+state 190
+
+  114 RelationalExpression: ArithmeticExpression OP_GREATER_EQUAL RelationalExpression .
+
+    $default  reduce using rule 114 (RelationalExpression)
+
+
+state 191
+
+  113 RelationalExpression: ArithmeticExpression OP_LESS_EQUAL RelationalExpression .
+
+    $default  reduce using rule 113 (RelationalExpression)
+
+
+state 192
+
+  115 RelationalExpression: ArithmeticExpression OP_EQUAL RelationalExpression .
+
+    $default  reduce using rule 115 (RelationalExpression)
+
+
+state 193
+
+  116 RelationalExpression: ArithmeticExpression OP_DIFFERENT RelationalExpression .
+
+    $default  reduce using rule 116 (RelationalExpression)
+
+
+state 194
+
+  120 RelationalExpression: ArithmeticExpression OP_AND RelationalExpression .
+
+    $default  reduce using rule 120 (RelationalExpression)
+
+
+state 195
+
+  121 RelationalExpression: ArithmeticExpression OP_OR RelationalExpression .
+
+    $default  reduce using rule 121 (RelationalExpression)
+
+
+state 196
+
+  119 RelationalExpression: ArithmeticExpression '|' RelationalExpression .
+
+    $default  reduce using rule 119 (RelationalExpression)
+
+
+state 197
+
+  118 RelationalExpression: ArithmeticExpression '^' RelationalExpression .
+
+    $default  reduce using rule 118 (RelationalExpression)
+
+
+state 198
+
+  117 RelationalExpression: ArithmeticExpression '&' RelationalExpression .
+
+    $default  reduce using rule 117 (RelationalExpression)
+
+
+state 199
+
+  112 RelationalExpression: ArithmeticExpression '>' RelationalExpression .
+
+    $default  reduce using rule 112 (RelationalExpression)
+
+
+state 200
+
+  111 RelationalExpression: ArithmeticExpression '<' RelationalExpression .
+
+    $default  reduce using rule 111 (RelationalExpression)
+
+
+state 201
+
+  103 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
+  104                     | ArithmeticExpression . '-' ArithmeticExpression
+  104                     | ArithmeticExpression '-' ArithmeticExpression .
+  105                     | ArithmeticExpression . '/' ArithmeticExpression
+  106                     | ArithmeticExpression . '*' ArithmeticExpression
+  107                     | ArithmeticExpression . '%' ArithmeticExpression
+  108                     | ArithmeticExpression . OP_SHL ArithmeticExpression
+  109                     | ArithmeticExpression . OP_SHR ArithmeticExpression
+
+    '*'  shift, and go to state 147
+    '/'  shift, and go to state 148
+    '%'  shift, and go to state 149
+
+    $default  reduce using rule 104 (ArithmeticExpression)
+
+
+state 202
+
+  103 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
+  103                     | ArithmeticExpression '+' ArithmeticExpression .
+  104                     | ArithmeticExpression . '-' ArithmeticExpression
+  105                     | ArithmeticExpression . '/' ArithmeticExpression
+  106                     | ArithmeticExpression . '*' ArithmeticExpression
+  107                     | ArithmeticExpression . '%' ArithmeticExpression
+  108                     | ArithmeticExpression . OP_SHL ArithmeticExpression
+  109                     | ArithmeticExpression . OP_SHR ArithmeticExpression
+
+    '*'  shift, and go to state 147
+    '/'  shift, and go to state 148
+    '%'  shift, and go to state 149
+
+    $default  reduce using rule 103 (ArithmeticExpression)
+
+
+state 203
+
+  103 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
+  104                     | ArithmeticExpression . '-' ArithmeticExpression
+  105                     | ArithmeticExpression . '/' ArithmeticExpression
+  106                     | ArithmeticExpression . '*' ArithmeticExpression
+  106                     | ArithmeticExpression '*' ArithmeticExpression .
+  107                     | ArithmeticExpression . '%' ArithmeticExpression
+  108                     | ArithmeticExpression . OP_SHL ArithmeticExpression
+  109                     | ArithmeticExpression . OP_SHR ArithmeticExpression
+
+    $default  reduce using rule 106 (ArithmeticExpression)
+
+
+state 204
+
+  103 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
+  104                     | ArithmeticExpression . '-' ArithmeticExpression
+  105                     | ArithmeticExpression . '/' ArithmeticExpression
+  105                     | ArithmeticExpression '/' ArithmeticExpression .
+  106                     | ArithmeticExpression . '*' ArithmeticExpression
+  107                     | ArithmeticExpression . '%' ArithmeticExpression
+  108                     | ArithmeticExpression . OP_SHL ArithmeticExpression
+  109                     | ArithmeticExpression . OP_SHR ArithmeticExpression
+
+    $default  reduce using rule 105 (ArithmeticExpression)
+
+
+state 205
+
+  103 ArithmeticExpression: ArithmeticExpression . '+' ArithmeticExpression
+  104                     | ArithmeticExpression . '-' ArithmeticExpression
+  105                     | ArithmeticExpression . '/' ArithmeticExpression
+  106                     | ArithmeticExpression . '*' ArithmeticExpression
+  107                     | ArithmeticExpression . '%' ArithmeticExpression
+  107                     | ArithmeticExpression '%' ArithmeticExpression .
+  108                     | ArithmeticExpression . OP_SHL ArithmeticExpression
+  109                     | ArithmeticExpression . OP_SHR ArithmeticExpression
+
+    $default  reduce using rule 107 (ArithmeticExpression)
+
+
+state 206
+
+  125 ConditionalExpression: RelationalExpression '?' Expression . ':' Expression
+
+    ':'  shift, and go to state 228
+
+
+state 207
+
+   82 JumpStatement: BREAK ID ';' .
+
+    $default  reduce using rule 82 (JumpStatement)
+
+
+state 208
+
+   65 LabeledStatement: CASE ConditionalExpression ':' . LocalVariableDeclarationOrStatement
+
+    BOOLEAN   shift, and go to state 30
+    BREAK     shift, and go to state 86
+    BYTE      shift, and go to state 31
+    CASE      shift, and go to state 87
+    CHAR      shift, and go to state 32
+    CONTINUE  shift, and go to state 88
+    DEFAULT   shift, and go to state 89
+    DO        shift, and go to state 90
+    DOUBLE    shift, and go to state 33
+    FLOAT     shift, and go to state 34
+    FOR       shift, and go to state 91
+    IF        shift, and go to state 92
+    INT       shift, and go to state 35
+    LONG      shift, and go to state 36
+    RETURN    shift, and go to state 93
+    SHORT     shift, and go to state 37
+    SWITCH    shift, and go to state 94
+    VOID      shift, and go to state 38
+    WHILE     shift, and go to state 95
+    OP_INC    shift, and go to state 67
+    OP_DEC    shift, and go to state 68
+    ID        shift, and go to state 96
+    LITERAL   shift, and go to state 70
+    '('       shift, and go to state 71
+    '!'       shift, and go to state 72
+    '{'       shift, and go to state 62
+    ';'       shift, and go to state 98
+
+    TypeSpecifier                        go to state 99
+    TypeName                             go to state 40
+    PrimitiveType                        go to state 41
+    QualifiedName                        go to state 42
+    Block                                go to state 100
+    LocalVariableDeclarationOrStatement  go to state 229
+    LocalVariableDeclarationStatement    go to state 103
+    Statement                            go to state 104
+    LabeledStatement                     go to state 105
+    SelectionStatement                   go to state 106
+    IterationStatement                   go to state 107
+    JumpStatement                        go to state 108
+    UnaryExpression                      go to state 74
+    BasicElement                         go to state 75
+    CastExpression                       go to state 76
+    ArithmeticExpression                 go to state 77
+    RelationalExpression                 go to state 78
+    Expression                           go to state 109
+    ConditionalExpression                go to state 80
+    AssignmentExpression                 go to state 81
+
+
+state 209
+
+   84 JumpStatement: CONTINUE ID ';' .
+
+    $default  reduce using rule 84 (JumpStatement)
+
+
+state 210
+
+   66 LabeledStatement: DEFAULT ':' LocalVariableDeclarationOrStatement .
+
+    $default  reduce using rule 66 (LabeledStatement)
+
+
+state 211
+
+   71 IterationStatement: DO Statement WHILE . '(' Expression ')' ';'
+
+    '('  shift, and go to state 230
+
+
+state 212
+
+   20 QualifiedName: ID .
+   94 UnaryExpression: ID . OP_INC
+   95                | ID . OP_DEC
+   98 BasicElement: ID .
+  126 AssignmentExpression: ID . '=' Expression
+  127                     | ID . ASS_MUL Expression
+  128                     | ID . ASS_DIV Expression
+  129                     | ID . ASS_ADD Expression
+  130                     | ID . ASS_SUB Expression
+  131                     | ID . ASS_XOR Expression
+  132                     | ID . ASS_MOD Expression
+  133                     | ID . ASS_SHL Expression
+  134                     | ID . ASS_SHR Expression
+
+    OP_INC   shift, and go to state 119
+    OP_DEC   shift, and go to state 120
+    ASS_MUL  shift, and go to state 121
+    ASS_DIV  shift, and go to state 122
+    ASS_ADD  shift, and go to state 123
+    ASS_SUB  shift, and go to state 124
+    ASS_XOR  shift, and go to state 125
+    ASS_MOD  shift, and go to state 126
+    ASS_SHL  shift, and go to state 127
+    ASS_SHR  shift, and go to state 128
+    '='      shift, and go to state 129
+
+    ID        reduce using rule 20 (QualifiedName)
+    '.'       reduce using rule 20 (QualifiedName)
+    '['       reduce using rule 20 (QualifiedName)
+    $default  reduce using rule 98 (BasicElement)
+
+
+state 213
+
+   76 ForInit: ';' .
+
+    $default  reduce using rule 76 (ForInit)
+
+
+state 214
+
+   75 ForInit: LocalVariableDeclarationStatement .
+
+    $default  reduce using rule 75 (ForInit)
+
+
+state 215
+
+   72 IterationStatement: FOR '(' ForInit . ForExpr ForIncr ')' Statement
+   73                   | FOR '(' ForInit . ForExpr ')' Statement
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+    ';'      shift, and go to state 231
+
+    ForExpr                go to state 232
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 233
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 216
+
+   74 ForInit: Expressions . ';'
+   81 Expressions: Expressions . ',' Expression
+
+    ';'  shift, and go to state 234
+    ','  shift, and go to state 235
+
+
+state 217
+
+   80 Expressions: Expression .
+
+    $default  reduce using rule 80 (Expressions)
+
+
+state 218
+
+   67 SelectionStatement: IF '(' Expression . ')' Statement
+   68                   | IF '(' Expression . ')' Statement ELSE Statement
+
+    ')'  shift, and go to state 236
+
+
+state 219
+
+   86 JumpStatement: RETURN Expression ';' .
+
+    $default  reduce using rule 86 (JumpStatement)
+
+
+state 220
+
+   69 SelectionStatement: SWITCH '(' Expression . ')' Block
+
+    ')'  shift, and go to state 237
+
+
+state 221
+
+   70 IterationStatement: WHILE '(' Expression . ')' Statement
+
+    ')'  shift, and go to state 238
+
+
+state 222
+
+   64 LabeledStatement: ID ':' LocalVariableDeclarationOrStatement .
+
+    $default  reduce using rule 64 (LabeledStatement)
+
+
+state 223
+
+   56 LocalVariableDeclarationStatement: TypeSpecifier VariableDeclarators ';' .
+
+    $default  reduce using rule 56 (LocalVariableDeclarationStatement)
+
+
+state 224
+
+   36 VariableInitializer: '{' ArrayInitializers '}' .
+
+    $default  reduce using rule 36 (VariableInitializer)
+
+
+state 225
+
+   38 ArrayInitializers: ArrayInitializers ',' . VariableInitializer
+   39                  | ArrayInitializers ',' .
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+    '{'      shift, and go to state 110
+
+    $default  reduce using rule 39 (ArrayInitializers)
+
+    VariableInitializer    go to state 239
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 112
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 226
+
+   46 ParameterList: ParameterList ',' Parameter .
+
+    $default  reduce using rule 46 (ParameterList)
+
+
+state 227
+
+  101 CastExpression: '(' PrimitiveType ')' UnaryExpression .
+
+    $default  reduce using rule 101 (CastExpression)
+
+
+state 228
+
+  125 ConditionalExpression: RelationalExpression '?' Expression ':' . Expression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 240
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 229
+
+   65 LabeledStatement: CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement .
+
+    $default  reduce using rule 65 (LabeledStatement)
+
+
+state 230
+
+   71 IterationStatement: DO Statement WHILE '(' . Expression ')' ';'
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 241
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 231
+
+   78 ForExpr: ';' .
+
+    $default  reduce using rule 78 (ForExpr)
+
+
+state 232
+
+   72 IterationStatement: FOR '(' ForInit ForExpr . ForIncr ')' Statement
+   73                   | FOR '(' ForInit ForExpr . ')' Statement
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    ')'      shift, and go to state 242
+    '!'      shift, and go to state 72
+
+    ForIncr                go to state 243
+    Expressions            go to state 244
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 217
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 233
+
+   77 ForExpr: Expression . ';'
+
+    ';'  shift, and go to state 245
+
+
+state 234
+
+   74 ForInit: Expressions ';' .
+
+    $default  reduce using rule 74 (ForInit)
+
+
+state 235
+
+   81 Expressions: Expressions ',' . Expression
+
+    OP_INC   shift, and go to state 67
+    OP_DEC   shift, and go to state 68
+    ID       shift, and go to state 69
+    LITERAL  shift, and go to state 70
+    '('      shift, and go to state 71
+    '!'      shift, and go to state 72
+
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 246
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 236
+
+   67 SelectionStatement: IF '(' Expression ')' . Statement
+   68                   | IF '(' Expression ')' . Statement ELSE Statement
+
+    BREAK     shift, and go to state 86
+    CASE      shift, and go to state 87
+    CONTINUE  shift, and go to state 88
+    DEFAULT   shift, and go to state 89
+    DO        shift, and go to state 90
+    FOR       shift, and go to state 91
+    IF        shift, and go to state 92
+    RETURN    shift, and go to state 93
+    SWITCH    shift, and go to state 94
+    WHILE     shift, and go to state 95
+    OP_INC    shift, and go to state 67
+    OP_DEC    shift, and go to state 68
+    ID        shift, and go to state 159
+    LITERAL   shift, and go to state 70
+    '('       shift, and go to state 71
+    '!'       shift, and go to state 72
+    '{'       shift, and go to state 62
+    ';'       shift, and go to state 98
+
+    Block                  go to state 100
+    Statement              go to state 247
+    LabeledStatement       go to state 105
+    SelectionStatement     go to state 106
+    IterationStatement     go to state 107
+    JumpStatement          go to state 108
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 109
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 237
+
+   69 SelectionStatement: SWITCH '(' Expression ')' . Block
+
+    '{'  shift, and go to state 62
+
+    Block  go to state 248
+
+
+state 238
+
+   70 IterationStatement: WHILE '(' Expression ')' . Statement
+
+    BREAK     shift, and go to state 86
+    CASE      shift, and go to state 87
+    CONTINUE  shift, and go to state 88
+    DEFAULT   shift, and go to state 89
+    DO        shift, and go to state 90
+    FOR       shift, and go to state 91
+    IF        shift, and go to state 92
+    RETURN    shift, and go to state 93
+    SWITCH    shift, and go to state 94
+    WHILE     shift, and go to state 95
+    OP_INC    shift, and go to state 67
+    OP_DEC    shift, and go to state 68
+    ID        shift, and go to state 159
+    LITERAL   shift, and go to state 70
+    '('       shift, and go to state 71
+    '!'       shift, and go to state 72
+    '{'       shift, and go to state 62
+    ';'       shift, and go to state 98
+
+    Block                  go to state 100
+    Statement              go to state 249
+    LabeledStatement       go to state 105
+    SelectionStatement     go to state 106
+    IterationStatement     go to state 107
+    JumpStatement          go to state 108
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 109
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 239
 
    38 ArrayInitializers: ArrayInitializers ',' VariableInitializer .
 
     $default  reduce using rule 38 (ArrayInitializers)
 
 
-state 181
+state 240
 
-   95 ConditionalExpression: RelationalExpression '?' Expression ':' Expression .
+  125 ConditionalExpression: RelationalExpression '?' Expression ':' Expression .
 
-    $default  reduce using rule 95 (ConditionalExpression)
+    $default  reduce using rule 125 (ConditionalExpression)
+
+
+state 241
+
+   71 IterationStatement: DO Statement WHILE '(' Expression . ')' ';'
+
+    ')'  shift, and go to state 250
+
+
+state 242
+
+   73 IterationStatement: FOR '(' ForInit ForExpr ')' . Statement
+
+    BREAK     shift, and go to state 86
+    CASE      shift, and go to state 87
+    CONTINUE  shift, and go to state 88
+    DEFAULT   shift, and go to state 89
+    DO        shift, and go to state 90
+    FOR       shift, and go to state 91
+    IF        shift, and go to state 92
+    RETURN    shift, and go to state 93
+    SWITCH    shift, and go to state 94
+    WHILE     shift, and go to state 95
+    OP_INC    shift, and go to state 67
+    OP_DEC    shift, and go to state 68
+    ID        shift, and go to state 159
+    LITERAL   shift, and go to state 70
+    '('       shift, and go to state 71
+    '!'       shift, and go to state 72
+    '{'       shift, and go to state 62
+    ';'       shift, and go to state 98
+
+    Block                  go to state 100
+    Statement              go to state 251
+    LabeledStatement       go to state 105
+    SelectionStatement     go to state 106
+    IterationStatement     go to state 107
+    JumpStatement          go to state 108
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 109
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 243
+
+   72 IterationStatement: FOR '(' ForInit ForExpr ForIncr . ')' Statement
+
+    ')'  shift, and go to state 252
+
+
+state 244
+
+   79 ForIncr: Expressions .
+   81 Expressions: Expressions . ',' Expression
+
+    ','  shift, and go to state 235
+
+    $default  reduce using rule 79 (ForIncr)
+
+
+state 245
+
+   77 ForExpr: Expression ';' .
+
+    $default  reduce using rule 77 (ForExpr)
+
+
+state 246
+
+   81 Expressions: Expressions ',' Expression .
+
+    $default  reduce using rule 81 (Expressions)
+
+
+state 247
+
+   67 SelectionStatement: IF '(' Expression ')' Statement .
+   68                   | IF '(' Expression ')' Statement . ELSE Statement
+
+    ELSE  shift, and go to state 253
+
+    $default  reduce using rule 67 (SelectionStatement)
+
+
+state 248
+
+   69 SelectionStatement: SWITCH '(' Expression ')' Block .
+
+    $default  reduce using rule 69 (SelectionStatement)
+
+
+state 249
+
+   70 IterationStatement: WHILE '(' Expression ')' Statement .
+
+    $default  reduce using rule 70 (IterationStatement)
+
+
+state 250
+
+   71 IterationStatement: DO Statement WHILE '(' Expression ')' . ';'
+
+    ';'  shift, and go to state 254
+
+
+state 251
+
+   73 IterationStatement: FOR '(' ForInit ForExpr ')' Statement .
+
+    $default  reduce using rule 73 (IterationStatement)
+
+
+state 252
+
+   72 IterationStatement: FOR '(' ForInit ForExpr ForIncr ')' . Statement
+
+    BREAK     shift, and go to state 86
+    CASE      shift, and go to state 87
+    CONTINUE  shift, and go to state 88
+    DEFAULT   shift, and go to state 89
+    DO        shift, and go to state 90
+    FOR       shift, and go to state 91
+    IF        shift, and go to state 92
+    RETURN    shift, and go to state 93
+    SWITCH    shift, and go to state 94
+    WHILE     shift, and go to state 95
+    OP_INC    shift, and go to state 67
+    OP_DEC    shift, and go to state 68
+    ID        shift, and go to state 159
+    LITERAL   shift, and go to state 70
+    '('       shift, and go to state 71
+    '!'       shift, and go to state 72
+    '{'       shift, and go to state 62
+    ';'       shift, and go to state 98
+
+    Block                  go to state 100
+    Statement              go to state 255
+    LabeledStatement       go to state 105
+    SelectionStatement     go to state 106
+    IterationStatement     go to state 107
+    JumpStatement          go to state 108
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 109
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 253
+
+   68 SelectionStatement: IF '(' Expression ')' Statement ELSE . Statement
+
+    BREAK     shift, and go to state 86
+    CASE      shift, and go to state 87
+    CONTINUE  shift, and go to state 88
+    DEFAULT   shift, and go to state 89
+    DO        shift, and go to state 90
+    FOR       shift, and go to state 91
+    IF        shift, and go to state 92
+    RETURN    shift, and go to state 93
+    SWITCH    shift, and go to state 94
+    WHILE     shift, and go to state 95
+    OP_INC    shift, and go to state 67
+    OP_DEC    shift, and go to state 68
+    ID        shift, and go to state 159
+    LITERAL   shift, and go to state 70
+    '('       shift, and go to state 71
+    '!'       shift, and go to state 72
+    '{'       shift, and go to state 62
+    ';'       shift, and go to state 98
+
+    Block                  go to state 100
+    Statement              go to state 256
+    LabeledStatement       go to state 105
+    SelectionStatement     go to state 106
+    IterationStatement     go to state 107
+    JumpStatement          go to state 108
+    UnaryExpression        go to state 74
+    BasicElement           go to state 75
+    CastExpression         go to state 76
+    ArithmeticExpression   go to state 77
+    RelationalExpression   go to state 78
+    Expression             go to state 109
+    ConditionalExpression  go to state 80
+    AssignmentExpression   go to state 81
+
+
+state 254
+
+   71 IterationStatement: DO Statement WHILE '(' Expression ')' ';' .
+
+    $default  reduce using rule 71 (IterationStatement)
+
+
+state 255
+
+   72 IterationStatement: FOR '(' ForInit ForExpr ForIncr ')' Statement .
+
+    $default  reduce using rule 72 (IterationStatement)
+
+
+state 256
+
+   68 SelectionStatement: IF '(' Expression ')' Statement ELSE Statement .
+
+    $default  reduce using rule 68 (SelectionStatement)
