@@ -63,32 +63,33 @@
      RETURN = 279,
      SHORT = 280,
      STATIC = 281,
-     SWITCH = 282,
-     VOID = 283,
-     WHILE = 284,
-     OP_INC = 285,
-     OP_DEC = 286,
-     OP_SHL = 287,
-     OP_SHR = 288,
-     OP_GREATER_EQUAL = 289,
-     OP_LESS_EQUAL = 290,
-     OP_EQUAL = 291,
-     OP_DIFFERENT = 292,
-     OP_AND = 293,
-     OP_OR = 294,
-     OP_DIM = 295,
-     ASS_MUL = 296,
-     ASS_DIV = 297,
-     ASS_ADD = 298,
-     ASS_SUB = 299,
-     ASS_XOR = 300,
-     ASS_MOD = 301,
-     ASS_SHL = 302,
-     ASS_SHR = 303,
-     ASS_AND = 304,
-     ASS_OR = 305,
-     ID = 306,
-     LITERAL = 307
+     STRING = 282,
+     SWITCH = 283,
+     VOID = 284,
+     WHILE = 285,
+     OP_INC = 286,
+     OP_DEC = 287,
+     OP_SHL = 288,
+     OP_SHR = 289,
+     OP_GREATER_EQUAL = 290,
+     OP_LESS_EQUAL = 291,
+     OP_EQUAL = 292,
+     OP_DIFFERENT = 293,
+     OP_AND = 294,
+     OP_OR = 295,
+     OP_DIM = 296,
+     ASS_MUL = 297,
+     ASS_DIV = 298,
+     ASS_ADD = 299,
+     ASS_SUB = 300,
+     ASS_XOR = 301,
+     ASS_MOD = 302,
+     ASS_SHL = 303,
+     ASS_SHR = 304,
+     ASS_AND = 305,
+     ASS_OR = 306,
+     ID = 307,
+     LITERAL = 308
    };
 #endif
 /* Tokens.  */
@@ -116,32 +117,33 @@
 #define RETURN 279
 #define SHORT 280
 #define STATIC 281
-#define SWITCH 282
-#define VOID 283
-#define WHILE 284
-#define OP_INC 285
-#define OP_DEC 286
-#define OP_SHL 287
-#define OP_SHR 288
-#define OP_GREATER_EQUAL 289
-#define OP_LESS_EQUAL 290
-#define OP_EQUAL 291
-#define OP_DIFFERENT 292
-#define OP_AND 293
-#define OP_OR 294
-#define OP_DIM 295
-#define ASS_MUL 296
-#define ASS_DIV 297
-#define ASS_ADD 298
-#define ASS_SUB 299
-#define ASS_XOR 300
-#define ASS_MOD 301
-#define ASS_SHL 302
-#define ASS_SHR 303
-#define ASS_AND 304
-#define ASS_OR 305
-#define ID 306
-#define LITERAL 307
+#define STRING 282
+#define SWITCH 283
+#define VOID 284
+#define WHILE 285
+#define OP_INC 286
+#define OP_DEC 287
+#define OP_SHL 288
+#define OP_SHR 289
+#define OP_GREATER_EQUAL 290
+#define OP_LESS_EQUAL 291
+#define OP_EQUAL 292
+#define OP_DIFFERENT 293
+#define OP_AND 294
+#define OP_OR 295
+#define OP_DIM 296
+#define ASS_MUL 297
+#define ASS_DIV 298
+#define ASS_ADD 299
+#define ASS_SUB 300
+#define ASS_XOR 301
+#define ASS_MOD 302
+#define ASS_SHL 303
+#define ASS_SHR 304
+#define ASS_AND 305
+#define ASS_OR 306
+#define ID 307
+#define LITERAL 308
 
 
 

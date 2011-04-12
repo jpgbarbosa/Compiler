@@ -108,6 +108,7 @@ Literal		({Numeric}|{Character}|{String})
 "continue"	{return CONTINUE;}
 "default"	{return DEFAULT;}
 "if"		{return IF;}
+"String"	{return STRING;}
 
 {Identifier}	{return ID;}
 

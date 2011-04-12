@@ -14,7 +14,7 @@
 %token OPERATOR
 %token PUBLIC
 %token RETURN
-%token SHORT STATIC SWITCH
+%token SHORT STATIC STRING SWITCH
 %token VOID
 %token WHILE
 %token OP_INC OP_DEC
@@ -51,8 +51,8 @@
 
 /* It can be a single variable or an array. */
 TypeSpecifier
-	: PrimitiveType
-	| PrimitiveType TypeDimExprs
+	: TypeName
+	| TypeName TypeDimExprs
 	;
 
 TypeDimExprs
@@ -60,17 +60,18 @@ TypeDimExprs
 	| TypeDimExprs '[' ']'
 	;
 
-
 /* TODO: We are keeping this in case we want to expand
  * our gramatic to accept types other than the basic ones.
  * In that case, up there, we have to change the PrimitiveType
  * to TypeName.
+ *
+/
 
+/* Accepts a primitive type. */
 TypeName
 	: PrimitiveType
 	;
 
-*/
 PrimitiveType
 	: BOOLEAN
 	| CHAR
@@ -81,6 +82,7 @@ PrimitiveType
 	| FLOAT
 	| DOUBLE
 	| VOID
+	| STRING
 	;
 
 /* We can have imports or only a class. */
@@ -131,7 +133,7 @@ NewAllocationExpression
     	;
 
 ArrayAllocationExpression
-	: NEW PrimitiveType DimExprs
+	: NEW TypeName DimExprs
 	;
 
 ArrayInitializers

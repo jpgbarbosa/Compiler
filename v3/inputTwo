@@ -3,11 +3,7 @@ public class gcdRrec{
 
 	public static void main(String[] args) {
 		int a, b;
-		
-		int [] c;
-		
-		c = new int[4];
-		c = new int[gcd()];
+
 		
 		a = (2 + 2);
 		
@@ -19,7 +15,7 @@ public class gcdRrec{
 		a = 315;
 		b = 1932;
 		
-		System.out.println(gcd(a,b));
+		//System.out.println(gcd(a,b));
 
 		for (a = 0; a < 2; a++){
 			int c;			
@@ -48,6 +44,4 @@ public class gcdRrec{
 	}
 
 }
-
-dfsdf
 
