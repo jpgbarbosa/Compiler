@@ -32,6 +32,8 @@ public class gcdRrec{
 
 		if (a == 2 && b > 4)
 			a = 2;
+			
+		a = (a++);
 	}
 	
 	public static int gcd(int a, int b) {
@@ -46,4 +48,6 @@ public class gcdRrec{
 	}
 
 }
+
+dfsdf
 

@@ -241,34 +241,6 @@ JumpStatement
 	| RETURN            ';'
 	;
 
-/*
-PrimaryExpression
-	: QualifiedName
-	| NotJustName
-	;
-
-NotJustName
-	: NewAllocationExpression
-	| ComplexPrimary
-	;
-
-ComplexPrimary
-	: '(' Expression ')'
-	| ComplexPrimaryNoParenthesis
-	;
-
-ComplexPrimaryNoParenthesis
-	: LITERAL
-	| ArrayAccess
-	| MethodCall
-	;
-
-
-ArrayAccess
-	: QualifiedName '[' Expression ']'
-	| ComplexPrimary '[' Expression ']'
-	;
-*/
 MethodCall
 	: QualifiedName '(' ArgumentList ')'
 	| QualifiedName '(' ')'
@@ -279,7 +251,6 @@ ArgumentList
 	| ArgumentList ',' Expression
 	;
 
-/* TODO: Corrigir isto. */
 DimExprs
 	: DimExpr
 	| DimExprs DimExpr
@@ -291,21 +262,28 @@ DimExpr
 	;
 
 UnaryExpression
-	: OP_INC ID
-	| OP_DEC ID
-	| ID OP_INC
-	| ID OP_DEC
-	| BasicElement
+	: OP_INC   BasicElement
+	| OP_DEC   BasicElement
+	|          BasicElement OP_INC
+	|          BasicElement OP_DEC
+	|          BasicElement
 	| '!' ID
+	/* We can negate the MethodCall or ArrayAccess if it returns a boolean. */
+	| '!' MethodCall
+	| '!' ArrayAccess
 	;
 
 /* The basic elements. */
 BasicElement
-	: ID
-	| LITERAL
+	: LITERAL
 	| MethodCall
+	| ID
+	| ArrayAccess
 	;
 
+ArrayAccess
+	: QualifiedName '[' ArithmeticExpression ']'
+	;
 
 /* TODO: is the third correct? */
 CastExpression
