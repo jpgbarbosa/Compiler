@@ -2,12 +2,11 @@
 #include <stdio.h>
 %}
 
-%token BOOLEAN BREAK BYTE BYVALUE
-%token CASE CAST CHAR CLASS CONST CONTINUE
+%token BOOLEAN BREAK BYTE
+%token CASE CHAR CLASS CONTINUE
 %token DEFAULT DO DOUBLE
-%token ELSE ELSE_IF
+%token ELSE
 %token FLOAT FOR
-%token GOTO
 %token IF IMPORT INT
 %token JNULL
 %token LONG
@@ -16,16 +15,35 @@
 %token PUBLIC
 %token RETURN
 %token SHORT STATIC SWITCH
-%token THIS
-%token VAR VOID
+%token VOID
 %token WHILE
 %token OP_INC OP_DEC
-%token OP_SHL OP_SHR OP_SHRR
+%token OP_SHL OP_SHR
 %token OP_GREATER_EQUAL OP_LESS_EQUAL OP_EQUAL OP_DIFFERENT
 %token OP_AND OP_OR
 %token OP_DIM
 %token ASS_MUL ASS_DIV ASS_ADD ASS_SUB
-%token IDENTIFIER LITERAL BOOLLIT
+%token ASS_XOR ASS_MOD ASS_SHL ASS_SHR
+%token ASS_AND ASS_OR
+%token IDENTIFIER LITERAL
+
+/* Priorities */
+%right ASS_MUL ASS_DIV ASS_ADD ASS_SUB ASS_XOR ASS_MOD ASS_SHL ASS_SHR
+%right '='
+%left OP_OR
+%left OP_AND
+%left '|'
+%left '^'
+%left '&'
+%left OP_EQUAL OP_DIFFERENT
+%left '>' OP_GREATER_EQUAL
+%left '<' OP_LESS_EQUAL
+%left OP_SHL OP_SHR
+%left '-' '+'
+%left '*' '/' '%'
+%left '(' ')'
+%right OP_INC OP_DEC '~' '!' NEW
+%left IF ELSE
 
 %start CompilationUnit
 
@@ -59,8 +77,7 @@ CompilationUnit
 
 ProgramFile
 	: ImportStatements TypeDeclarations
-	| ImportStatements
-	|                  TypeDeclarations {printf("Hello World\n");}
+	|                  TypeDeclarations
 	;
 
 TypeDeclarations
@@ -89,20 +106,8 @@ TypeDeclaration
 	;
 
 ClassHeader
-	: Modifiers CLASS IDENTIFIER
-	|           CLASS IDENTIFIER
+	: PUBLIC CLASS IDENTIFIER
 	;
-
-Modifiers
-	: Modifier
-	| Modifiers Modifier
-	;
-
-Modifier
-	: PUBLIC
-	| STATIC
-	;
-
 
 FieldDeclarations
 	: FieldDeclaration
@@ -112,15 +117,14 @@ FieldDeclarations
 FieldDeclaration
 	: FieldVariableDeclaration ';'
 	| MethodDeclaration
-	| ConstructorDeclaration
 	| StaticInitializer
         | NonStaticInitializer
         | TypeDeclaration
 	;
 
 FieldVariableDeclaration
-	: Modifiers TypeSpecifier VariableDeclarators
-	|           TypeSpecifier VariableDeclarators
+	: PUBLIC STATIC TypeSpecifier VariableDeclarators
+	|        STATIC TypeSpecifier VariableDeclarators
 	;
 
 VariableDeclarators
@@ -146,8 +150,8 @@ ArrayInitializers
 	;
 
 MethodDeclaration
-	: Modifiers TypeSpecifier MethodDeclarator        MethodBody
-	|           TypeSpecifier MethodDeclarator        MethodBody
+	: PUBLIC STATIC TypeSpecifier MethodDeclarator        MethodBody
+	|        STATIC TypeSpecifier MethodDeclarator        MethodBody
 	;
 
 MethodDeclarator
@@ -173,16 +177,6 @@ DeclaratorName
 MethodBody
 	: Block
 	| ';'
-	;
-
-ConstructorDeclaration
-	: Modifiers ConstructorDeclarator        Block
-	|           ConstructorDeclarator        Block
-	;
-
-ConstructorDeclarator
-	: IDENTIFIER '(' ParameterList ')'
-	| IDENTIFIER '(' ')'
 	;
 
 StaticInitializer
@@ -233,16 +227,10 @@ ExpressionStatement
 	;
 
 SelectionStatement
-	: IF '(' Expression ')' Statement ElseIfStatement
-        | IF '(' Expression ')' Statement ElseIfStatement ELSE Statement
+	: IF '(' Expression ')' Statement
+        | IF '(' Expression ')' Statement ELSE Statement
         | SWITCH '(' Expression ')' Block
         ;
-
-ElseIfStatement
-	: ElseIfStatement ELSE_IF '(' Expression ')' Statement 
-	| ELSE_IF '(' Expression ')' Statement
-	|
-	;
 
 IterationStatement
 	: WHILE '(' Expression ')' Statement
@@ -283,7 +271,6 @@ JumpStatement
 PrimaryExpression
 	: QualifiedName
         | QualifiedName '.' NewAllocationExpression
-        | QualifiedName '.' THIS
         | QualifiedName '.' CLASS
         | PrimitiveType '.' CLASS
 	| NotJustName
@@ -301,7 +288,6 @@ ComplexPrimary
 
 ComplexPrimaryNoParenthesis
 	: LITERAL
-	| BOOLLIT
 	| ArrayAccess
 	| MethodCall
 	;
@@ -318,7 +304,6 @@ MethodCall
 
 MethodAccess
 	: ComplexPrimaryNoParenthesis
-	| THIS
 	| QualifiedName
 	;
 
@@ -329,17 +314,9 @@ ArgumentList
 
 NewAllocationExpression
     	: ArrayAllocationExpression
-    	| ClassAllocationExpression
     	| ArrayAllocationExpression '{' '}'
-    	| ClassAllocationExpression '{' '}'
     	| ArrayAllocationExpression '{' ArrayInitializers '}'
-    	| ClassAllocationExpression '{' FieldDeclarations '}'
     	;
-
-ClassAllocationExpression
-	: NEW TypeName '(' ArgumentList ')'
-	| NEW TypeName '('              ')'
-        ;
 
 ArrayAllocationExpression
 	: NEW TypeName DimExprs Dims
@@ -420,7 +397,6 @@ ShiftExpression
 	: AdditiveExpression
         | ShiftExpression OP_SHL AdditiveExpression
         | ShiftExpression OP_SHR AdditiveExpression
-        | ShiftExpression OP_SHRR AdditiveExpression
 	;
 
 RelationalExpression

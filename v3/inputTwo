@@ -1,4 +1,6 @@
 public class gcdRrec{
+	static int a;
+
 	public static void main(String[] args) {
 		int a, b;
 		

@@ -74,11 +74,16 @@ Literal		({Numeric}|{Character}|{String})
 "--"		{return OP_DEC;}
 ">>"		{return OP_SHR;}
 "<<"		{return OP_SHL;}
-">>>"		{return OP_SHRR;}
 "+="		{return ASS_ADD;}
 "-="		{return ASS_SUB;}
 "*="		{return ASS_MUL;}
 "/="		{return ASS_DIV;}
+"&="		{return ASS_AND;}
+"|="		{return ASS_OR;}
+"^="		{return ASS_XOR;}
+"%="		{return ASS_MOD;}
+"<<="		{return ASS_SHL;}
+">>="		{return ASS_SHR;}
 
 "do"            {return DO;}
 "boolean"	{return BOOLEAN;}
@@ -90,8 +95,6 @@ Literal		({Numeric}|{Character}|{String})
 "public"	{return PUBLIC;}
 "case"		{return CASE;}
 "int"		{return INT;}
-"var"		{return VAR;}
-"cast"		{return CAST;}
 "return"	{return RETURN;}
 "void"		{return VOID;}
 "float"		{return FLOAT;}
@@ -103,15 +106,11 @@ Literal		({Numeric}|{Character}|{String})
 "while"		{return WHILE;}
 "class"		{return CLASS;}
 "new"		{return NEW;}
-"const"		{return CONST;}
 "null"		{return JNULL;}
 "switch"	{return SWITCH;}
 "continue"	{return CONTINUE;}
-"goto"		{return GOTO;}
 "default"	{return DEFAULT;}
 "if"		{return IF;}
-"else if"	{return ELSE_IF;}
-"this"		{return THIS;}
 
 {Identifier}	{return IDENTIFIER;}
 

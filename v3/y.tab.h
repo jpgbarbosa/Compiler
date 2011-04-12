@@ -42,112 +42,106 @@
      BOOLEAN = 258,
      BREAK = 259,
      BYTE = 260,
-     BYVALUE = 261,
-     CASE = 262,
-     CAST = 263,
-     CHAR = 264,
-     CLASS = 265,
-     CONST = 266,
-     CONTINUE = 267,
-     DEFAULT = 268,
-     DO = 269,
-     DOUBLE = 270,
-     ELSE = 271,
-     ELSE_IF = 272,
-     FLOAT = 273,
-     FOR = 274,
-     GOTO = 275,
-     IF = 276,
-     IMPORT = 277,
-     INT = 278,
-     JNULL = 279,
-     LONG = 280,
-     NEW = 281,
-     OPERATOR = 282,
-     PUBLIC = 283,
-     RETURN = 284,
-     SHORT = 285,
-     STATIC = 286,
-     SWITCH = 287,
-     THIS = 288,
-     VAR = 289,
-     VOID = 290,
-     WHILE = 291,
-     OP_INC = 292,
-     OP_DEC = 293,
-     OP_SHL = 294,
-     OP_SHR = 295,
-     OP_SHRR = 296,
-     OP_GREATER_EQUAL = 297,
-     OP_LESS_EQUAL = 298,
-     OP_EQUAL = 299,
-     OP_DIFFERENT = 300,
-     OP_AND = 301,
-     OP_OR = 302,
-     OP_DIM = 303,
-     ASS_MUL = 304,
-     ASS_DIV = 305,
-     ASS_ADD = 306,
-     ASS_SUB = 307,
-     IDENTIFIER = 308,
-     LITERAL = 309,
-     BOOLLIT = 310
+     CASE = 261,
+     CHAR = 262,
+     CLASS = 263,
+     CONTINUE = 264,
+     DEFAULT = 265,
+     DO = 266,
+     DOUBLE = 267,
+     ELSE = 268,
+     FLOAT = 269,
+     FOR = 270,
+     IF = 271,
+     IMPORT = 272,
+     INT = 273,
+     JNULL = 274,
+     LONG = 275,
+     NEW = 276,
+     OPERATOR = 277,
+     PUBLIC = 278,
+     RETURN = 279,
+     SHORT = 280,
+     STATIC = 281,
+     SWITCH = 282,
+     VOID = 283,
+     WHILE = 284,
+     OP_INC = 285,
+     OP_DEC = 286,
+     OP_SHL = 287,
+     OP_SHR = 288,
+     OP_GREATER_EQUAL = 289,
+     OP_LESS_EQUAL = 290,
+     OP_EQUAL = 291,
+     OP_DIFFERENT = 292,
+     OP_AND = 293,
+     OP_OR = 294,
+     OP_DIM = 295,
+     ASS_MUL = 296,
+     ASS_DIV = 297,
+     ASS_ADD = 298,
+     ASS_SUB = 299,
+     ASS_XOR = 300,
+     ASS_MOD = 301,
+     ASS_SHL = 302,
+     ASS_SHR = 303,
+     ASS_AND = 304,
+     ASS_OR = 305,
+     IDENTIFIER = 306,
+     LITERAL = 307
    };
 #endif
 /* Tokens.  */
 #define BOOLEAN 258
 #define BREAK 259
 #define BYTE 260
-#define BYVALUE 261
-#define CASE 262
-#define CAST 263
-#define CHAR 264
-#define CLASS 265
-#define CONST 266
-#define CONTINUE 267
-#define DEFAULT 268
-#define DO 269
-#define DOUBLE 270
-#define ELSE 271
-#define ELSE_IF 272
-#define FLOAT 273
-#define FOR 274
-#define GOTO 275
-#define IF 276
-#define IMPORT 277
-#define INT 278
-#define JNULL 279
-#define LONG 280
-#define NEW 281
-#define OPERATOR 282
-#define PUBLIC 283
-#define RETURN 284
-#define SHORT 285
-#define STATIC 286
-#define SWITCH 287
-#define THIS 288
-#define VAR 289
-#define VOID 290
-#define WHILE 291
-#define OP_INC 292
-#define OP_DEC 293
-#define OP_SHL 294
-#define OP_SHR 295
-#define OP_SHRR 296
-#define OP_GREATER_EQUAL 297
-#define OP_LESS_EQUAL 298
-#define OP_EQUAL 299
-#define OP_DIFFERENT 300
-#define OP_AND 301
-#define OP_OR 302
-#define OP_DIM 303
-#define ASS_MUL 304
-#define ASS_DIV 305
-#define ASS_ADD 306
-#define ASS_SUB 307
-#define IDENTIFIER 308
-#define LITERAL 309
-#define BOOLLIT 310
+#define CASE 261
+#define CHAR 262
+#define CLASS 263
+#define CONTINUE 264
+#define DEFAULT 265
+#define DO 266
+#define DOUBLE 267
+#define ELSE 268
+#define FLOAT 269
+#define FOR 270
+#define IF 271
+#define IMPORT 272
+#define INT 273
+#define JNULL 274
+#define LONG 275
+#define NEW 276
+#define OPERATOR 277
+#define PUBLIC 278
+#define RETURN 279
+#define SHORT 280
+#define STATIC 281
+#define SWITCH 282
+#define VOID 283
+#define WHILE 284
+#define OP_INC 285
+#define OP_DEC 286
+#define OP_SHL 287
+#define OP_SHR 288
+#define OP_GREATER_EQUAL 289
+#define OP_LESS_EQUAL 290
+#define OP_EQUAL 291
+#define OP_DIFFERENT 292
+#define OP_AND 293
+#define OP_OR 294
+#define OP_DIM 295
+#define ASS_MUL 296
+#define ASS_DIV 297
+#define ASS_ADD 298
+#define ASS_SUB 299
+#define ASS_XOR 300
+#define ASS_MOD 301
+#define ASS_SHL 302
+#define ASS_SHR 303
+#define ASS_AND 304
+#define ASS_OR 305
+#define IDENTIFIER 306
+#define LITERAL 307
 
 
 

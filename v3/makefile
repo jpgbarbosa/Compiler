@@ -1,2 +1,4 @@
 all:
-	lex pJava.l; yacc -d pJava.y; gcc -o pJava y.tab.c lex.yy.c -ll -ly -lm;
+	lex pJava.l;
+	yacc -d pJava.y -v;
+	gcc -o pJava y.tab.c lex.yy.c -ll -ly -lm;
