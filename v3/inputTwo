@@ -11,9 +11,11 @@ public class gcdRrec{
 
 		for (a = 0; a < 2; a++){
 			int c;			
-			b = 2;
-			c = 1;
-			
+			b = 2 +2;
+			c = 1 * 5 + a - 8;
+			a = (int) 5.0;
+			a >>= 5;
+			b = c << 5;
 		}
 
 		if (a == 2 && b > 4)

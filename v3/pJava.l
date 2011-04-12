@@ -27,8 +27,6 @@ Comment2        [\/][\/].*
 Comment		({Comment1}|{Comment2})
 WhiteSpace	({CR}|{LF}|{FF}|{TAB}|{BLK}|[ ])
 
-Dimension	[\[]({WhiteSpace}|{Comment})*[\]]
-
 IntSuffix	([l]|[L])
 DecimalNum	{NonZeroDigit}{Digit}*{IntSuffix}?
 OctalNum	[0]{OctalDigit}*{IntSuffix}?
@@ -62,7 +60,6 @@ Literal		({Numeric}|{Character}|{String})
 
 {Separator}	{return yytext[0];}
 {Delimiter1}	{return yytext[0];}
-{Dimension}	{return OP_DIM;}
 
 "=="		{return OP_EQUAL;}
 "<="		{return OP_LESS_EQUAL;}
@@ -112,7 +109,7 @@ Literal		({Numeric}|{Character}|{String})
 "default"	{return DEFAULT;}
 "if"		{return IF;}
 
-{Identifier}	{return IDENTIFIER;}
+{Identifier}	{return ID;}
 
 {Literal}	{return LITERAL;}
 

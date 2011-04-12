@@ -87,7 +87,7 @@
      ASS_SHR = 303,
      ASS_AND = 304,
      ASS_OR = 305,
-     IDENTIFIER = 306,
+     ID = 306,
      LITERAL = 307
    };
 #endif
@@ -140,7 +140,7 @@
 #define ASS_SHR 303
 #define ASS_AND 304
 #define ASS_OR 305
-#define IDENTIFIER 306
+#define ID 306
 #define LITERAL 307
 
 

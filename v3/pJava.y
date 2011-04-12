@@ -25,7 +25,7 @@
 %token ASS_MUL ASS_DIV ASS_ADD ASS_SUB
 %token ASS_XOR ASS_MOD ASS_SHL ASS_SHR
 %token ASS_AND ASS_OR
-%token IDENTIFIER LITERAL
+%token ID LITERAL
 
 /* Priorities */
 %right ASS_MUL ASS_DIV ASS_ADD ASS_SUB ASS_XOR ASS_MOD ASS_SHL ASS_SHR
@@ -45,15 +45,17 @@
 %right OP_INC OP_DEC '~' '!' NEW
 %left IF ELSE
 
-%start CompilationUnit
+%start ProgramFile
 
 %%
 
+/* It can be a single variable or an array. */
 TypeSpecifier
 	: TypeName
-	| TypeName Dims
+	| TypeName DimExprs
 	;
 
+/* Accepts a primitive type or another class. */
 TypeName
 	: PrimitiveType
 	| QualifiedName
@@ -71,18 +73,10 @@ PrimitiveType
 	| VOID
 	;
 
-CompilationUnit
-	: ProgramFile
-        ;
-
+/* We can have imports or only a class. */
 ProgramFile
-	: ImportStatements TypeDeclarations
-	|                  TypeDeclarations
-	;
-
-TypeDeclarations
-	: TypeDeclaration
-	| TypeDeclarations TypeDeclaration
+	: ImportStatements ClassHeader '{' FieldDeclarations '}'
+	|                  ClassHeader '{' FieldDeclarations '}'
 	;
 
 ImportStatements
@@ -96,37 +90,30 @@ ImportStatement
 	;
 
 QualifiedName
-	: IDENTIFIER
-	| QualifiedName '.' IDENTIFIER
-	;
-
-TypeDeclaration
-	: ClassHeader '{' FieldDeclarations '}'
-	| ClassHeader '{' '}'
+	: ID
+	| QualifiedName '.' ID
 	;
 
 ClassHeader
-	: PUBLIC CLASS IDENTIFIER
+	: PUBLIC CLASS ID
+	| CLASS ID
 	;
-
+/* In here, we will declare some attributes of methods. */
 FieldDeclarations
 	: FieldDeclaration
         | FieldDeclarations FieldDeclaration
 	;
 
 FieldDeclaration
-	: FieldVariableDeclaration ';'
+	: AttrDeclaration ';'
 	| MethodDeclaration
-	| StaticInitializer
-        | NonStaticInitializer
-        | TypeDeclaration
 	;
 
-FieldVariableDeclaration
+AttrDeclaration
 	: PUBLIC STATIC TypeSpecifier VariableDeclarators
 	|        STATIC TypeSpecifier VariableDeclarators
 	;
-
+/* Declaration of variables (both single and array). */
 VariableDeclarators
 	: VariableDeclarator
 	| VariableDeclarators ',' VariableDeclarator
@@ -149,9 +136,11 @@ ArrayInitializers
 	| ArrayInitializers ','
 	;
 
+/* Declaration of methods. */
+
 MethodDeclaration
-	: PUBLIC STATIC TypeSpecifier MethodDeclarator        MethodBody
-	|        STATIC TypeSpecifier MethodDeclarator        MethodBody
+	: PUBLIC STATIC TypeSpecifier MethodDeclarator        Block
+	|        STATIC TypeSpecifier MethodDeclarator        Block
 	;
 
 MethodDeclarator
@@ -170,21 +159,8 @@ Parameter
 	;
 
 DeclaratorName
-	: IDENTIFIER
+	: ID
         | DeclaratorName OP_DIM
-        ;
-
-MethodBody
-	: Block
-	| ';'
-	;
-
-StaticInitializer
-	: STATIC Block
-	;
-
-NonStaticInitializer
-        : Block
         ;
 
 Block
@@ -192,6 +168,7 @@ Block
 	| '{' '}'
         ;
 
+/* Declarations of variables and use of statements. */
 LocalVariableDeclarationsAndStatements
 	: LocalVariableDeclarationOrStatement
 	| LocalVariableDeclarationsAndStatements LocalVariableDeclarationOrStatement
@@ -207,6 +184,10 @@ LocalVariableDeclarationStatement
 	;
 
 Statement
+	: ';'
+	;
+
+/*Statement
 	: LabeledStatement
 	| Expression ';'
         | SelectionStatement
@@ -217,8 +198,8 @@ Statement
 	;
 
 LabeledStatement
-	: IDENTIFIER ':' LocalVariableDeclarationOrStatement
-        | CASE ConstantExpression ':' LocalVariableDeclarationOrStatement
+	: ID ':' LocalVariableDeclarationOrStatement
+        | CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement
 	| DEFAULT ':' LocalVariableDeclarationOrStatement
         ;
 
@@ -248,7 +229,7 @@ ForExpr
 
 ForIncr
 	: Expressions
-	;
+	;/*
 
 Expressions
 	: Expression
@@ -256,7 +237,9 @@ Expressions
 	;
 
 JumpStatement
-	: BREAK            ';'
+	: BREAK ID ';'
+	| BREAK            ';'
+        | CONTINUE ID ';'
 	| CONTINUE            ';'
 	| RETURN Expression ';'
 	| RETURN            ';'
@@ -264,9 +247,6 @@ JumpStatement
 
 PrimaryExpression
 	: QualifiedName
-        | QualifiedName '.' NewAllocationExpression
-        | QualifiedName '.' CLASS
-        | PrimitiveType '.' CLASS
 	| NotJustName
 	;
 
@@ -292,13 +272,8 @@ ArrayAccess
 	;
 
 MethodCall
-	: MethodAccess '(' ArgumentList ')'
-	| MethodAccess '(' ')'
-	;
-
-MethodAccess
-	: ComplexPrimaryNoParenthesis
-	| QualifiedName
+	: ID '(' ArgumentList ')'
+	| ID '(' ')'
 	;
 
 ArgumentList
@@ -313,10 +288,11 @@ NewAllocationExpression
     	;
 
 ArrayAllocationExpression
-	: NEW TypeName DimExprs Dims
-	| NEW TypeName DimExprs
+	: NEW TypeName DimExprs
 	;
+*/
 
+/* TODO: Corrigir isto. */
 DimExprs
 	: DimExpr
 	| DimExprs DimExpr
@@ -324,143 +300,111 @@ DimExprs
 
 DimExpr
 	: '[' Expression ']'
+	| '[' ']'
 	;
-
-Dims
-	: OP_DIM
-	| Dims OP_DIM
-	;
-
-PostfixExpression
-	: PrimaryExpression
-	| RealPostfixExpression
-	;
-
-RealPostfixExpression
-	: PostfixExpression OP_INC
-	| PostfixExpression OP_DEC
-	;
-
+/*
 UnaryExpression
 	: OP_INC UnaryExpression
 	| OP_DEC UnaryExpression
-	| ArithmeticUnaryOperator CastExpression
-	| LogicalUnaryExpression
-	;
-
-LogicalUnaryExpression
-	: PostfixExpression
+	|        UnaryExpression OP_INC
+	|	 UnaryExpression OP_DEC
 	| '!' UnaryExpression
+	| ArithmeticUnaryOperator CastExpression
+	| ID
+	| LITERAL
 	;
 
 ArithmeticUnaryOperator
 	: '+'
 	| '-'
 	;
+*/
 
+UnaryExpression
+	: OP_INC ID
+	| OP_DEC ID
+	| ID OP_INC
+	| ID OP_DEC
+	| BasicElement
+	| '!' ID
+	;
+
+/* The basic elements. */
+BasicElement
+	: ID
+	| LITERAL
+	;
+
+
+/* TODO: The second should be Expression. */
 CastExpression
 	: UnaryExpression
-	| '(' PrimitiveTypeExpression ')' CastExpression
-	| '(' ClassTypeExpression ')' CastExpression
-	| '(' Expression ')' LogicalUnaryExpression
+	| '(' PrimitiveType ')' UnaryExpression
 	;
 
-PrimitiveTypeExpression
-	: PrimitiveType
-        | PrimitiveType Dims
-        ;
-
-ClassTypeExpression
-	: QualifiedName Dims
-        ;
-
-MultiplicativeExpression
+ArithmeticExpression
 	: CastExpression
-	| MultiplicativeExpression '*' CastExpression
-	| MultiplicativeExpression '/' CastExpression
-	| MultiplicativeExpression '%' CastExpression
-	;
-
-AdditiveExpression
-	: MultiplicativeExpression
-        | AdditiveExpression '+' MultiplicativeExpression
-	| AdditiveExpression '-' MultiplicativeExpression
+	| ArithmeticExpression  '+'   ArithmeticExpression
+	| ArithmeticExpression  '-'   ArithmeticExpression
+	| ArithmeticExpression  '/'   ArithmeticExpression
+	| ArithmeticExpression  '*'   ArithmeticExpression
+	| ArithmeticExpression  '%'   ArithmeticExpression
+	| ArithmeticExpression OP_SHL ArithmeticExpression
+	| ArithmeticExpression OP_SHR ArithmeticExpression
         ;
 
-ShiftExpression
-	: AdditiveExpression
-        | ShiftExpression OP_SHL AdditiveExpression
-        | ShiftExpression OP_SHR AdditiveExpression
-	;
 
 RelationalExpression
-	: ShiftExpression
-        | RelationalExpression '<' ShiftExpression
-	| RelationalExpression '>' ShiftExpression
-	| RelationalExpression OP_LESS_EQUAL ShiftExpression
-	| RelationalExpression OP_GREATER_EQUAL ShiftExpression
+	: ArithmeticExpression
+        | ArithmeticExpression '<' 	        RelationalExpression
+        | ArithmeticExpression '>' 	        RelationalExpression
+        | ArithmeticExpression OP_LESS_EQUAL    RelationalExpression
+        | ArithmeticExpression OP_GREATER_EQUAL RelationalExpression
+        | ArithmeticExpression OP_EQUAL	        RelationalExpression
+        | ArithmeticExpression OP_DIFFERENT	RelationalExpression
+        | ArithmeticExpression '&'		RelationalExpression
+        | ArithmeticExpression '^'		RelationalExpression
+        | ArithmeticExpression '|'		RelationalExpression
+        | ArithmeticExpression OP_AND		RelationalExpression
+        | ArithmeticExpression OP_OR		RelationalExpression
 	;
 
-EqualityExpression
-	: RelationalExpression
-        | EqualityExpression OP_EQUAL RelationalExpression
-        | EqualityExpression OP_DIFFERENT RelationalExpression
-        ;
-
-AndExpression
-	: EqualityExpression
-        | AndExpression '&' EqualityExpression
-        ;
-
-ExclusiveOrExpression
-	: AndExpression
-	| ExclusiveOrExpression '^' AndExpression
-	;
-
-InclusiveOrExpression
-	: ExclusiveOrExpression
-	| InclusiveOrExpression '|' ExclusiveOrExpression
-	;
-
-ConditionalAndExpression
-	: InclusiveOrExpression
-	| ConditionalAndExpression OP_AND InclusiveOrExpression
-	;
-
-ConditionalOrExpression
-	: ConditionalAndExpression
-	| ConditionalOrExpression OP_OR ConditionalAndExpression
-	;
-
-ConditionalExpression
-	: ConditionalOrExpression
-	| ConditionalOrExpression '?' Expression ':' ConditionalExpression
-	;
-
-AssignmentExpression
-	: ConditionalExpression
-	| UnaryExpression AssignmentOperator AssignmentExpression
-	;
-
-AssignmentOperator
-	: '='
-	| ASS_MUL
-	| ASS_DIV
-	| ASS_ADD
-	| ASS_SUB
-	| ASS_XOR
-	| ASS_MOD
-	| ASS_SHL
-	| ASS_SHR
+/*
+BinaryExpression
+	: ArithmeticExpression
+	| AssignmentExpression
 	;
 
 Expression
-	: AssignmentExpression
-        ;
-
-ConstantExpression
-	: ConditionalExpression
+	: BinaryExpression
+	| ConditionalExpression
+	| UnaryExpression
 	;
+*/
+
+Expression
+	: ConditionalExpression
+	| AssignmentExpression
+	;
+
+
+ConditionalExpression
+	: RelationalExpression
+	| RelationalExpression '?' Expression ':' Expression
+	;
+
+AssignmentExpression
+	: ID '='     Expression
+	| ID ASS_MUL Expression
+	| ID ASS_DIV Expression
+	| ID ASS_ADD Expression
+	| ID ASS_SUB Expression
+	| ID ASS_XOR Expression
+	| ID ASS_MOD Expression
+	| ID ASS_SHL Expression
+	| ID ASS_SHR Expression
+	;
+
 
 %%
 
