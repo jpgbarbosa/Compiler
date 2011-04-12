@@ -208,7 +208,7 @@ LocalVariableDeclarationStatement
 
 Statement
 	: LabeledStatement
-	| ExpressionStatement ';'
+	| Expression ';'
         | SelectionStatement
         | IterationStatement
 	| JumpStatement
@@ -221,10 +221,6 @@ LabeledStatement
         | CASE ConstantExpression ':' LocalVariableDeclarationOrStatement
 	| DEFAULT ':' LocalVariableDeclarationOrStatement
         ;
-
-ExpressionStatement
-	: Expression
-	;
 
 SelectionStatement
 	: IF '(' Expression ')' Statement
@@ -240,7 +236,7 @@ IterationStatement
 	;
 
 ForInit
-	: ExpressionStatements ';'
+	: Expressions ';'
 	| LocalVariableDeclarationStatement
 	| ';'
 	;
@@ -251,18 +247,16 @@ ForExpr
 	;
 
 ForIncr
-	: ExpressionStatements
+	: Expressions
 	;
 
-ExpressionStatements
-	: ExpressionStatement
-	| ExpressionStatements ',' ExpressionStatement
+Expressions
+	: Expression
+	| Expressions ',' Expression
 	;
 
 JumpStatement
-	: BREAK IDENTIFIER ';'
-	| BREAK            ';'
-        | CONTINUE IDENTIFIER ';'
+	: BREAK            ';'
 	| CONTINUE            ';'
 	| RETURN Expression ';'
 	| RETURN            ';'
@@ -454,6 +448,10 @@ AssignmentOperator
 	| ASS_DIV
 	| ASS_ADD
 	| ASS_SUB
+	| ASS_XOR
+	| ASS_MOD
+	| ASS_SHL
+	| ASS_SHR
 	;
 
 Expression
