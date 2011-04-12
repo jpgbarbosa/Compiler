@@ -4,6 +4,18 @@ public class gcdRrec{
 	public static void main(String[] args) {
 		int a, b;
 		
+		int [] c;
+		
+		c = new int[4];
+		c = new int[gcd()];
+		
+		a = (2 + 2);
+		
+		/* We have an error for:
+		 * a = (gcd() + 2) + 2;
+		 */
+		a = (gcd() + 2);
+		
 		a = 315;
 		b = 1932;
 		
@@ -11,7 +23,7 @@ public class gcdRrec{
 
 		for (a = 0; a < 2; a++){
 			int c;			
-			b = 2 +2;
+			b = 2 +2 + c*4;
 			c = 1 * 5 + a - 8;
 			a = (int) 5.0;
 			a >>= 5;
@@ -19,9 +31,9 @@ public class gcdRrec{
 		}
 
 		if (a == 2 && b > 4)
-			System.out.println(gcd(a,b));
+			a = 2;
 	}
-
+	
 	public static int gcd(int a, int b) {
 		if (  a == b || b == 0)
 			return a;
@@ -32,5 +44,6 @@ public class gcdRrec{
 		else /* b < a W*/
 			return gcd(a, b % a);
 	}
+
 }
 

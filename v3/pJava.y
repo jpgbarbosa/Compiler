@@ -263,32 +263,21 @@ ComplexPrimaryNoParenthesis
 	| MethodCall
 	;
 
+
 ArrayAccess
 	: QualifiedName '[' Expression ']'
 	| ComplexPrimary '[' Expression ']'
 	;
 */
 MethodCall
-	: ID '(' ArgumentList ')'
-	| ID '(' ')'
+	: QualifiedName '(' ArgumentList ')'
+	| QualifiedName '(' ')'
 	;
 
 ArgumentList
 	: Expression
 	| ArgumentList ',' Expression
 	;
-/*
-NewAllocationExpression
-    	: ArrayAllocationExpression
-    	| ArrayAllocationExpression '{' '}'
-    	| ArrayAllocationExpression '{' ArrayInitializers '}'
-    	;
-
-ArrayAllocationExpression
-	: NEW TypeName DimExprs
-	;
-
-*/
 
 /* TODO: Corrigir isto. */
 DimExprs
@@ -297,26 +286,9 @@ DimExprs
 	;
 
 DimExpr
-	: '[' Expression ']'
+	: '[' ArithmeticExpression ']'
 	| '[' ']'
 	;
-/*
-UnaryExpression
-	: OP_INC UnaryExpression
-	| OP_DEC UnaryExpression
-	|        UnaryExpression OP_INC
-	|	 UnaryExpression OP_DEC
-	| '!' UnaryExpression
-	| ArithmeticUnaryOperator CastExpression
-	| ID
-	| LITERAL
-	;
-
-ArithmeticUnaryOperator
-	: '+'
-	| '-'
-	;
-*/
 
 UnaryExpression
 	: OP_INC ID
@@ -331,13 +303,16 @@ UnaryExpression
 BasicElement
 	: ID
 	| LITERAL
+	| MethodCall
 	;
 
 
-/* TODO: The second should be Expression. */
+/* TODO: is the third correct? */
 CastExpression
 	: UnaryExpression
 	| '(' PrimitiveType ')' UnaryExpression
+	| '(' PrimitiveType ')' '(' AssignmentExpression ')'
+	| '(' PrimitiveType ')' '(' ConditionalExpression ')'
 	;
 
 ArithmeticExpression
@@ -367,22 +342,10 @@ RelationalExpression
         | ArithmeticExpression OP_OR		RelationalExpression
 	;
 
-/*
-BinaryExpression
-	: ArithmeticExpression
-	| AssignmentExpression
-	;
-
-Expression
-	: BinaryExpression
-	| ConditionalExpression
-	| UnaryExpression
-	;
-*/
-
 Expression
 	: ConditionalExpression
 	| AssignmentExpression
+	| '(' Expression ')'
 	;
 
 
@@ -393,6 +356,7 @@ ConditionalExpression
 
 AssignmentExpression
 	: ID '='     Expression
+	| ID '='     NewAllocationExpression
 	| ID ASS_MUL Expression
 	| ID ASS_DIV Expression
 	| ID ASS_ADD Expression
@@ -401,6 +365,16 @@ AssignmentExpression
 	| ID ASS_MOD Expression
 	| ID ASS_SHL Expression
 	| ID ASS_SHR Expression
+	;
+
+NewAllocationExpression
+    	: ArrayAllocationExpression
+    	| ArrayAllocationExpression '{' '}'
+    	| ArrayAllocationExpression '{' ArrayInitializers '}'
+    	;
+
+ArrayAllocationExpression
+	: NEW TypeName DimExprs
 	;
 
 
