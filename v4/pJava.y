@@ -52,12 +52,6 @@
 /* It can be a single variable or an array. */
 TypeSpecifier
 	: TypeName
-	| TypeName TypeDimExprs
-	;
-
-TypeDimExprs
-	: '[' ']'
-	| TypeDimExprs '[' ']'
 	;
 
 /* TODO: We are keeping this in case we want to expand
@@ -117,38 +111,7 @@ VariableDeclarators
 
 VariableDeclarator
 	: DeclaratorName
-	| DeclaratorName '=' VariableInitializer
-	;
-
-VariableInitializer
-	: Expression
-	| '{' '}'
-        | '{' ArrayInitializers '}'
-        ;
-
-NewAllocationExpression
-    	: ArrayAllocationExpression
-    	| ArrayAllocationExpression '{' '}'
-    	| ArrayAllocationExpression '{' ArrayInitializers '}'
-    	;
-
-ArrayAllocationExpression
-	: NEW TypeName DimExprs
-	;
-
-ArrayInitializers
-	: VariableInitializer
-	| ArrayInitializers ',' VariableInitializer
-	| ArrayInitializers ','
-	;
-
-DimExprs
-	: DimExpr
-	| DimExprs DimExpr
-	;
-
-DimExpr
-	: '[' ArithmeticExpression ']'
+	| DeclaratorName '=' Expression
 	;
 
 /* Declaration of methods. */
@@ -273,9 +236,8 @@ UnaryExpression
 	|          BasicElement OP_DEC
 	|          BasicElement
 	| '!' ID
-	/* We can negate the MethodCall or ArrayAccess if it returns a boolean. */
+	/* We can negate the MethodCall if it returns a boolean. */
 	| '!' MethodCall
-	| '!' ArrayAccess
 	;
 
 /* The basic elements. */
@@ -283,11 +245,6 @@ BasicElement
 	: LITERAL
 	| MethodCall
 	| ID
-	| ArrayAccess
-	;
-
-ArrayAccess
-	: ID '[' ArithmeticExpression ']'
 	;
 
 /* TODO: is the third correct? */
@@ -339,7 +296,6 @@ ConditionalExpression
 
 AssignmentExpression /*TODO: WITH STRUCT*/
 	: ID '='     Expression
-	| ID '='     NewAllocationExpression
 	| ID ASS_MUL Expression
 	| ID ASS_DIV Expression
 	| ID ASS_ADD Expression
