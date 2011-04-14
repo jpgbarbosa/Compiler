@@ -50,7 +50,7 @@
 %%
 
 /* It can be a single variable or an array. */
-TypeSpecifier
+TypeSpecifier /*TODO: WITH STRUCT*/
 	: TypeName
 	;
 
@@ -77,91 +77,88 @@ PrimitiveType /*TODO: WITH STRUCT*/
 	| DOUBLE
 	| VOID
 	| STRING
+	| STRING '['']'
 	;
 
 /* We can have imports or only a class. */
-ProgramFile
+ProgramFile /*TODO: WITH STRUCT*/
 	: ClassHeader '{' FieldDeclarations '}'
 	;
 
-ClassHeader
+ClassHeader /*TODO: WITH STRUCT*/
 	: PUBLIC CLASS ID
 	| CLASS ID
 	;
 /* In here, we will declare some attributes of methods. */
-FieldDeclarations
+FieldDeclarations /*TODO: WITH STRUCT*/
 	: FieldDeclaration
         | FieldDeclarations FieldDeclaration
 	;
 
-FieldDeclaration
+FieldDeclaration /*TODO: WITH STRUCT*/
 	: AttrDeclaration ';'
 	| MethodDeclaration
 	;
 
-AttrDeclaration
+AttrDeclaration /*TODO: WITH STRUCT*/
 	: PUBLIC STATIC TypeSpecifier VariableDeclarators
-	|        STATIC TypeSpecifier VariableDeclarators
+	|        STATIC Typ/*TODO: WITH STRUCT*/eSpecifier VariableDeclarators
 	;
 /* Declaration of variables (both single and array). */
-VariableDeclarators
+VariableDeclarators /*TODO: WITH STRUCT*/
 	: VariableDeclarator
 	| VariableDeclarators ',' VariableDeclarator
 	;
 
-VariableDeclarator
-	: DeclaratorName
-	| DeclaratorName '=' Expression
+VariableDeclarator /*TODO: WITH STRUCT*/
+	: ID
+	| ID '=' Expression
 	;
 
 /* Declaration of methods. */
 
-MethodDeclaration
+MethodDeclaration /*TODO: WITH STRUCT*/
 	: PUBLIC STATIC TypeSpecifier MethodDeclarator        Block
 	|        STATIC TypeSpecifier MethodDeclarator        Block
 	;
 
-MethodDeclarator
-	: DeclaratorName '(' ParameterList ')'
-	| DeclaratorName '(' ')'
-	| MethodDeclarator OP_DIM
+MethodDeclarator /*TODO: WITH STRUCT*/
+	: ID '(' ParameterList ')'
+	| ID '(' ')'
 	;
 
-ParameterList
+ParameterList /*TODO: WITH STRUCT*/
 	: Parameter
 	| ParameterList ',' Parameter
 	;
 
-Parameter
-	: TypeSpecifier DeclaratorName
+Parameter /*TODO: WITH STRUCT*/
+	: TypeSpecifier ID
 	;
 
-DeclaratorName
-	: ID
-        | DeclaratorName OP_DIM
-        ;
-
-Block
+Block /*TODO: WITH STRUCT*/
 	: '{' LocalVariableDeclarationsAndStatements '}'
 	| '{' '}'
         ;
 
 /* Declarations of variables and use of statements. */
-LocalVariableDeclarationsAndStatements
+
+/* Used to perform a list of declarations or statements. */
+LocalVariableDeclarationsAndStatements /*TODO: WITH STRUCT*/
 	: LocalVariableDeclarationOrStatement
 	| LocalVariableDeclarationsAndStatements LocalVariableDeclarationOrStatement
 	;
 
-LocalVariableDeclarationOrStatement
+LocalVariableDeclarationOrStatement /*TODO: WITH STRUCT*/
 	: LocalVariableDeclarationStatement
 	| Statement
 	;
 
-LocalVariableDeclarationStatement
+LocalVariableDeclarationStatement /*TODO: WITH STRUCT*/
 	: TypeSpecifier VariableDeclarators ';'
 	;
 
-Statement
+Statement /*TODO: WITH STRUCT*/
 	: LabeledStatement
 	| Expression ';'
         | SelectionStatement
