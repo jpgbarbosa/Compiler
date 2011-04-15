@@ -2,61 +2,194 @@
 #define _STRUCTURES_
 
 #define MAX_SIZE 256
+typedef struct _a1 is_AssignmnetExpression;
+typedef struct _a2 is_Typename;
+typedef struct _a3 is_TypeSpecifier;
+typedef struct _a4 is_ProgramFile;
+typedef struct _a5 is_ClassHeader;
+typedef struct _a6 is_FieldDeclaration_list;
+typedef struct _a7 is_FieldDeclaration;
+typedef struct _a8 is_AttrDeclaration;
+typedef struct _a9 is_VariablesDeclarator_list;
+typedef struct _a10 is_VariablesDeclarator;
+typedef struct _a11 is_MethodDeclaration;
+typedef struct _a12 is_MethodDeclarator;
+typedef struct _a13 is_Parameters_list;
+typedef struct _a14 is_Parameter;
+typedef struct _a15 is_Block;
+typedef struct _a16 is_LocalVariableDeclarationsOrStatements_list;
+typedef struct _a17 is_LocalVariableDeclarationsOrStatements;
+typedef struct _a18 is_LocalVariableDeclarationStatement;
+typedef struct _a19 is_Statement;
+typedef struct _a20 is_BasicElement;
+typedef struct _a21 is_MethodCall;
+typedef struct _a22 is_Expressions_list;
+typedef struct _a23 is_UnaryExpression;
+typedef struct _a24 is_CastExpression;
+typedef struct _a25 is_ArithmeticExpression;
+typedef struct _a26 is_RelationalExpression;
+typedef struct _a27 is_Expression;
+typedef struct _a28 is_ConditionalExpression;
+
+typedef enum {is_ID, is_LITERAL, is_METHOD_CALL} is_BasicElement_enum;
+typedef enum {d_BasicElement, d_MethodCall} disc_BasicElement;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a20{
+	is_BasicElement_enum element;
+	char ID[MAX_SIZE];
+	/* TODO: We may have to change the LITERAL to something else. */
+	char LITERAL[MAX_SIZE];
+	is_MethodCall *methodCall; /* It can be NULL in case we are not using it. */
+
+} /*is_BasicElement*/;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+typedef enum {is_OP_INC_AFTER, is_OP_DCR_AFTER, is_OP_INC_BEFORE, is_OP_DCR_BEFORE, is_OP_DIFFERENT_UNARY, is_NONE} is_UnaryOp;
+
+struct _a23{
+	is_UnaryOp operator;
+	is_BasicElement *element;
+	
+} /*is_UnaryExpression*/;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a22{
+		is_Expression *exp;
+		is_Expressions_list *next;
+	
+} /*is_Expressions_list*/;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+struct _a21{
+		char ID[MAX_SIZE];
+		is_Expressions_list *argumentsList; /* The list of arguments is a list of expressions. */
+	
+} /* is_MethodCall */;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+typedef enum {is_PLUS, is_MINUS, is_SLASH, is_TIMES, is_MODULO, is_OP_SHL, is_OP_SHR} is_ArithmeticOp;
+typedef enum {d_ArithmeticExpression, d_CastExpression} disc_ArithmeticExpression;
+	
+struct _a25{
+	disc_ArithmeticExpression firstElement;
+	disc_ArithmeticExpression secondElement;
+	is_ArithmeticOp operator;
+	
+	union{
+		is_CastExpression *cExpression;
+		is_ArithmeticExpression *aExpression;
+	}data_FirstElement;
+	
+	union{
+		is_CastExpression *cExpression;
+		is_ArithmeticExpression *aExpression;
+	}data_SecondElement;
+	
+	
+} /*is_ArithmeticExpression*/;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+typedef enum {is_OP_GREATER, is_OP_LESS, is_OP_LESS_EQUAL, is_OP_GREATER_EQUAL, is_OP_EQUAL, is_OP_DIFFERENT, is_OP_SAND, is_OP_SXOR, is_OP_SOR, is_OP_AND, is_OP_OR} is_RelationalOp;
+	
+struct _a26{
+	is_ArithmeticExpression *aExpression;
+	is_RelationalExpression *next; /* It's null if it's the last element. */
+	is_RelationalOp operator; /* If the above is NULL, this is useless. */
+	
+} /*is_RelationalExpression*/;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
 typedef enum {is_BOOLEAN, is_CHAR, is_BYTE, is_SHORT, is_INT, is_LONG, is_FLOAT, is_DOUBLE, is_VOID, is_STRING, is_STRING_ARRAY} is_PrimitiveType;
 
-
-typedef struct _a2{
+struct _a2{
 	is_PrimitiveType type;
-} is_Typename;
+} /*is_Typename*/;
 
-typedef struct _a3{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a3{
 	is_Typename* typeName;
 
-} is_TypeSpecifier;
+} /*is_TypeSpecifier*/;
 
-typedef struct _a5{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+typedef enum {d_UnaryExpression, d_AssignmentExpression, d_ConditionalExpression} disc_CastExpression;
+struct _a24{
+	disc_CastExpression disc_d;
+	union{
+		is_UnaryExpression *unaryExpression;
+		is_AssigmentExpression *assignmentExpression;
+		is_ConditionalExpression *conditionalExpression;
+	}data_CastExpression;
+	
+	is_PrimitiveType primitiveType; /* It is used when we make a cast. Otherwise, it reamins NULL. */
+	
+} /*is_CastExpression*/;
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a5{
 	char ID[MAX_SIZE];
 	
-} is_ClassHeader;
+} /*is_ClassHeader*/;
 
-typedef struct _a14{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a14{
 	is_TypeSpecifier *typeSpecifier;
 	char ID[MAX_SIZE];
 	
-}is_Parameter;
+}/*is_Parameter*/;
 
-typedef struct _a13{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a13{
 	is_Parameter *parameter;
 	struct _a13 *next;
-}is_Parameters_list;
+}/*is_Parameters_list*/;
 
-typedef struct _a12{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a12{
 	char ID[MAX_SIZE];
 	is_Parameters_list *parametersList;
 	
-} is_MethodDeclarator;
+} /*is_MethodDeclarator*/;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
 /* expression can be null. */
-typedef struct _a10{
+struct _a10{
 	char ID[MAX_SIZE];
 	is_Expression *expression;
 	
-} is_VariablesDeclarator;
+} /*is_VariablesDeclarator*/;
 
-typedef struct _a9{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a9{
 	is_VariablesDeclarator *variablesDeclarator;
 	struct _a9 *next;
-}is_VariablesDeclarator_list;
+}/*is_VariablesDeclarator_list*/;
 
-typedef struct _a18{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a18{
 	is_TypeSpecifier *typeSpecifier;
 	is_VariablesDeclarator_list *variablesDeclarator_list;
 	
-}is_LocalVariableDeclarationStatement;
+}/*is_LocalVariableDeclarationStatement*/;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
 typedef enum {d_LabeledStatement, d_StatementExpression, d_SelectionStatement, d_IterationStatement, d_JumpStatement, d_StatementBlock} disc_Statement;
-typedef struct _a19{
+struct _a19{
 	disc_Statement disc_d;
 	union{
 		is_LabeledStatement *labeledStatement;
@@ -67,67 +200,109 @@ typedef struct _a19{
 		is_Block *block;
 	}data_Statement;
 	
-} is_Statement;
+} /*is_Statement*/;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
 typedef enum {d_LocalVariableDelcarationStatement, d_Statement} disc_LocalVariableDeclarationsOrStatements;
-typedef struct _a17{
+struct _a17{
 	disc_LocalVariableDeclarationsOrStatements disc_d;
 	union{
 		is_LocalVariableDeclarationStatement *u_lvds;
 		is_Statement *u_statement;
 	}data_LocalVariableDeclarationsOrStatements;
-}is_LocalVariableDeclarationsOrStatements;
+} /*is_LocalVariableDeclarationsOrStatements */;
 
-typedef struct _a16{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a16{
 	is_LocalVariableDeclarationsOrStatements* lvdos;
 	struct _a16 *next;
-}is_LocalVariableDeclarationsOrStatements_list;
+} /*is_LocalVariableDeclarationsOrStatements_list*/;
 
-typedef struct _a15{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a15{
 	is_LocalVariableDeclarationsOrStatements_list *lvdos_list;
-} is_Block;
+} /*is_Block*/;
 
-typedef struct _a11{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a11{
 	is_TypeSpecifier *typeSpecifier;
 	is_MethodDeclarator *methodDeclarator;
 	is_Block *block;
 	
-} is_MethodDeclaration;
+} /*is_MethodDeclaration*/;
 
-typedef struct _a8{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a8{
 		is_TypeSpecifier *typeSpecifier;
 		is_VariablesDeclarator_list * variablesDeclarators;
-} is_AttrDeclaration;
+} /*is_AttrDeclaration*/;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
 typedef enum {d_attrDeclaration, d_methodDeclaration} disc_FieldDeclaration;
-typedef struct _a7{
+struct _a7{
 	disc_FieldDeclaration disc_d;
 	union{
 		is_AttrDeclaration *u_attrDeclaration;
 		is_MethodDeclaration *u_methodDeclaration;
 	}data_FieldDeclaration;
 	
-} is_FieldDeclaration;
+} /*is_FieldDeclaration*/;
 
-typedef struct _a6{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a6{
 	is_FieldDeclaration* fieldDeclaration;
 	struct _a6 *next;
 	
-} is_FieldDeclaration_list;
+} /*is_FieldDeclaration_list*/;
 
-typedef struct _a4{
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+struct _a4{
 	is_ClassHeader* classHeader;
 	is_FieldDeclaration_list* fieldDeclarations;
 	
-} is_ProgramFile;
+} /*is_ProgramFile*/;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+typedef enum {is_ConditionalExp, is_AssignmentExp, is_Exp} disc_Expression;
+struct _a27{
+	disc_Expression expType;
+	union{
+		is_ConditionalExpression *cExpression;
+		is_AssignmentExpression *aExpression;
+		typedef struct _a27 *expression;
+	}data_Expression;
+	
+} /*is_Expression*/;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+typedef enum {is_UNARY, is_UNARY_NOT, is_TRINARY} is_ConditionalType;
+
+struct _a28{
+	is_ConditionalType type;
+	is_RelationalExpression *rExpression;
+	/* Both can be NULL if we aren't using a trinary operator. */
+	is_Expression *firstExp;
+	is_Expression *secondExp;
+	
+} /*is_ConditionalExpression*/;
 
 typedef enum {is_ASSIGN, is_ASS_MUL, is_ASS_DIV, is_ASS_ADD, is_ASS_SUB, is_ASS_XOR, is_ASS_MOD, is_ASS_SHL, is_ASS_SHR} is_AssignmentOp;
 
-typedef struct _a1{
+struct _a1{
 	char ID[MAX_SIZE];
 	is_AssignmentOp assOp;
 	is_Expression* expression;
 
-} is_AssignmnetOperation;
+} /*is_AssignmnetExpression*/;
 
 #endif

@@ -102,7 +102,7 @@ FieldDeclaration /*TODO: WITH STRUCT*/
 
 AttrDeclaration /*TODO: WITH STRUCT*/
 	: PUBLIC STATIC TypeSpecifier VariableDeclarators
-	|        STATIC Typ/*TODO: WITH STRUCT*/eSpecifier VariableDeclarators
+	|        STATIC TypeSpecifier VariableDeclarators
 	;
 /* Declaration of variables (both single and array). */
 VariableDeclarators /*TODO: WITH STRUCT*/
@@ -202,7 +202,7 @@ ForIncr
 	: Expressions
 	;
 
-Expressions
+Expressions /*TODO: WITH STRUCT*/
 	: Expression
 	| Expressions ',' Expression
 	;
@@ -216,43 +216,42 @@ JumpStatement
 	| RETURN            ';'
 	;
 
-MethodCall
+MethodCall /*TODO: WITH STRUCT*/
 	: ID '(' ArgumentList ')'
 	| ID '(' ')'
 	;
 
-ArgumentList
+ArgumentList /*TODO: WITH STRUCT*/
 	: Expression
 	| ArgumentList ',' Expression
 	;
 
-UnaryExpression
+UnaryExpression /*TODO: WITH STRUCT*/
 	: OP_INC   BasicElement
 	| OP_DEC   BasicElement
 	|          BasicElement OP_INC
 	|          BasicElement OP_DEC
 	|          BasicElement
 	| '!' ID
-	/* We can negate the MethodCall if it returns a boolean. */
-	| '!' MethodCall
+	| '!' MethodCall /* We can negate the MethodCall if it returns a boolean. */
 	;
 
 /* The basic elements. */
-BasicElement
+BasicElement /*TODO: WITH STRUCT*/
 	: LITERAL
 	| MethodCall
 	| ID
 	;
 
 /* TODO: is the third correct? */
-CastExpression
+CastExpression /*TODO: WITH STRUCT*/
 	: UnaryExpression
 	| '(' PrimitiveType ')' UnaryExpression
 	| '(' PrimitiveType ')' '(' AssignmentExpression ')'
 	| '(' PrimitiveType ')' '(' ConditionalExpression ')'
 	;
 
-ArithmeticExpression
+ArithmeticExpression /*TODO: WITH STRUCT*/
 	: CastExpression
 	| ArithmeticExpression  '+'   ArithmeticExpression
 	| ArithmeticExpression  '-'   ArithmeticExpression
@@ -264,7 +263,7 @@ ArithmeticExpression
         ;
 
 
-RelationalExpression
+RelationalExpression /*TODO: WITH STRUCT*/
 	: ArithmeticExpression
         | ArithmeticExpression '<' 	        RelationalExpression
         | ArithmeticExpression '>' 	        RelationalExpression
@@ -279,15 +278,16 @@ RelationalExpression
         | ArithmeticExpression OP_OR		RelationalExpression
 	;
 
-Expression
+Expression /*TODO: WITH STRUCT*/
 	: ConditionalExpression
 	| AssignmentExpression
 	| '(' Expression ')'
 	;
 
 
-ConditionalExpression
+ConditionalExpression /*TODO: WITH STRUCT*/
 	: RelationalExpression
+	| '!' '(' RelationalExpression ')'
 	| RelationalExpression '?' Expression ':' Expression
 	;
 
