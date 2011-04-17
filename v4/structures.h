@@ -42,9 +42,9 @@ typedef enum {d_BasicElement, d_MethodCall} disc_BasicElement;
 
 struct _a20{
 	is_BasicElement_enum element;
-	char ID_S[MAX_SIZE];
+	char id[MAX_SIZE];
 	/* TODO: We may have to change the LITERAL to something else. */
-	char LITERAL_S[MAX_SIZE];
+	char literal[MAX_SIZE];
 	is_MethodCall *methodCall; /* It can be NULL in case we are not using it. */
 
 } /*is_BasicElement*/;
@@ -68,7 +68,7 @@ struct _a22{
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 struct _a21{
-		char ID_S[MAX_SIZE];
+		char id[MAX_SIZE];
 		is_Expressions_list *argumentsList; /* The list of arguments is a list of expressions. */
 	
 } /* is_MethodCall */;
@@ -139,7 +139,7 @@ struct _a24{
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
 struct _a5{
-	char ID_S[MAX_SIZE];
+	char id[MAX_SIZE];
 	
 } /*is_ClassHeader*/;
 
@@ -147,7 +147,7 @@ struct _a5{
 
 struct _a14{
 	is_TypeSpecifier *typeSpecifier;
-	char ID_S[MAX_SIZE];
+	char id[MAX_SIZE];
 	
 }/*is_Parameter*/;
 
@@ -161,7 +161,7 @@ struct _a13{
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
 struct _a12{
-	char ID_S[MAX_SIZE];
+	char id[MAX_SIZE];
 	is_Parameters_list *parametersList;
 	
 } /*is_MethodDeclarator*/;
@@ -170,7 +170,7 @@ struct _a12{
 
 /* expression can be null. */
 struct _a10{
-	char ID_S[MAX_SIZE];
+	char id[MAX_SIZE];
 	is_Expression *expression;
 	
 } /*is_VariablesDeclarator*/;
@@ -218,7 +218,7 @@ struct _a30{
 	disc_LabeledStatement *disc_d;
 	is_LocalVariableDeclarationsOrStatements *lvdos;
 	/* We might or not use these depending on value of the above enumeration. */
-	char ID_S[MAX_SIZE];
+	char id[MAX_SIZE];
 	is_ConditionalExpression *exp;
 	
 } /* is_LabeledStatement */;
@@ -231,7 +231,7 @@ struct _a31{
 	disc_JumpStatement disc_d;
 	/* Both may not be used. */
 	union{
-		char ID_S[MAX_SIZE];
+		char id[MAX_SIZE];
 		is_Expression *exp;
 	}data_JumpStatement;
 	
@@ -363,7 +363,7 @@ struct _a28{
 typedef enum {is_ASSIGN, is_ASS_MUL, is_ASS_DIV, is_ASS_ADD, is_ASS_SUB, is_ASS_XOR, is_ASS_MOD, is_ASS_SHL, is_ASS_SHR} is_AssignmentOp;
 
 struct _a1{
-	char ID_S[MAX_SIZE];
+	char id[MAX_SIZE];
 	is_AssignmentOp assOp;
 	is_Expression* expression;
 

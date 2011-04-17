@@ -61,7 +61,7 @@ is_ClassHeader* insert_ClassHeader(char *id)
 {
 	is_ClassHeader* cH = malloc(sizeof(is_ClassHeader));
 	
-	strcpy(cH->ID_S, id);
+	strcpy(cH->id, id);
 	
 	return cH;
 }
