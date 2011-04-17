@@ -1,5 +1,8 @@
 %{
 #include <stdio.h>
+#include "insertionFunction.h"
+#include "structures.h"
+
 %}
 
 %token BOOLEAN BREAK BYTE
@@ -25,7 +28,10 @@
 %token ASS_MUL ASS_DIV ASS_ADD ASS_SUB
 %token ASS_XOR ASS_MOD ASS_SHL ASS_SHR
 %token ASS_AND ASS_OR
-%token ID LITERAL
+%token <id> ID
+%token LITERAL
+
+%type <cH> ClassHeader;
 
 /* Priorities */
 %right ASS_MUL ASS_DIV ASS_ADD ASS_SUB ASS_XOR ASS_MOD ASS_SHL ASS_SHR
@@ -45,12 +51,20 @@
 %right OP_INC OP_DEC '~' '!' NEW
 %left IF ELSE
 
+%union{
+	int i;
+	double d;
+	char* id;
+	is_ClassHeader *cH;
+}
+
+
 %start ProgramFile
 
 %%
 
 /* It can be a single variable or an array. */
-TypeSpecifier /*TODO: WITH STRUCT*/
+TypeSpecifier /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: TypeName
 	;
 
@@ -62,11 +76,11 @@ TypeSpecifier /*TODO: WITH STRUCT*/
 /
 
 /* Accepts a primitive type. */
-TypeName /*TODO: WITH STRUCT*/
+TypeName /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: PrimitiveType
 	;
 
-PrimitiveType /*TODO: WITH STRUCT*/
+PrimitiveType /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: BOOLEAN
 	| CHAR
 	| BYTE
@@ -81,13 +95,13 @@ PrimitiveType /*TODO: WITH STRUCT*/
 	;
 
 /* We can have imports or only a class. */
-ProgramFile /*TODO: WITH STRUCT*/
+ProgramFile /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: ClassHeader '{' FieldDeclarations '}'
 	;
 
-ClassHeader /*TODO: WITH STRUCT*/
-	: PUBLIC CLASS ID
-	| CLASS ID
+ClassHeader /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+	: PUBLIC CLASS ID {$$ = insert_ClassHeader($3);}
+	| CLASS ID {$$ = insert_ClassHeader($2);}
 	;
 /* In here, we will declare some attributes of methods. */
 FieldDeclarations /*TODO: WITH STRUCT*/

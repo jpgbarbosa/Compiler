@@ -71,10 +71,13 @@
 #line 1 "pJava.y"
 
 #include <stdio.h>
+#include "insertionFunction.h"
+#include "structures.h"
+
 
 
 /* Line 189 of yacc.c  */
-#line 78 "y.tab.c"
+#line 81 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -211,7 +214,22 @@
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+typedef union YYSTYPE
+{
+
+/* Line 214 of yacc.c  */
+#line 54 "pJava.y"
+
+	int i;
+	double d;
+	char* id;
+	is_ClassHeader *cH;
+
+
+
+/* Line 214 of yacc.c  */
+#line 232 "y.tab.c"
+} YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -222,7 +240,7 @@ typedef int YYSTYPE;
 
 
 /* Line 264 of yacc.c  */
-#line 226 "y.tab.c"
+#line 244 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -563,19 +581,19 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    54,    54,    66,    70,    71,    72,    73,    74,    75,
-      76,    77,    78,    79,    80,    85,    89,    90,    94,    95,
-      99,   100,   104,   105,   109,   110,   114,   115,   121,   122,
-     126,   127,   131,   132,   136,   140,   141,   148,   149,   153,
-     154,   158,   162,   163,   164,   165,   166,   167,   168,   172,
-     173,   174,   178,   179,   180,   184,   185,   186,   187,   191,
-     192,   193,   197,   198,   202,   206,   207,   211,   212,   213,
-     214,   215,   216,   220,   221,   225,   226,   230,   231,   232,
-     233,   234,   235,   236,   241,   242,   243,   248,   249,   250,
-     251,   255,   256,   257,   258,   259,   260,   261,   262,   267,
-     268,   269,   270,   271,   272,   273,   274,   275,   276,   277,
-     278,   282,   283,   284,   289,   290,   291,   295,   296,   297,
-     298,   299,   300,   301,   302,   303
+       0,    68,    68,    80,    84,    85,    86,    87,    88,    89,
+      90,    91,    92,    93,    94,    99,   103,   104,   108,   109,
+     113,   114,   118,   119,   123,   124,   128,   129,   135,   136,
+     140,   141,   145,   146,   150,   154,   155,   162,   163,   167,
+     168,   172,   176,   177,   178,   179,   180,   181,   182,   186,
+     187,   188,   192,   193,   194,   198,   199,   200,   201,   205,
+     206,   207,   211,   212,   216,   220,   221,   225,   226,   227,
+     228,   229,   230,   234,   235,   239,   240,   244,   245,   246,
+     247,   248,   249,   250,   255,   256,   257,   262,   263,   264,
+     265,   269,   270,   271,   272,   273,   274,   275,   276,   281,
+     282,   283,   284,   285,   286,   287,   288,   289,   290,   291,
+     292,   296,   297,   298,   303,   304,   305,   309,   310,   311,
+     312,   313,   314,   315,   316,   317
 };
 #endif
 
@@ -1693,10 +1711,24 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-      
+        case 16:
 
 /* Line 1455 of yacc.c  */
-#line 1700 "y.tab.c"
+#line 103 "pJava.y"
+    {(yyval.cH) = insert_ClassHeader((yyvsp[(3) - (3)].id));}
+    break;
+
+  case 17:
+
+/* Line 1455 of yacc.c  */
+#line 104 "pJava.y"
+    {(yyval.cH) = insert_ClassHeader((yyvsp[(2) - (2)].id));}
+    break;
+
+
+
+/* Line 1455 of yacc.c  */
+#line 1732 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1908,7 +1940,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 307 "pJava.y"
+#line 321 "pJava.y"
 
 
 int main()

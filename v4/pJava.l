@@ -1,4 +1,5 @@
 %{
+#include "structures.h"
 #include "y.tab.h"
 %}
 
@@ -110,7 +111,7 @@ Literal		({Numeric}|{Character}|{String})
 "if"		{return IF;}
 "String"	{return STRING;}
 
-{Identifier}	{return ID;}
+{Identifier}	{yylval.id = (char*)strdup(yytext); return ID;}
 
 {Literal}	{return LITERAL;}
 
