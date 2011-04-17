@@ -2,7 +2,7 @@
 #define _STRUCTURES_
 
 #define MAX_SIZE 256
-typedef struct _a1 is_AssignmnetExpression;
+typedef struct _a1 is_AssignmentExpression;
 typedef struct _a2 is_Typename;
 typedef struct _a3 is_TypeSpecifier;
 typedef struct _a4 is_ProgramFile;
@@ -30,6 +30,11 @@ typedef struct _a25 is_ArithmeticExpression;
 typedef struct _a26 is_RelationalExpression;
 typedef struct _a27 is_Expression;
 typedef struct _a28 is_ConditionalExpression;
+
+typedef struct _a29 is_IterationStatement;
+typedef struct _a30 is_LabeledStatement;
+typedef struct _a31 is_JumpStatement;
+typedef struct _a32 is_SelectionStatement;
 
 typedef enum {is_ID, is_LITERAL, is_METHOD_CALL} is_BasicElement_enum;
 typedef enum {d_BasicElement, d_MethodCall} disc_BasicElement;
@@ -125,7 +130,7 @@ struct _a24{
 	disc_CastExpression disc_d;
 	union{
 		is_UnaryExpression *unaryExpression;
-		is_AssigmentExpression *assignmentExpression;
+		is_AssignmentExpression *assignmentExpression;
 		is_ConditionalExpression *conditionalExpression;
 	}data_CastExpression;
 	
@@ -185,6 +190,66 @@ struct _a18{
 	is_VariablesDeclarator_list *variablesDeclarator_list;
 	
 }/*is_LocalVariableDeclarationStatement*/;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+typedef enum {d_WHILE, d_DO, d_FOR} disc_IterationStatement;
+
+struct _a29{
+	disc_IterationStatement disc_d;
+	/* In the case of the FOR, it will be used for the ForExpr. */
+	is_Expression *exp;
+	is_Statement *statement;
+	
+	/* Only concerns the FOR. */
+	/* ForInit. */
+	is_Expressions_list *forInitExps;
+	is_LocalVariableDeclarationStatement *forInitStat;
+	
+	/* ForIncr. */
+	is_Expressions_list *forIncr;
+	
+} /* is_IterationStatement */;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+typedef enum {d_ID, d_Case, d_Default} disc_LabeledStatement;
+
+struct _a30{
+	disc_LabeledStatement *disc_d;
+	is_LocalVariableDeclarationsOrStatements *lvdos;
+	/* We might or not use these depending on value of the above enumeration. */
+	char ID[MAX_SIZE];
+	is_ConditionalExpression *exp;
+	
+} /* is_LabeledStatement */;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+typedef enum {is_BREAK, is_CONTINUE, is_RETURN} disc_JumpStatement;
+
+struct _a31{
+	disc_JumpStatement disc_d;
+	/* Both may not be used. */
+	union{
+		char ID[MAX_SIZE];
+		is_Expression *exp;
+	}data_JumpStatement;
+	
+} /* is_JumpStatement. */;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+typedef enum {is_IF, is_IFELSE, is_SWITCH} disc_SelectionStatement;
+
+struct _a32{
+	disc_SelectionStatement disc_d;
+	is_Expression *exp;
+	/* We might or not use these depending on value of the above enumeration. */
+	is_Expression *expSecond;
+	is_Block *block;
+	
+} /* is_SelectionStatement */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
@@ -278,7 +343,7 @@ struct _a27{
 	union{
 		is_ConditionalExpression *cExpression;
 		is_AssignmentExpression *aExpression;
-		typedef struct _a27 *expression;
+		is_Expression *expression;
 	}data_Expression;
 	
 } /*is_Expression*/;

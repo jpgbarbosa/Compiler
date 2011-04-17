@@ -168,37 +168,37 @@ Statement /*TODO: WITH STRUCT*/
 	| ';'
 	;
 
-LabeledStatement
+LabeledStatement /*TODO: WITH STRUCT*/
 	: ID ':' LocalVariableDeclarationOrStatement
         | CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement
 	| DEFAULT ':' LocalVariableDeclarationOrStatement
         ;
 
-SelectionStatement
+SelectionStatement /*TODO: WITH STRUCT*/
 	: IF '(' Expression ')' Statement
         | IF '(' Expression ')' Statement ELSE Statement
         | SWITCH '(' Expression ')' Block
         ;
 
-IterationStatement
+IterationStatement /*TODO: WITH STRUCT*/
 	: WHILE '(' Expression ')' Statement
 	| DO Statement WHILE '(' Expression ')' ';'
 	| FOR '(' ForInit ForExpr ForIncr ')' Statement
 	| FOR '(' ForInit ForExpr         ')' Statement
 	;
 
-ForInit
+ForInit /*TODO: WITH STRUCT*/
 	: Expressions ';'
 	| LocalVariableDeclarationStatement
 	| ';'
 	;
 
-ForExpr
+ForExpr /*TODO: WITH STRUCT*/
 	: Expression ';'
 	| ';'
 	;
 
-ForIncr
+ForIncr /*TODO: WITH STRUCT*/
 	: Expressions
 	;
 
@@ -207,7 +207,7 @@ Expressions /*TODO: WITH STRUCT*/
 	| Expressions ',' Expression
 	;
 
-JumpStatement
+JumpStatement /*TODO: WITH STRUCT*/
 	: BREAK ID ';'
 	| BREAK            ';'
         | CONTINUE ID ';'
