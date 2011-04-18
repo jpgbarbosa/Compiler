@@ -35,3 +35,15 @@ is_SelectionStatement* insert_SelectionStatement_SWITCH(is_Expression* exp, is_B
 is_IterationStatement* insert_IterationStatement_WHILE(is_Expression* exp, is_Statement* stat);
 is_IterationStatement* insert_IterationStatement_DO(is_Expression* exp, is_Statement* stat);
 is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Statement* stat,is_Expressions_list *forInitExps, is_LocalVariableDeclarationStatement *forInitStat, is_Expressions_list *forIncr);
+is_Expressions_list* insert_Expressions_list(is_Expressions_list* list, is_Expression* exp);
+is_Expression* insert_Expression_ConditionalExpression(is_ConditionalExpression *cExpression);
+is_Expression* insert_Expression_AssignmentExpression(is_AssignmentExpression *aExpression);
+is_Expression* insert_Expression_Expression(is_Expression *expression);
+is_JumpStatement* insert_JumpStatement_BREAK();
+is_JumpStatement* insert_JumpStatement_BREAK_ID(char* id);
+is_JumpStatement* insert_JumpStatement_CONTINUE();
+is_JumpStatement* insert_JumpStatement_CONTINUE_ID(char* id);
+is_JumpStatement* insert_JumpStatement_RETURN();
+is_JumpStatement* insert_JumpStatement_RETURN_EXP(is_Expression* exp);
+is_MethodCall* insert_MethodCall(char *id, is_Expressions_list* list);
+

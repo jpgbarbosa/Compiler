@@ -61,17 +61,17 @@ struct _a23{
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
 struct _a22{
-		is_Expression *exp;
-		is_Expressions_list *next;
+	is_Expression *exp;
+	is_Expressions_list *next;
 	
 } /*is_Expressions_list*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 struct _a21{
-		char id[MAX_SIZE];
-		is_Expressions_list *argumentsList; /* The list of arguments is a list of expressions. */
+	char id[MAX_SIZE];
+	is_Expressions_list *argumentsList; /* The list of arguments is a list of expressions. */
 	
-} /* is_MethodCall */;
+} /*is_MethodCall */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
@@ -230,7 +230,7 @@ struct _a30{
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {is_BREAK, is_CONTINUE, is_RETURN} disc_JumpStatement;
+typedef enum {is_BREAK, is_BREAK_ID, is_CONTINUE, is_CONTINUE_ID, is_RETURN, is_RETURN_EXP} disc_JumpStatement;
 
 struct _a31{
 	disc_JumpStatement disc_d;
@@ -343,9 +343,9 @@ struct _a4{
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {is_ConditionalExp, is_AssignmentExp, is_Exp} disc_Expression;
+typedef enum {d_ConditionalExp, d_AssignmentExp, d_Exp} disc_Expression;
 struct _a27{
-	disc_Expression expType;
+	disc_Expression disc_d;
 	union{
 		is_ConditionalExpression *cExpression;
 		is_AssignmentExpression *aExpression;

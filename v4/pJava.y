@@ -219,12 +219,12 @@ ForIncr /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: Expressions
 	;
 
-Expressions /*TODO: WITH STRUCT*/
+Expressions /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: Expression
 	| Expressions ',' Expression
 	;
 
-JumpStatement /*TODO: WITH STRUCT*/
+JumpStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: BREAK ID ';'
 	| BREAK            ';'
         | CONTINUE ID ';'
@@ -233,12 +233,12 @@ JumpStatement /*TODO: WITH STRUCT*/
 	| RETURN            ';'
 	;
 
-MethodCall /*TODO: WITH STRUCT*/
+MethodCall /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: ID '(' ArgumentList ')'
 	| ID '(' ')'
 	;
 
-ArgumentList /*TODO: WITH STRUCT*/
+ArgumentList /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: Expression
 	| ArgumentList ',' Expression
 	;
@@ -295,7 +295,7 @@ RelationalExpression /*TODO: WITH STRUCT*/
         | ArithmeticExpression OP_OR		RelationalExpression
 	;
 
-Expression /*TODO: WITH STRUCT*/
+Expression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: ConditionalExpression
 	| AssignmentExpression
 	| '(' Expression ')'

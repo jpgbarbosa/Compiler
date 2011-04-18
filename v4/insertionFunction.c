@@ -419,4 +419,126 @@ is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Stat
 
 /* - - - - - - - - - - - - - - - - - - - - - - */
 
+is_Expressions_list* insert_Expressions_list(is_Expressions_list* list, is_Expression* exp)
+{
+	/* Creates a new node on the list and fills it with the correct information. */
+	is_Expressions_list* el = malloc(sizeof(is_Expressions_list));
+	el->exp = exp;
+	
+	/* It's an empty list, so this will be the first element. */
+	if(list == NULL)
+		return el;
+
+	/* Else, we have to find the tail of the list and add this node in that position. */
+	is_Expressions_list* aux;
+			
+	for(aux = list; aux->next != NULL; aux = aux->next);
+	aux->next = el;
+	
+	/* Returns the head of the list. */
+	return list;
+}
+
+/* - - - - - - - is_Expression - - - - - - - - */
+
+is_Expression* insert_Expression_ConditionalExpression(is_ConditionalExpression *cExpression)
+{
+	is_Expression* exp = malloc(sizeof(is_Expression));
+	exp->disc_d = d_ConditionalExp;
+	exp->data_Expression.cExpression = cExpression;
+	
+	return exp;
+	
+}
+
+is_Expression* insert_Expression_AssignmentExpression(is_AssignmentExpression *aExpression)
+{
+	is_Expression* exp = malloc(sizeof(is_Expression));
+	exp->disc_d = d_AssignmentExpression;
+	exp->data_Expression.aExpression = aExpression;
+	
+	return exp;
+	
+}
+
+is_Expression* insert_Expression_Expression(is_Expression *expression)
+{
+	is_Expression* exp = malloc(sizeof(is_Expression));
+	exp->disc_d = d_Exp;
+	exp->data_Expression.expression = expression;
+	
+	return exp;
+	
+}
+
+/* - - - - - - - is_JumpStatement - - - - - -  */
+
+is_JumpStatement* insert_JumpStatement_BREAK()
+{
+	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
+	jS->disc_d = is_BREAK;
+	
+	return jS;
+}
+
+is_JumpStatement* insert_JumpStatement_BREAK_ID(char *id)
+{
+	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
+	jS->disc_d = is_BREAK_ID;
+	strcpy(jS->data_JumpStatement.id, id);
+	
+	return jS;
+}
+
+is_JumpStatement* insert_JumpStatement_CONTINUE()
+{
+	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
+	jS->disc_d = is_CONTINUE;
+	
+	return jS;
+}
+
+is_JumpStatement* insert_JumpStatement_CONTINUE_ID(char *id)
+{
+	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
+	jS->disc_d = is_CONTINUE_ID;
+	strcpy(jS->data_JumpStatement.id,id);
+	
+	return jS;
+}
+
+is_JumpStatement* insert_JumpStatement_RETURN()
+{
+	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
+	jS->disc_d = is_RETURN;
+	
+	return jS;
+}
+
+is_JumpStatement* insert_JumpStatement_RETURN_EXP(is_Expression* exp)
+{
+	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
+	jS->disc_d = is_RETURN_EXP;
+	jS->data_JumpStatement.exp = exp;
+	
+	return jS;
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - - */
+
+is_MethodCall* insert_MethodCall(char *id, is_Expressions_list* list)
+{
+	is_MethodCall* mC = malloc(sizeof(is_MethodCall));
+	mC->argumentsList = list;
+	strcpy(mC->id, id);
+	
+	return mC;
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - - */
+
+/* - - - - - - - - - - - - - - - - - - - - - - */
+
+/* - - - - - - - - - - - - - - - - - - - - - - */
+
 /* - - - - - - - - - - - - - - - - - - - - - - */
