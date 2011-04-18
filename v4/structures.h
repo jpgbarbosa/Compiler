@@ -35,17 +35,17 @@ typedef struct _a30 is_LabeledStatement;
 typedef struct _a31 is_JumpStatement;
 typedef struct _a32 is_SelectionStatement;
 
-typedef enum {is_ID, is_LITERAL, is_METHOD_CALL} is_BasicElement_enum;
-typedef enum {d_BasicElement, d_MethodCall} disc_BasicElement;
-
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+typedef enum {is_ID, is_LITERAL, is_METHOD_CALL} disc_BasicElement;
 
 struct _a20{
-	is_BasicElement_enum element;
-	char id[MAX_SIZE];
-	/* TODO: We may have to change the LITERAL to something else. */
-	char literal[MAX_SIZE];
-	is_MethodCall *methodCall; /* It can be NULL in case we are not using it. */
+	disc_BasicElement disc_d;
+	union{
+		char id[MAX_SIZE];
+		/* TODO: We may have to change the LITERAL to something else. */
+		char literal[MAX_SIZE];
+		is_MethodCall *methodCall; /* It can be NULL in case we are not using it. */
+	}data_BasicElement;
 
 } /*is_BasicElement*/;
 
@@ -53,7 +53,7 @@ struct _a20{
 typedef enum {is_OP_INC_AFTER, is_OP_DCR_AFTER, is_OP_INC_BEFORE, is_OP_DCR_BEFORE, is_OP_DIFFERENT_UNARY, is_NONE} is_UnaryOp;
 
 struct _a23{
-	is_UnaryOp operator;
+	is_UnaryOp op;
 	is_BasicElement *element;
 	
 } /*is_UnaryExpression*/;
@@ -133,7 +133,7 @@ struct _a24{
 		is_ConditionalExpression *conditionalExpression;
 	}data_CastExpression;
 	
-	is_PrimitiveType primitiveType; /* It is used when we make a cast. Otherwise, it reamins NULL. */
+	is_PrimitiveType primitiveType; /* It is used when we make a cast. Otherwise, it remains NULL. */
 	
 } /*is_CastExpression*/;
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */

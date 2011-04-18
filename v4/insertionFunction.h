@@ -46,4 +46,10 @@ is_JumpStatement* insert_JumpStatement_CONTINUE_ID(char* id);
 is_JumpStatement* insert_JumpStatement_RETURN();
 is_JumpStatement* insert_JumpStatement_RETURN_EXP(is_Expression* exp);
 is_MethodCall* insert_MethodCall(char *id, is_Expressions_list* list);
-
+is_UnaryExpression* insert_UnaryExpression(is_UnaryOp op, is_BasicElement* element);
+is_BasicElement* insert_BasicElement_ID(char *id);
+is_BasicElement* insert_BasicElement_LITERAL(char *literal);
+is_BasicElement* insert_BasicElement_METHOD_CALL(is_MethodCall* call);
+is_CastExpression* insert_CastExpression_UnaryExpression(is_PrimitiveType* castType, is_UnaryExpression *unaryExpression);
+is_CastExpression* insert_CastExpression_AssignmentExpression(is_PrimitiveType* castType,is_AssignmentExpression *assignmentExpression);
+is_CastExpression* insert_CastExpression_ConditionalExpression(is_PrimitiveType* castType, is_ConditionalExpression *conditionalExpression);

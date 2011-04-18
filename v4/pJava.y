@@ -243,25 +243,25 @@ ArgumentList /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	| ArgumentList ',' Expression
 	;
 
-UnaryExpression /*TODO: WITH STRUCT*/
+UnaryExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: OP_INC   BasicElement
 	| OP_DEC   BasicElement
 	|          BasicElement OP_INC
 	|          BasicElement OP_DEC
 	|          BasicElement
-	| '!' ID
-	| '!' MethodCall /* We can negate the MethodCall if it returns a boolean. */
+	/* We can negate the MethodCall if it returns a boolean.
+	 * The same applies for the literal, if it's true or false.
+         */
+	| '!' 	   BasicElement
 	;
-
 /* The basic elements. */
-BasicElement /*TODO: WITH STRUCT*/
+BasicElement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: LITERAL
 	| MethodCall
 	| ID
 	;
 
-/* TODO: is the third correct? */
-CastExpression /*TODO: WITH STRUCT*/
+CastExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: UnaryExpression
 	| '(' PrimitiveType ')' UnaryExpression
 	| '(' PrimitiveType ')' '(' AssignmentExpression ')'

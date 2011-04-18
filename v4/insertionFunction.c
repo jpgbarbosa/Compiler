@@ -535,7 +535,72 @@ is_MethodCall* insert_MethodCall(char *id, is_Expressions_list* list)
 	return mC;
 }
 
-/* - - - - - - - - - - - - - - - - - - - - - - */
+is_UnaryExpression* insert_UnaryExpression(is_UnaryOp op, is_BasicElement* element)
+{
+	is_UnaryExpression* uE = malloc(sizeof(is_UnaryExpression));
+	uE->op = op;
+	uE->element = element;
+	
+	return uE;
+}
+
+/* - - - - - - - is_BasicElement - - - - - - - */
+
+is_BasicElement* insert_BasicElement_ID(char *id)
+{
+	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
+	bE->disc_d = is_ID;
+	strcpy(bE->data_BasicElement.id, id);
+	
+	return bE;
+}
+
+is_BasicElement* insert_BasicElement_LITERAL(char *literal)
+{
+	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
+	bE->disc_d = is_LITERAL;
+	strcpy(bE->data_BasicElement.literal, literal);
+	
+	return bE;
+}
+
+is_BasicElement* insert_BasicElement_METHOD_CALL(is_MethodCall* call)
+{
+	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
+	bE->disc_d = is_METHOD_CALL;
+	bE->data_BasicElement.methodCall = call;
+	
+	return bE;
+}
+
+/* - - - - - - is_Cast_Expression - - - - - -  */
+
+is_CastExpression* insert_CastExpression_UnaryExpression(is_PrimitiveType* castType, is_UnaryExpression *unaryExpression)
+{
+	is_CastExpression* cE = malloc(sizeof(is_CastExpression));
+	cE->disc_d = d_UnaryExpression;
+	cE->data_CastExpression.unaryExpression = unaryExpression;
+	
+	return cE;
+}
+
+is_CastExpression* insert_CastExpression_AssignmentExpression(is_PrimitiveType* castType,is_AssignmentExpression *assignmentExpression)
+{
+	is_CastExpression* cE = malloc(sizeof(is_CastExpression));
+	cE->disc_d = d_AssignmentExpression;
+	cE->data_CastExpression.assignmentExpression = assignmentExpression;
+	
+	return cE;
+}
+
+is_CastExpression* insert_CastExpression_ConditionalExpression(is_PrimitiveType* castType, is_ConditionalExpression *conditionalExpression)
+{
+	is_CastExpression* cE = malloc(sizeof(is_CastExpression));
+	cE->disc_d = d_ConditionalExpression;
+	cE->data_CastExpression.conditionalExpression = conditionalExpression;
+	
+	return cE;
+}
 
 /* - - - - - - - - - - - - - - - - - - - - - - */
 
