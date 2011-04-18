@@ -65,3 +65,117 @@ is_ClassHeader* insert_ClassHeader(char *id)
 	
 	return cH;
 }
+
+is_FieldDeclaration_list* insert_FieldDeclaration_list(is_FieldDeclaration_list* list, is_FieldDeclaration* fD)
+{
+	/* Creates a new node on the list and fills it with the correct information. */
+	is_FieldDeclaration_list* fdl = malloc(sizeof(is_FieldDeclaration_list));
+	fdl->fieldDeclaration = fD;
+	
+	/* It's an empty list, so this will be the first element. */
+	if(list == NULL)
+		return fdl;
+
+	/* Else, we have to find the tail of the list and add this node in that position. */
+	is_FieldDeclaration_list* aux;
+			
+	for(aux = list; aux->next != NULL; aux = aux->next);
+	aux->next=fdl;
+	
+	/* Returns the head of the list. */
+	return list;
+}
+
+
+/* - - - - - is_FieldDeclaration - - - - - - - */
+
+is_FieldDeclaration* insert_FieldDeclaration_AttrDeclaration(is_AttrDeclaration* declaration)
+{
+	is_FieldDeclaration* fD = malloc(sizeof(is_FieldDeclaration));
+	fD->disc_d = d_attrDeclaration;
+	fD->data_FieldDeclaration.u_attrDeclaration = declaration;
+
+	return fD;
+
+}
+
+is_FieldDeclaration* insert_FieldDeclaration_MethodDeclaration(is_MethodDeclaration* declaration)
+{
+	is_FieldDeclaration* fD = malloc(sizeof(is_FieldDeclaration));
+	fD->disc_d = d_methodDeclaration;
+	fD->data_FieldDeclaration.u_methodDeclaration = declaration;
+
+	return fD;
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - - */
+
+is_AttrDeclaration* insert_AttrDeclaration( is_TypeSpecifier* typeS, is_VariablesDeclarator_list* vD_list)
+{
+	is_AttrDeclaration* aD = malloc(sizeof(is_AttrDeclaration));
+	aD->typeSpecifier = typeS;
+	aD->variablesDeclarators = vD_list;
+	
+	return aD;
+	
+}
+
+is_VariablesDeclarator_list* insert_VariablesDeclarator_list(is_VariablesDeclarator_list* list, is_VariablesDeclarator* vD)
+{
+	/* Creates a new node on the list and fills it with the correct information. */
+	is_VariablesDeclarator_list* vdl = malloc(sizeof(is_VariablesDeclarator_list));
+	vdl->variablesDeclarator = vD;
+	
+	/* It's an empty list, so this will be the first element. */
+	if(list == NULL)
+		return vdl;
+
+	/* Else, we have to find the tail of the list and add this node in that position. */
+	is_VariablesDeclarator_list* aux;
+			
+	for(aux = list; aux->next != NULL; aux = aux->next);
+	aux->next = vdl;
+	
+	/* Returns the head of the list. */
+	return list;
+}
+
+is_VariablesDeclarator* insert_VariablesDeclarator(char *id, is_Expression* exp)
+{
+	is_VariablesDeclarator* vD = malloc(sizeof(is_VariablesDeclarator));
+	vD->expression = exp;
+	strcpy(vD->id, id);
+	
+	return vD;
+}
+
+is_MethodDeclaration* insert_MethodDeclaration(is_TypeSpecifier* typeS, is_MethodDeclarator* methodD, is_Block* block)
+{
+	is_MethodDeclaration* mD = malloc(sizeof(is_MethodDeclaration));
+	mD->typeSpecifier = typeS;
+	mD->methodDeclarator = methodD;
+	mD->block = block;
+	
+	return mD;
+}
+
+is_MethodDeclarator* insert_MethodDeclarator(char *id, is_Parameters_list* list)
+{
+	is_MethodDeclarator* mD = malloc(sizeof(is_MethodDeclarator));
+	strcpy(mD->id, id);
+	mD->parametersList = list;
+	
+	return mD;
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - - */
+
+/* - - - - - - - - - - - - - - - - - - - - - - */
+
+/* - - - - - - - - - - - - - - - - - - - - - - */
+
+/* - - - - - - - - - - - - - - - - - - - - - - */
+
+/* - - - - - - - - - - - - - - - - - - - - - - */
+
+/* - - - - - - - - - - - - - - - - - - - - - - */

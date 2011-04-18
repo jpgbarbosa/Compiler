@@ -104,39 +104,39 @@ ClassHeader /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	| CLASS ID {$$ = insert_ClassHeader($2);}
 	;
 /* In here, we will declare some attributes of methods. */
-FieldDeclarations /*TODO: WITH STRUCT*/
+FieldDeclarations /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: FieldDeclaration
         | FieldDeclarations FieldDeclaration
 	;
 
-FieldDeclaration /*TODO: WITH STRUCT*/
+FieldDeclaration /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: AttrDeclaration ';'
 	| MethodDeclaration
 	;
 
-AttrDeclaration /*TODO: WITH STRUCT*/
+AttrDeclaration /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: PUBLIC STATIC TypeSpecifier VariableDeclarators
 	|        STATIC TypeSpecifier VariableDeclarators
 	;
-/* Declaration of variables (both single and array). */
-VariableDeclarators /*TODO: WITH STRUCT*/
+/* Declaration of variables. */
+VariableDeclarators /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: VariableDeclarator
 	| VariableDeclarators ',' VariableDeclarator
 	;
 
-VariableDeclarator /*TODO: WITH STRUCT*/
+VariableDeclarator /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: ID
 	| ID '=' Expression
 	;
 
 /* Declaration of methods. */
 
-MethodDeclaration /*TODO: WITH STRUCT*/
+MethodDeclaration /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: PUBLIC STATIC TypeSpecifier MethodDeclarator        Block
 	|        STATIC TypeSpecifier MethodDeclarator        Block
 	;
 
-MethodDeclarator /*TODO: WITH STRUCT*/
+MethodDeclarator /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: ID '(' ParameterList ')'
 	| ID '(' ')'
 	;

@@ -179,7 +179,8 @@ struct _a10{
 
 struct _a9{
 	is_VariablesDeclarator *variablesDeclarator;
-	struct _a9 *next;
+	is_VariablesDeclarator_list *next;
+
 }/*is_VariablesDeclarator_list*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
