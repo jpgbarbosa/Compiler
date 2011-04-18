@@ -604,6 +604,44 @@ is_CastExpression* insert_CastExpression_ConditionalExpression(is_PrimitiveType*
 
 /* - - - - - - - - - - - - - - - - - - - - - - */
 
-/* - - - - - - - - - - - - - - - - - - - - - - */
+is_ArithmeticExpression* insert_ArithmeticExpression(is_ArithmeticOp op, is_ArithmeticExpression *firstAE, is_ArithmeticExpression *secondAE, is_CastExpression *cExpression)
+{
+	is_ArithmeticExpression* aE = malloc(sizeof(is_ArithmeticExpression));
+	aE->op = op;
+	aE->firstAE = firstAE;
+	aE->secondAE = secondAE ;
+	aE->cExpression = cExpression;
+	
+	return aE;
+}
 
-/* - - - - - - - - - - - - - - - - - - - - - - */
+is_RelationalExpression* insert_RelationalExpression(is_RelationalOp op, is_ArithmeticExpression *aExpression, is_RelationalExpression *next)
+{
+	is_RelationalExpression* rE = malloc(sizeof(is_RelationalExpression));
+	rE-> op = op;
+	rE->aExpression = aExpression;
+	rE->next = next;
+	
+	return rE;
+}
+
+is_ConditionalExpression* insert_ConditionalExpression(is_ConditionalType type, is_RelationalExpression *rExpression, is_Expression *firstExp, is_Expression *secondExp)
+{
+	is_ConditionalExpression* cE = malloc(sizeof(is_ConditionalExpression));
+	cE->type = type;
+	cE->rExpression = rExpression;
+	cE->firstExp = firstExp;
+	cE->secondExp = secondExp;
+	
+	return cE;
+}
+
+is_AssignmentExpression* insert_AssignmentExpression(is_AssignmentOp assOp, char *id, is_Expression* expression)
+{
+	is_AssignmentExpression* aE = malloc(sizeof(is_AssignmentExpression));
+	aE->assOp = assOp;
+	aE->expression = expression;
+	strcpy(aE-> id, id);
+	
+	return aE;
+}

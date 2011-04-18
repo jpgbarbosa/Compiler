@@ -75,35 +75,24 @@ struct _a21{
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {is_PLUS, is_MINUS, is_SLASH, is_TIMES, is_MODULO, is_OP_SHL, is_OP_SHR} is_ArithmeticOp;
-typedef enum {d_ArithmeticExpression, d_CastExpression} disc_ArithmeticExpression;
+typedef enum {is_PLUS, is_MINUS, is_SLASH, is_TIMES, is_MODULO, is_OP_SHL, is_OP_SHR, is_AE_NONE} is_ArithmeticOp;
 	
 struct _a25{
-	disc_ArithmeticExpression firstElement;
-	disc_ArithmeticExpression secondElement;
-	is_ArithmeticOp operator;
-	
-	union{
-		is_CastExpression *cExpression;
-		is_ArithmeticExpression *aExpression;
-	}data_FirstElement;
-	
-	union{
-		is_CastExpression *cExpression;
-		is_ArithmeticExpression *aExpression;
-	}data_SecondElement;
-	
+	is_ArithmeticExpression *firstAE;
+	is_ArithmeticExpression *secondAE;
+	is_CastExpression *cExpression;
+	is_ArithmeticOp op;
 	
 } /*is_ArithmeticExpression*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {is_OP_GREATER, is_OP_LESS, is_OP_LESS_EQUAL, is_OP_GREATER_EQUAL, is_OP_EQUAL, is_OP_DIFFERENT, is_OP_SAND, is_OP_SXOR, is_OP_SOR, is_OP_AND, is_OP_OR} is_RelationalOp;
+typedef enum {is_OP_GREATER, is_OP_LESS, is_OP_LESS_EQUAL, is_OP_GREATER_EQUAL, is_OP_EQUAL, is_OP_DIFFERENT, is_OP_SAND, is_OP_SXOR, is_OP_SOR, is_OP_AND, is_OP_OR, is_RE_NONE} is_RelationalOp;
 	
 struct _a26{
 	is_ArithmeticExpression *aExpression;
 	is_RelationalExpression *next; /* It's null if it's the last element. */
-	is_RelationalOp operator; /* If the above is NULL, this is useless. */
+	is_RelationalOp op; /* If the above is NULL, this is useless. */
 	
 } /*is_RelationalExpression*/;
 

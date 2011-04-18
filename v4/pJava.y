@@ -268,7 +268,7 @@ CastExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	| '(' PrimitiveType ')' '(' ConditionalExpression ')'
 	;
 
-ArithmeticExpression /*TODO: WITH STRUCT*/
+ArithmeticExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: CastExpression
 	| ArithmeticExpression  '+'   ArithmeticExpression
 	| ArithmeticExpression  '-'   ArithmeticExpression
@@ -280,7 +280,7 @@ ArithmeticExpression /*TODO: WITH STRUCT*/
         ;
 
 
-RelationalExpression /*TODO: WITH STRUCT*/
+RelationalExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: ArithmeticExpression
         | ArithmeticExpression '<' 	        RelationalExpression
         | ArithmeticExpression '>' 	        RelationalExpression
@@ -302,13 +302,13 @@ Expression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	;
 
 
-ConditionalExpression /*TODO: WITH STRUCT*/
+ConditionalExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: RelationalExpression
 	| '!' '(' RelationalExpression ')'
 	| RelationalExpression '?' Expression ':' Expression
 	;
 
-AssignmentExpression /*TODO: WITH STRUCT*/
+AssignmentExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: ID '='     Expression
 	| ID ASS_MUL Expression
 	| ID ASS_DIV Expression
