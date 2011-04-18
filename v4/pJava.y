@@ -31,7 +31,7 @@
 %token <id> ID
 %token LITERAL
 
-%type <cH> ClassHeader;
+%type <_classHeader> ClassHeader;
 
 /* Priorities */
 %right ASS_MUL ASS_DIV ASS_ADD ASS_SUB ASS_XOR ASS_MOD ASS_SHL ASS_SHR
@@ -55,7 +55,36 @@
 	int i;
 	double d;
 	char* id;
-	is_ClassHeader *cH;
+	is_TypeSpecifier* _typeSpecifier;
+	is_Typename* _typeName;
+	is_ProgramFile* _programFile;
+	is_ClassHeader* _classHeader;
+	is_FieldDeclaration_list* _fieldDeclaration_list;
+	is_FieldDeclaration* _fieldDeclaration;
+	is_AttrDeclaration* _attrDeclaration;
+	is_VariablesDeclarator_list* _variablesDeclarator_list;
+	is_VariablesDeclarator* _variablesDeclarator;
+	is_MethodDeclaration* _methodDeclaration;
+	is_MethodDeclarator* _methodDeclarator;
+	is_Parameters_list* _parameters_list;
+	is_Parameter* _parameter;
+	is_Block* _block;
+	is_LocalVariableDeclarationsOrStatements_list* _localVariableDeclarationsOrStatements_list;
+	is_LocalVariableDeclarationStatement* insert_LocalVariableDeclarationStatement;
+	is_Statement* _statement;
+	is_LabeledStatement* _labeledStatement;
+	is_SelectionStatement* _selectionStatement;
+	is_IterationStatement* _iterationStatement;
+	is_Expressions_list* _expressions_list;
+	is_JumpStatement* _jumpStatement;
+	is_MethodCall* _methodCall;
+	is_UnaryExpression* _unaryExpression;
+	is_BasicElement* _basicElement;
+	is_CastExpression* _castExpression;
+	is_ArithmeticExpression* _arithmeticExpression;
+	is_RelationalExpression* _relationalExpression;
+	is_ConditionalExpression* _conditionalExpression;
+	is_AssignmentExpression* _assignmentExpression;
 }
 
 
