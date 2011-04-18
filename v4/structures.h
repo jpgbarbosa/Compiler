@@ -245,7 +245,8 @@ struct _a32{
 	is_Expression *exp;
 	/* We might or not use these depending on value of the above enumeration. */
 	union{
-		is_Expression *expSecond;
+		is_Statement *stat;
+		is_Statement *statSecond;
 		is_Block *block;
 	}data_SelectionStatement;
 	

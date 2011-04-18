@@ -319,22 +319,24 @@ is_LabeledStatement* insert_LabeledStatement_DEFAULT(is_LocalVariableDeclaration
 
 /* - - - - - - is_SelectionStatement - - - - - */
 
-is_SelectionStatement* insert_SelectionStatement_IF(is_Expression* exp)
+is_SelectionStatement* insert_SelectionStatement_IF(is_Expression* exp, is_Statement* stat)
 {
 	is_SelectionStatement* sS = malloc(sizeof(is_SelectionStatement));
 	sS->disc_d = is_IF;
 	sS->exp = exp;
+	sS->data_SelectionStatement.stat = stat;
 	
 	return sS;
 	
 }
 
-is_SelectionStatement* insert_SelectionStatement_IFELSE(is_Expression* exp, is_Expression* expTwo)
+is_SelectionStatement* insert_SelectionStatement_IFELSE(is_Expression* exp, is_Statement* stat, is_Statement* statTwo)
 {
 	is_SelectionStatement* sS = malloc(sizeof(is_SelectionStatement));
 	sS->disc_d = is_IFELSE;
 	sS->exp = exp;
-	sS->data_SelectionStatement.expSecond = expTwo;
+	sS->data_SelectionStatement.stat = stat;
+	sS->data_SelectionStatement.statSecond = statTwo;
 	
 	return sS;
 	
