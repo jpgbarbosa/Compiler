@@ -56,7 +56,7 @@
 	double d;
 	char* id;
 	is_TypeSpecifier* _typeSpecifier;
-	is_Typename* _typeName;
+	is_Typename* _typename;
 	is_ProgramFile* _programFile;
 	is_ClassHeader* _classHeader;
 	is_FieldDeclaration_list* _fieldDeclaration_list;
@@ -93,7 +93,7 @@
 %%
 
 /* It can be a single variable or an array. */
-TypeSpecifier /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+TypeSpecifier
 	: TypeName
 	;
 
@@ -105,11 +105,11 @@ TypeSpecifier /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 /
 
 /* Accepts a primitive type. */
-TypeName /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+TypeName
 	: PrimitiveType
 	;
 
-PrimitiveType /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+PrimitiveType
 	: BOOLEAN
 	| CHAR
 	| BYTE
@@ -124,62 +124,62 @@ PrimitiveType /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	;
 
 /* We can have imports or only a class. */
-ProgramFile /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+ProgramFile
 	: ClassHeader '{' FieldDeclarations '}'
 	;
 
-ClassHeader /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+ClassHeader
 	: PUBLIC CLASS ID {$$ = insert_ClassHeader($3);}
 	| CLASS ID {$$ = insert_ClassHeader($2);}
 	;
 /* In here, we will declare some attributes of methods. */
-FieldDeclarations /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+FieldDeclarations
 	: FieldDeclaration
         | FieldDeclarations FieldDeclaration
 	;
 
-FieldDeclaration /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+FieldDeclaration
 	: AttrDeclaration ';'
 	| MethodDeclaration
 	;
 
-AttrDeclaration /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+AttrDeclaration
 	: PUBLIC STATIC TypeSpecifier VariableDeclarators
 	|        STATIC TypeSpecifier VariableDeclarators
 	;
 /* Declaration of variables. */
-VariableDeclarators /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+VariableDeclarators
 	: VariableDeclarator
 	| VariableDeclarators ',' VariableDeclarator
 	;
 
-VariableDeclarator /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+VariableDeclarator
 	: ID
 	| ID '=' Expression
 	;
 
 /* Declaration of methods. */
 
-MethodDeclaration /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+MethodDeclaration
 	: PUBLIC STATIC TypeSpecifier MethodDeclarator        Block
 	|        STATIC TypeSpecifier MethodDeclarator        Block
 	;
 
-MethodDeclarator /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+MethodDeclarator
 	: ID '(' ParameterList ')'
 	| ID '(' ')'
 	;
 
-ParameterList /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+ParameterList
 	: Parameter
 	| ParameterList ',' Parameter
 	;
 
-Parameter /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+Parameter
 	: TypeSpecifier ID
 	;
 
-Block /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+Block
 	: '{' LocalVariableDeclarationsAndStatements '}'
 	| '{' '}'
         ;
@@ -187,21 +187,21 @@ Block /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 /* Declarations of variables and use of statements. */
 
 /* Used to perform a list of declarations or statements. */
-LocalVariableDeclarationsAndStatements /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+LocalVariableDeclarationsAndStatements
 	: LocalVariableDeclarationOrStatement
 	| LocalVariableDeclarationsAndStatements LocalVariableDeclarationOrStatement
 	;
 
-LocalVariableDeclarationOrStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+LocalVariableDeclarationOrStatement
 	: LocalVariableDeclarationStatement
 	| Statement
 	;
 
-LocalVariableDeclarationStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+LocalVariableDeclarationStatement
 	: TypeSpecifier VariableDeclarators ';'
 	;
 
-Statement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+Statement
 	: LabeledStatement
 	| Expression ';'
         | SelectionStatement
@@ -214,46 +214,46 @@ Statement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	| ';'
 	;
 
-LabeledStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+LabeledStatement
 	: ID ':' LocalVariableDeclarationOrStatement
         | CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement
 	| DEFAULT ':' LocalVariableDeclarationOrStatement
         ;
 
-SelectionStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+SelectionStatement
 	: IF '(' Expression ')' Statement
         | IF '(' Expression ')' Statement ELSE Statement
         | SWITCH '(' Expression ')' Block
         ;
 
-IterationStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+IterationStatement
 	: WHILE '(' Expression ')' Statement
 	| DO Statement WHILE '(' Expression ')' ';'
 	| FOR '(' ForInit ForExpr ForIncr ')' Statement
 	| FOR '(' ForInit ForExpr         ')' Statement
 	;
 
-ForInit /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+ForInit
 	: Expressions ';'
 	| LocalVariableDeclarationStatement
 	| ';'
 	;
 
-ForExpr /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+ForExpr
 	: Expression ';'
 	| ';'
 	;
 
-ForIncr /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+ForIncr
 	: Expressions
 	;
 
-Expressions /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+Expressions
 	: Expression
 	| Expressions ',' Expression
 	;
 
-JumpStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+JumpStatement
 	: BREAK ID ';'
 	| BREAK            ';'
         | CONTINUE ID ';'
@@ -262,17 +262,17 @@ JumpStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	| RETURN            ';'
 	;
 
-MethodCall /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+MethodCall
 	: ID '(' ArgumentList ')'
 	| ID '(' ')'
 	;
 
-ArgumentList /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+ArgumentList
 	: Expression
 	| ArgumentList ',' Expression
 	;
 
-UnaryExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+UnaryExpression
 	: OP_INC   BasicElement
 	| OP_DEC   BasicElement
 	|          BasicElement OP_INC
@@ -284,20 +284,20 @@ UnaryExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	| '!' 	   BasicElement
 	;
 /* The basic elements. */
-BasicElement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+BasicElement
 	: LITERAL
 	| MethodCall
 	| ID
 	;
 
-CastExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+CastExpression
 	: UnaryExpression
 	| '(' PrimitiveType ')' UnaryExpression
 	| '(' PrimitiveType ')' '(' AssignmentExpression ')'
 	| '(' PrimitiveType ')' '(' ConditionalExpression ')'
 	;
 
-ArithmeticExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+ArithmeticExpression
 	: CastExpression
 	| ArithmeticExpression  '+'   ArithmeticExpression
 	| ArithmeticExpression  '-'   ArithmeticExpression
@@ -309,7 +309,7 @@ ArithmeticExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
         ;
 
 
-RelationalExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+RelationalExpression
 	: ArithmeticExpression
         | ArithmeticExpression '<' 	        RelationalExpression
         | ArithmeticExpression '>' 	        RelationalExpression
@@ -324,20 +324,20 @@ RelationalExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
         | ArithmeticExpression OP_OR		RelationalExpression
 	;
 
-Expression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+Expression
 	: ConditionalExpression
 	| AssignmentExpression
 	| '(' Expression ')'
 	;
 
 
-ConditionalExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+ConditionalExpression
 	: RelationalExpression
 	| '!' '(' RelationalExpression ')'
 	| RelationalExpression '?' Expression ':' Expression
 	;
 
-AssignmentExpression /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
+AssignmentExpression
 	: ID '='     Expression
 	| ID ASS_MUL Expression
 	| ID ASS_DIV Expression

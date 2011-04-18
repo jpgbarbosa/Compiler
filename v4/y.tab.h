@@ -159,7 +159,7 @@ typedef union YYSTYPE
 	double d;
 	char* id;
 	is_TypeSpecifier* _typeSpecifier;
-	is_Typename* _typeName;
+	is_Typename* _typename;
 	is_ProgramFile* _programFile;
 	is_ClassHeader* _classHeader;
 	is_FieldDeclaration_list* _fieldDeclaration_list;
