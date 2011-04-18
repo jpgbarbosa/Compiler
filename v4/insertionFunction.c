@@ -226,13 +226,196 @@ is_LocalVariableDeclarationsOrStatements_list* insert_LocalVariableDeclarationsO
 	return list;
 }
 
-/* - - - - - - - - - - - - - - - - - - - - - - */
+/* - - - - is_LocalVariableOrStatement - - - - */
+
+is_LocalVariableDeclarationsOrStatements* insert_LocalVariableDeclarationsOrStatements_LocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement* lvds)
+{
+	is_LocalVariableDeclarationsOrStatements* lvdos = malloc(sizeof(is_LocalVariableDeclarationsOrStatements));
+	lvdos->disc_d = d_LocalVariableDelcarationStatement;
+	lvdos->data_LocalVariableDeclarationsOrStatements.u_lvds = lvds;
+	
+	return lvdos;
+}
+
+is_LocalVariableDeclarationsOrStatements* insert_LocalVariableDeclarationsOrStatements_Statement(is_Statement* statement)
+{
+	is_LocalVariableDeclarationsOrStatements* lvdos = malloc(sizeof(is_LocalVariableDeclarationsOrStatements));
+	lvdos->disc_d = d_Statement;
+	lvdos->data_LocalVariableDeclarationsOrStatements.u_statement = statement;
+	
+	return lvdos;
+}
 
 /* - - - - - - - - - - - - - - - - - - - - - - */
 
-/* - - - - - - - - - - - - - - - - - - - - - - */
+is_LocalVariableDeclarationStatement* insert_LocalVariableDeclarationStatement(is_TypeSpecifier* typeS, is_VariablesDeclarator_list* list)
+{
+	is_LocalVariableDeclarationStatement* lvds = malloc(sizeof(is_LocalVariableDeclarationStatement));
+	lvds->typeSpecifier = typeS;
+	lvds->variablesDeclarator_list = list;
+	
+	return lvds;
+}
 
-/* - - - - - - - - - - - - - - - - - - - - - - */
+/* - - - - - - - - is_Statement - - - - - - -  */
+
+is_Statement* insert_Statement_LabeledStatement(is_LabeledStatement* labeled)
+{
+	is_Statement* statement = malloc(sizeof(is_Statement));
+	statement->disc_d = d_LabeledStatement;
+	statement->data_Statement.labeledStatement = labeled;
+	
+	return statement;
+}
+
+is_Statement* insert_Statement_Expression(is_Expression* exp)
+{
+	is_Statement* statement = malloc(sizeof(is_Statement));
+	statement->disc_d = d_StatementExpression;
+	statement->data_Statement.expression = exp;
+	
+	return statement;
+}
+
+is_Statement* insert_Statement_SelectionStatement(is_SelectionStatement* selection)
+{
+	is_Statement* statement = malloc(sizeof(is_Statement));
+	statement->disc_d = d_SelectionStatement;
+	statement->data_Statement.selectionStatement = selection;
+	
+	return statement;
+}
+
+is_Statement* insert_Statement_IterationStatement(is_IterationStatement* iteration)
+{
+	is_Statement* statement = malloc(sizeof(is_Statement));
+	statement->disc_d = d_IterationStatement;
+	statement->data_Statement.iterationStatement = iteration;
+	
+	return statement;
+}
+
+is_Statement* insert_Statement_JumpStatement(is_JumpStatement* jump)
+{
+	is_Statement* statement = malloc(sizeof(is_Statement));
+	statement->disc_d = d_JumpStatement;
+	statement->data_Statement.jumpStatement = jump;
+	
+	return statement;
+}
+
+is_Statement* insert_Statement_Block(is_Block* block)
+{
+	is_Statement* statement = malloc(sizeof(is_Statement));
+	statement->disc_d = d_StatementBlock;
+	statement->data_Statement.block = block;
+	
+	return statement;
+}
+
+/* - - - - - - is_LabeledStatement - - - - - - */
+
+is_LabeledStatement* insert_LabeledStatement_ID(char *id, is_LocalVariableDeclarationsOrStatements *lvdos)
+{
+	is_LabeledStatement* lS = malloc(sizeof(is_LabeledStatement));
+	lS->disc_d = d_ID;
+	lS->lvdos = lvdos;
+	strcpy(lS->data_LabeledStatement.id, id);
+	
+	return lS;
+}
+
+is_LabeledStatement* insert_LabeledStatement_CASE(is_LocalVariableDeclarationsOrStatements *lvdos, is_ConditionalExpression* exp)
+{
+	is_LabeledStatement* lS = malloc(sizeof(is_LabeledStatement));
+	lS->disc_d = d_CASE;
+	lS->lvdos = lvdos;
+	lS->data_LabeledStatement.exp = exp;
+	
+	return lS;
+}
+
+is_LabeledStatement* insert_LabeledStatement_DEFAULT(is_LocalVariableDeclarationsOrStatements *lvdos)
+{
+	is_LabeledStatement* lS = malloc(sizeof(is_LabeledStatement));
+	lS->disc_d = d_DEFAULT;
+	lS->lvdos = lvdos;
+	
+	return lS;
+}
+
+/* - - - - - - is_SelectionStatement - - - - - */
+
+is_SelectionStatement* insert_SelectionStatement_IF(is_Expression* exp)
+{
+	is_SelectionStatement* sS = malloc(sizeof(is_SelectionStatement));
+	sS->disc_d = is_IF;
+	sS->exp = exp;
+	
+	return sS;
+	
+}
+
+is_SelectionStatement* insert_SelectionStatement_IFELSE(is_Expression* exp, is_Expression* expTwo)
+{
+	is_SelectionStatement* sS = malloc(sizeof(is_SelectionStatement));
+	sS->disc_d = is_IFELSE;
+	sS->exp = exp;
+	sS->data_SelectionStatement.expSecond = expTwo;
+	
+	return sS;
+	
+}
+
+is_SelectionStatement* insert_SelectionStatement_SWITCH(is_Expression* exp, is_Block* block)
+{
+	is_SelectionStatement* sS = malloc(sizeof(is_SelectionStatement));
+	sS->disc_d = is_SWITCH;
+	sS->exp = exp;
+	sS->data_SelectionStatement.block = block;
+	
+	return sS;
+	
+}
+
+/* - - - - - - is_IterationStatement - - - - - */
+
+is_IterationStatement* insert_IterationStatement_WHILE(is_Expression* exp, is_Statement* stat)
+{
+	is_IterationStatement* iS = malloc(sizeof(is_IterationStatement));
+	iS->disc_d = is_WHILE;
+	iS->exp = exp;
+	iS->statement = stat;
+	
+	return iS;
+	
+}
+
+is_IterationStatement* insert_IterationStatement_DO(is_Expression* exp, is_Statement* stat)
+{
+	is_IterationStatement* iS = malloc(sizeof(is_IterationStatement));
+	iS->disc_d = is_DO;
+	iS->exp = exp;
+	iS->statement = stat;
+	
+	return iS;
+	
+}
+
+is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Statement* stat,is_Expressions_list *forInitExps, is_LocalVariableDeclarationStatement *forInitStat, is_Expressions_list *forIncr)
+{
+	is_IterationStatement* iS = malloc(sizeof(is_IterationStatement));
+	iS->disc_d = is_FOR;
+	iS->exp = exp;
+	iS->statement = stat;
+	
+	iS->data_FOR.forInitExps = forInitExps;
+	iS->data_FOR.forInitStat = forInitStat;
+	iS->data_FOR.forIncr = forIncr;
+	
+	return iS;
+	
+}
 
 /* - - - - - - - - - - - - - - - - - - - - - - */
 

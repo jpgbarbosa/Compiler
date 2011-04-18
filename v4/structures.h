@@ -193,7 +193,7 @@ struct _a18{
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {d_WHILE, d_DO, d_FOR} disc_IterationStatement;
+typedef enum {is_WHILE, is_DO, is_FOR} disc_IterationStatement;
 
 struct _a29{
 	disc_IterationStatement disc_d;
@@ -202,25 +202,29 @@ struct _a29{
 	is_Statement *statement;
 	
 	/* Only concerns the FOR. */
-	/* ForInit. */
-	is_Expressions_list *forInitExps;
-	is_LocalVariableDeclarationStatement *forInitStat;
+	union{
+		/* ForInit. */
+		is_Expressions_list *forInitExps;
+		is_LocalVariableDeclarationStatement *forInitStat;
 	
-	/* ForIncr. */
-	is_Expressions_list *forIncr;
+		/* ForIncr. */
+		is_Expressions_list *forIncr;
+	}data_FOR;
 	
 } /* is_IterationStatement */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {d_ID, d_Case, d_Default} disc_LabeledStatement;
+typedef enum {d_ID, d_CASE, d_DEFAULT} disc_LabeledStatement;
 
 struct _a30{
-	disc_LabeledStatement *disc_d;
+	disc_LabeledStatement disc_d;
 	is_LocalVariableDeclarationsOrStatements *lvdos;
 	/* We might or not use these depending on value of the above enumeration. */
-	char id[MAX_SIZE];
-	is_ConditionalExpression *exp;
+	union{
+		char id[MAX_SIZE];
+		is_ConditionalExpression *exp;
+	}data_LabeledStatement;
 	
 } /* is_LabeledStatement */;
 
@@ -246,8 +250,10 @@ struct _a32{
 	disc_SelectionStatement disc_d;
 	is_Expression *exp;
 	/* We might or not use these depending on value of the above enumeration. */
-	is_Expression *expSecond;
-	is_Block *block;
+	union{
+		is_Expression *expSecond;
+		is_Block *block;
+	}data_SelectionStatement;
 	
 } /* is_SelectionStatement */;
 

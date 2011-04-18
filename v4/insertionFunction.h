@@ -16,4 +16,22 @@ is_MethodDeclarator* insert_MethodDeclarator(char *id, is_Parameters_list* list)
 is_Parameters_list* insert_Parameters_list(is_Parameters_list* list, is_Parameter* par);
 is_Parameter* insert_Parameter(char *id, is_TypeSpecifier* typeS);
 is_Block* insert_Block(is_LocalVariableDeclarationsOrStatements_list* list);
-
+is_LocalVariableDeclarationsOrStatements_list* insert_LocalVariableDeclarationsOrStatements_list(is_LocalVariableDeclarationsOrStatements_list* list, is_LocalVariableDeclarationsOrStatements* lvdos);
+is_LocalVariableDeclarationsOrStatements* insert_LocalVariableDeclarationsOrStatements_LocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement* lvds);
+is_LocalVariableDeclarationsOrStatements* insert_LocalVariableDeclarationsOrStatements_Statement(is_Statement* statement);
+is_LocalVariableDeclarationStatement* insert_LocalVariableDeclarationStatement(is_TypeSpecifier* typeS, is_VariablesDeclarator_list* list);
+is_Statement* insert_Statement_LabeledStatement(is_LabeledStatement* labeled);
+is_Statement* insert_Statement_Expression(is_Expression* exp);
+is_Statement* insert_Statement_SelectionStatement(is_SelectionStatement* selection);
+is_Statement* insert_Statement_IterationStatement(is_IterationStatement* iteration);
+is_Statement* insert_Statement_JumpStatement(is_JumpStatement* jump);
+is_Statement* insert_Statement_Block(is_Block* block);
+is_LabeledStatement* insert_LabeledStatement_ID(char *id, is_LocalVariableDeclarationsOrStatements *lvdos);
+is_LabeledStatement* insert_LabeledStatement_CASE(is_LocalVariableDeclarationsOrStatements *lvdos, is_ConditionalExpression* exp);
+is_LabeledStatement* insert_LabeledStatement_DEFAULT(is_LocalVariableDeclarationsOrStatements *lvdos);
+is_SelectionStatement* insert_SelectionStatement_IF(is_Expression* exp);
+is_SelectionStatement* insert_SelectionStatement_IFELSE(is_Expression* exp, is_Expression* expTwo);
+is_SelectionStatement* insert_SelectionStatement_SWITCH(is_Expression* exp, is_Block* block);
+is_IterationStatement* insert_IterationStatement_WHILE(is_Expression* exp, is_Statement* stat);
+is_IterationStatement* insert_IterationStatement_DO(is_Expression* exp, is_Statement* stat);
+is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Statement* stat,is_Expressions_list *forInitExps, is_LocalVariableDeclarationStatement *forInitStat, is_Expressions_list *forIncr);

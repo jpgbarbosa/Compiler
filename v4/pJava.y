@@ -158,61 +158,64 @@ Block /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 /* Declarations of variables and use of statements. */
 
 /* Used to perform a list of declarations or statements. */
-LocalVariableDeclarationsAndStatements /*TODO: WITH STRUCT*/
+LocalVariableDeclarationsAndStatements /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: LocalVariableDeclarationOrStatement
 	| LocalVariableDeclarationsAndStatements LocalVariableDeclarationOrStatement
 	;
 
-LocalVariableDeclarationOrStatement /*TODO: WITH STRUCT*/
+LocalVariableDeclarationOrStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: LocalVariableDeclarationStatement
 	| Statement
 	;
 
-LocalVariableDeclarationStatement /*TODO: WITH STRUCT*/
+LocalVariableDeclarationStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: TypeSpecifier VariableDeclarators ';'
 	;
 
-Statement /*TODO: WITH STRUCT*/
+Statement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: LabeledStatement
 	| Expression ';'
         | SelectionStatement
         | IterationStatement
 	| JumpStatement
 	| Block
+	/* Here, we might return NULL. Then, be careful to check it in the for and while's
+         * statements (e.g. while(a < b); -> endless cycle.
+	 */
 	| ';'
 	;
 
-LabeledStatement /*TODO: WITH STRUCT*/
+LabeledStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: ID ':' LocalVariableDeclarationOrStatement
         | CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement
 	| DEFAULT ':' LocalVariableDeclarationOrStatement
         ;
 
-SelectionStatement /*TODO: WITH STRUCT*/
+SelectionStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: IF '(' Expression ')' Statement
         | IF '(' Expression ')' Statement ELSE Statement
         | SWITCH '(' Expression ')' Block
         ;
 
-IterationStatement /*TODO: WITH STRUCT*/
+IterationStatement /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: WHILE '(' Expression ')' Statement
 	| DO Statement WHILE '(' Expression ')' ';'
 	| FOR '(' ForInit ForExpr ForIncr ')' Statement
 	| FOR '(' ForInit ForExpr         ')' Statement
 	;
 
-ForInit /*TODO: WITH STRUCT*/
+ForInit /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: Expressions ';'
 	| LocalVariableDeclarationStatement
 	| ';'
 	;
 
-ForExpr /*TODO: WITH STRUCT*/
+ForExpr /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: Expression ';'
 	| ';'
 	;
 
-ForIncr /*TODO: WITH STRUCT*/
+ForIncr /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: Expressions
 	;
 
