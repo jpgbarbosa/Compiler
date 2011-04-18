@@ -375,18 +375,27 @@ is_IterationStatement* insert_IterationStatement_DO(is_Expression* exp, is_State
 	
 }
 
-is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Statement* stat,is_Expressions_list *forInitExps, is_LocalVariableDeclarationStatement *forInitStat, is_Expressions_list *forIncr)
+is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Statement* stat,is_ForInit *forInit, is_Expressions_list *forIncr)
 {
 	is_IterationStatement* iS = malloc(sizeof(is_IterationStatement));
 	iS->disc_d = is_FOR;
 	iS->exp = exp;
 	iS->statement = stat;
 	
-	iS->data_FOR.forInitExps = forInitExps;
-	iS->data_FOR.forInitStat = forInitStat;
+	iS->data_FOR.forInit = forInit;
 	iS->data_FOR.forIncr = forIncr;
 	
 	return iS;
+	
+}
+
+is_ForInit* insert_ForInit(is_Expressions_list* list, is_LocalVariableDeclarationStatement* lvds)
+{
+	is_ForInit* fI = malloc(sizeof(is_ForInit));
+	fI->list = list;
+	fI->lvds = lvds;
+	
+	return fI;
 	
 }
 

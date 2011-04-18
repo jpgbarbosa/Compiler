@@ -32,11 +32,41 @@
 %token LITERAL
 
 %type <_typeSpecifier> TypeSpecifier;
-%type <_typeName> TypeName;
-%type <_programFile> ProgramFile;
+%type <_typename> TypeName;
+//%type <_programFile> ProgramFile;
 %type <_classHeader> ClassHeader;
-//%type <_> ;
-
+/*%type <_fieldDeclaration_list> FieldDeclarations;
+%type <_fieldDeclaration> FieldDeclaration;
+%type <_attrDeclaration> AttrDeclaration;
+%type <_variablesDeclarator_list> VariableDeclarators;
+%type <_variablesDeclarator> VariableDeclarator;
+%type <_methodDeclaration> MethodDeclaration;
+%type <_methodDeclarator> MethodDeclarator;
+%type <_parameters_list> ParameterList;
+%type <_parameter> Parameter;
+%type <_block> Block;
+%type <_localVariableDeclarationsOrStatements_list> LocalVariableDeclarationsAndStatements;
+%type <_localVariableDeclarationsOrStatements> LocalVariableDeclarationOrStatement;
+%type <_localVariableDeclarationStatement> LocalVariableDeclarationStatement;
+%type <_statement> Statement;
+%type <_labeledStatement> LabeledStatement;
+%type <_selectionStatement> SelectionStatement;
+%type <_iterationStatement> IterationStatement;
+%type <_is_ForInit> ForInit;
+%type <_is_Expression> ForExpr;
+%type <_is_Expressions_list> ForIncr;
+%type <_expressions_list> Expressions;
+%type <_jumpStatement> JumpStatement;
+%type <_methodCall> MethodCall;
+%type <_expressions_list> ArgumentList;
+%type <_unaryExpression> UnaryExpression;
+%type <_basicElement> BasicElement;
+%type <_castExpression> CastExpression;
+%type <_arithmeticExpression> ArithmeticExpression;
+%type <_relationalExpression> RelationalExpression;
+%type <_expression> Expression;
+%type <_conditionalExpression> ConditionalExpression;
+%type <_assignmentExpression> AssignmentExpression;*/
 
 /* Priorities */
 %right ASS_MUL ASS_DIV ASS_ADD ASS_SUB ASS_XOR ASS_MOD ASS_SHL ASS_SHR
@@ -75,12 +105,15 @@
 	is_Parameter* _parameter;
 	is_Block* _block;
 	is_LocalVariableDeclarationsOrStatements_list* _localVariableDeclarationsOrStatements_list;
-	is_LocalVariableDeclarationStatement* insert_LocalVariableDeclarationStatement;
+	is_LocalVariableDeclarationsOrStatements* _localVariableDeclarationsOrStatements;
+	is_LocalVariableDeclarationStatement* _localVariableDeclarationStatement;
 	is_Statement* _statement;
 	is_LabeledStatement* _labeledStatement;
 	is_SelectionStatement* _selectionStatement;
 	is_IterationStatement* _iterationStatement;
+	is_ForInit* _forInit;
 	is_Expressions_list* _expressions_list;
+	is_Expression* _expression;
 	is_JumpStatement* _jumpStatement;
 	is_MethodCall* _methodCall;
 	is_UnaryExpression* _unaryExpression;
@@ -99,7 +132,7 @@
 
 /* It can be a single variable or an array. */
 TypeSpecifier
-	: TypeName;
+	: TypeName 		{$$ = insert_TypeSpecifier($1);}
 	;
 
 /* TODO: We are keeping this in case we want to expand
@@ -110,27 +143,27 @@ TypeSpecifier
 
 TypeName
 	/* The primitive types. */
-	: BOOLEAN
-	| CHAR
-	| BYTE
-	| SHORT
-	| INT
-	| LONG
-	| FLOAT
-	| DOUBLE
-	| VOID
-	| STRING
-	| STRING '['']'
+	: BOOLEAN		{$$ = insert_Typename(is_BOOLEAN);}
+	| CHAR			{$$ = insert_Typename(is_CHAR);}
+	| BYTE			{$$ = insert_Typename(is_BYTE);}
+	| SHORT			{$$ = insert_Typename(is_SHORT);}
+	| INT			{$$ = insert_Typename(is_INT);}
+	| LONG			{$$ = insert_Typename(is_LONG);}
+	| FLOAT			{$$ = insert_Typename(is_FLOAT);}
+	| DOUBLE		{$$ = insert_Typename(is_DOUBLE);}
+	| VOID			{$$ = insert_Typename(is_VOID);}
+	| STRING		{$$ = insert_Typename(is_STRING);}
+	| STRING '['']'		{$$ = insert_Typename(is_STRING_ARRAY);}
 	;
 
 /* We can have imports or only a class. */
 ProgramFile
-	: ClassHeader '{' FieldDeclarations '}'
+	: ClassHeader '{' FieldDeclarations '}'		//{$$ = insert_ProgramFile($1, $2);}
 	;
 
 ClassHeader
-	: PUBLIC CLASS ID {$$ = insert_ClassHeader($3);}
-	| CLASS ID {$$ = insert_ClassHeader($2);}
+	: PUBLIC CLASS ID 	{$$ = insert_ClassHeader($3);}
+	| CLASS ID 		{$$ = insert_ClassHeader($2);}
 	;
 /* In here, we will declare some attributes of methods. */
 FieldDeclarations

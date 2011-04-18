@@ -218,7 +218,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 59 "pJava.y"
+#line 89 "pJava.y"
 
 	int i;
 	double d;
@@ -238,12 +238,15 @@ typedef union YYSTYPE
 	is_Parameter* _parameter;
 	is_Block* _block;
 	is_LocalVariableDeclarationsOrStatements_list* _localVariableDeclarationsOrStatements_list;
-	is_LocalVariableDeclarationStatement* insert_LocalVariableDeclarationStatement;
+	is_LocalVariableDeclarationsOrStatements* _localVariableDeclarationsOrStatements;
+	is_LocalVariableDeclarationStatement* _localVariableDeclarationStatement;
 	is_Statement* _statement;
 	is_LabeledStatement* _labeledStatement;
 	is_SelectionStatement* _selectionStatement;
 	is_IterationStatement* _iterationStatement;
+	is_ForInit* _forInit;
 	is_Expressions_list* _expressions_list;
+	is_Expression* _expression;
 	is_JumpStatement* _jumpStatement;
 	is_MethodCall* _methodCall;
 	is_UnaryExpression* _unaryExpression;
@@ -257,7 +260,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 261 "y.tab.c"
+#line 264 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -269,7 +272,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 273 "y.tab.c"
+#line 276 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -610,19 +613,19 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   102,   102,   113,   114,   115,   116,   117,   118,   119,
-     120,   121,   122,   123,   128,   132,   133,   137,   138,   142,
-     143,   147,   148,   152,   153,   157,   158,   164,   165,   169,
-     170,   174,   175,   179,   183,   184,   191,   192,   196,   197,
-     201,   205,   206,   207,   208,   209,   210,   214,   218,   219,
-     220,   224,   225,   226,   230,   231,   232,   233,   237,   238,
-     239,   243,   244,   248,   252,   253,   257,   258,   259,   260,
-     261,   262,   266,   267,   271,   272,   276,   277,   278,   279,
-     280,   284,   288,   289,   290,   294,   295,   296,   297,   301,
-     302,   303,   304,   305,   306,   307,   308,   313,   314,   315,
-     316,   317,   318,   319,   320,   321,   322,   323,   324,   328,
-     329,   330,   335,   336,   337,   341,   342,   343,   344,   345,
-     346,   347,   348,   349
+       0,   135,   135,   146,   147,   148,   149,   150,   151,   152,
+     153,   154,   155,   156,   161,   165,   166,   170,   171,   175,
+     176,   180,   181,   185,   186,   190,   191,   197,   198,   202,
+     203,   207,   208,   212,   216,   217,   224,   225,   229,   230,
+     234,   238,   239,   240,   241,   242,   243,   247,   251,   252,
+     253,   257,   258,   259,   263,   264,   265,   266,   270,   271,
+     272,   276,   277,   281,   285,   286,   290,   291,   292,   293,
+     294,   295,   299,   300,   304,   305,   309,   310,   311,   312,
+     313,   317,   321,   322,   323,   327,   328,   329,   330,   334,
+     335,   336,   337,   338,   339,   340,   341,   346,   347,   348,
+     349,   350,   351,   352,   353,   354,   355,   356,   357,   361,
+     362,   363,   368,   369,   370,   374,   375,   376,   377,   378,
+     379,   380,   381,   382
 };
 #endif
 
@@ -1746,24 +1749,108 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 15:
+        case 2:
 
 /* Line 1455 of yacc.c  */
-#line 132 "pJava.y"
+#line 135 "pJava.y"
+    {(yyval._typeSpecifier) = insert_TypeSpecifier((yyvsp[(1) - (1)]._typename));}
+    break;
+
+  case 3:
+
+/* Line 1455 of yacc.c  */
+#line 146 "pJava.y"
+    {(yyval._typename) = insert_Typename(is_BOOLEAN);}
+    break;
+
+  case 4:
+
+/* Line 1455 of yacc.c  */
+#line 147 "pJava.y"
+    {(yyval._typename) = insert_Typename(is_CHAR);}
+    break;
+
+  case 5:
+
+/* Line 1455 of yacc.c  */
+#line 148 "pJava.y"
+    {(yyval._typename) = insert_Typename(is_BYTE);}
+    break;
+
+  case 6:
+
+/* Line 1455 of yacc.c  */
+#line 149 "pJava.y"
+    {(yyval._typename) = insert_Typename(is_SHORT);}
+    break;
+
+  case 7:
+
+/* Line 1455 of yacc.c  */
+#line 150 "pJava.y"
+    {(yyval._typename) = insert_Typename(is_INT);}
+    break;
+
+  case 8:
+
+/* Line 1455 of yacc.c  */
+#line 151 "pJava.y"
+    {(yyval._typename) = insert_Typename(is_LONG);}
+    break;
+
+  case 9:
+
+/* Line 1455 of yacc.c  */
+#line 152 "pJava.y"
+    {(yyval._typename) = insert_Typename(is_FLOAT);}
+    break;
+
+  case 10:
+
+/* Line 1455 of yacc.c  */
+#line 153 "pJava.y"
+    {(yyval._typename) = insert_Typename(is_DOUBLE);}
+    break;
+
+  case 11:
+
+/* Line 1455 of yacc.c  */
+#line 154 "pJava.y"
+    {(yyval._typename) = insert_Typename(is_VOID);}
+    break;
+
+  case 12:
+
+/* Line 1455 of yacc.c  */
+#line 155 "pJava.y"
+    {(yyval._typename) = insert_Typename(is_STRING);}
+    break;
+
+  case 13:
+
+/* Line 1455 of yacc.c  */
+#line 156 "pJava.y"
+    {(yyval._typename) = insert_Typename(is_STRING_ARRAY);}
+    break;
+
+  case 15:
+
+/* Line 1455 of yacc.c  */
+#line 165 "pJava.y"
     {(yyval._classHeader) = insert_ClassHeader((yyvsp[(3) - (3)].id));}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 133 "pJava.y"
+#line 166 "pJava.y"
     {(yyval._classHeader) = insert_ClassHeader((yyvsp[(2) - (2)].id));}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1767 "y.tab.c"
+#line 1854 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1975,7 +2062,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 353 "pJava.y"
+#line 386 "pJava.y"
 
 
 int main()

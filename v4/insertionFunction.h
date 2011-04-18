@@ -1,7 +1,7 @@
 /* The header for all the insertion functions. */
 #include "structures.h"
 
-is_TypeSpecifier* insert_TypeSpecifier( is_Typename* tyoeName);
+is_TypeSpecifier* insert_TypeSpecifier( is_Typename* typeName);
 is_Typename* insert_Typename( is_PrimitiveType type);
 is_ProgramFile* insert_ProgramFile(is_ClassHeader *classHeader, is_FieldDeclaration_list *fieldDeclarations);
 is_ClassHeader* insert_ClassHeader(char *ID);
@@ -34,7 +34,8 @@ is_SelectionStatement* insert_SelectionStatement_IFELSE(is_Expression* exp, is_E
 is_SelectionStatement* insert_SelectionStatement_SWITCH(is_Expression* exp, is_Block* block);
 is_IterationStatement* insert_IterationStatement_WHILE(is_Expression* exp, is_Statement* stat);
 is_IterationStatement* insert_IterationStatement_DO(is_Expression* exp, is_Statement* stat);
-is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Statement* stat,is_Expressions_list *forInitExps, is_LocalVariableDeclarationStatement *forInitStat, is_Expressions_list *forIncr);
+is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Statement* stat,is_ForInit *forInit, is_Expressions_list *forIncr);
+is_ForInit* insert_ForInit(is_Expressions_list* list, is_LocalVariableDeclarationStatement* lvds);
 is_Expressions_list* insert_Expressions_list(is_Expressions_list* list, is_Expression* exp);
 is_Expression* insert_Expression_ConditionalExpression(is_ConditionalExpression *cExpression);
 is_Expression* insert_Expression_AssignmentExpression(is_AssignmentExpression *aExpression);

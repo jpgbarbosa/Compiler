@@ -34,6 +34,7 @@ typedef struct _a29 is_IterationStatement;
 typedef struct _a30 is_LabeledStatement;
 typedef struct _a31 is_JumpStatement;
 typedef struct _a32 is_SelectionStatement;
+typedef struct _a33 is_ForInit;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 typedef enum {is_ID, is_LITERAL, is_METHOD_CALL} disc_BasicElement;
@@ -193,14 +194,18 @@ struct _a29{
 	/* Only concerns the FOR. */
 	union{
 		/* ForInit. */
-		is_Expressions_list *forInitExps;
-		is_LocalVariableDeclarationStatement *forInitStat;
-	
+		is_ForInit *forInit;
 		/* ForIncr. */
 		is_Expressions_list *forIncr;
 	}data_FOR;
 	
 } /* is_IterationStatement */;
+
+struct _a33{
+	is_Expressions_list* list;
+	is_LocalVariableDeclarationStatement* lvds;
+	
+} /* is_ForInit */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 

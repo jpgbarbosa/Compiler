@@ -153,7 +153,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 59 "pJava.y"
+#line 89 "pJava.y"
 
 	int i;
 	double d;
@@ -173,12 +173,15 @@ typedef union YYSTYPE
 	is_Parameter* _parameter;
 	is_Block* _block;
 	is_LocalVariableDeclarationsOrStatements_list* _localVariableDeclarationsOrStatements_list;
-	is_LocalVariableDeclarationStatement* insert_LocalVariableDeclarationStatement;
+	is_LocalVariableDeclarationsOrStatements* _localVariableDeclarationsOrStatements;
+	is_LocalVariableDeclarationStatement* _localVariableDeclarationStatement;
 	is_Statement* _statement;
 	is_LabeledStatement* _labeledStatement;
 	is_SelectionStatement* _selectionStatement;
 	is_IterationStatement* _iterationStatement;
+	is_ForInit* _forInit;
 	is_Expressions_list* _expressions_list;
+	is_Expression* _expression;
 	is_JumpStatement* _jumpStatement;
 	is_MethodCall* _methodCall;
 	is_UnaryExpression* _unaryExpression;
@@ -192,7 +195,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 196 "y.tab.h"
+#line 199 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
