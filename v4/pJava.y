@@ -29,7 +29,7 @@
 %token ASS_XOR ASS_MOD ASS_SHL ASS_SHR
 %token ASS_AND ASS_OR
 %token <id> ID
-%token LITERAL
+%token <id> LITERAL
 
 %type <_typeSpecifier> TypeSpecifier;
 %type <_typename> TypeName;
@@ -52,13 +52,12 @@
 %type <_labeledStatement> LabeledStatement;
 %type <_selectionStatement> SelectionStatement;
 %type <_iterationStatement> IterationStatement;
-%type <_is_ForInit> ForInit;
-%type <_is_Expression> ForExpr;
-%type <_is_Expressions_list> ForIncr;
+%type <_forInit> ForInit;
+%type <_expression> ForExpr;
+%type <_expressions_list> ForIncr;
 %type <_expressions_list> Expressions;
 %type <_jumpStatement> JumpStatement;
 %type <_methodCall> MethodCall;
-%type <_expressions_list> ArgumentList;
 %type <_unaryExpression> UnaryExpression;
 %type <_basicElement> BasicElement;
 %type <_castExpression> CastExpression;
@@ -167,13 +166,13 @@ ClassHeader
 	;
 /* In here, we will declare some attributes of methods. */
 FieldDeclarations
-	: FieldDeclaration				{$$ = insert_fieldDeclaration_list(NULL, $1);}
-        | FieldDeclarations FieldDeclaration		{$$ = insert_fieldDeclaration_list($1, $2);}
+	: FieldDeclaration				{$$ = insert_FieldDeclaration_list(NULL, $1);}
+        | FieldDeclarations FieldDeclaration		{$$ = insert_FieldDeclaration_list($1, $2);}
 	;
 
 FieldDeclaration
-	: AttrDeclaration ';'	{$$ = insert_fieldDeclaration_AttrDeclaration($1);}
-	| MethodDeclaration	{$$ = insert_fieldDeclaration_($1);}
+	: AttrDeclaration ';'	{$$ = insert_FieldDeclaration_AttrDeclaration($1);}
+	| MethodDeclaration	{$$ = insert_FieldDeclaration_MethodDeclaration($1);}
 	;
 
 AttrDeclaration
@@ -182,13 +181,13 @@ AttrDeclaration
 	;
 /* Declaration of variables. */
 VariableDeclarators
-	: VariableDeclarator					{$$ = insert_VariableDeclarator_list(NULL, $1);}
-	| VariableDeclarators ',' VariableDeclarator		{$$ = insert_VariableDeclarator_list($1, $2);}
+	: VariableDeclarator					{$$ = insert_VariablesDeclarator_list(NULL, $1);}
+	| VariableDeclarators ',' VariableDeclarator		{$$ = insert_VariablesDeclarator_list($1, $3);}
 	;
 
 VariableDeclarator
-	: ID			{$$ = insert_VariableDeclarator($1, NULL);}
-	| ID '=' Expression	{$$ = insert_VariableDeclarator($1, $3);}
+	: ID			{$$ = insert_VariablesDeclarator($1, NULL);}
+	| ID '=' Expression	{$$ = insert_VariablesDeclarator($1, $3);}
 	;
 
 /* Declaration of methods. */
@@ -205,11 +204,11 @@ MethodDeclarator
 
 ParameterList
 	: Parameter			{$$ = insert_Parameters_list(NULL, $1);}
-	| ParameterList ',' Parameter	{$$ = insert_Parameters_list($1, $2);}
+	| ParameterList ',' Parameter	{$$ = insert_Parameters_list($1, $3);}
 	;
 
 Parameter
-	: TypeSpecifier ID		{$$ = insert_Parameter($1, $2);}
+	: TypeSpecifier ID		{$$ = insert_Parameter($2, $1);}
 	;
 
 Block
@@ -221,13 +220,13 @@ Block
 
 /* Used to perform a list of declarations or statements. */
 LocalVariableDeclarationsAndStatements
-	: LocalVariableDeclarationOrStatement						{$$ = insert_LocalVariableDeclarationOrStatement_list(NULL, $1);}
-	| LocalVariableDeclarationsAndStatements LocalVariableDeclarationOrStatement	{$$ = insert_LocalVariableDeclarationOrStatement_list($1, $2);}
+	: LocalVariableDeclarationOrStatement						{$$ = insert_LocalVariableDeclarationsOrStatements_list(NULL, $1);}
+	| LocalVariableDeclarationsAndStatements LocalVariableDeclarationOrStatement	{$$ = insert_LocalVariableDeclarationsOrStatements_list($1, $2);}
 	;
 
 LocalVariableDeclarationOrStatement
-	: LocalVariableDeclarationStatement		{$$ = insert_LocalVariableDeclarationOrStatement_LocalVariableDeclarationStatement($1);}
-	| Statement					{$$ = insert_LocalVariableDeclarationOrStatement_Statement($1);}
+	: LocalVariableDeclarationStatement		{$$ = insert_LocalVariableDeclarationsOrStatements_LocalVariableDeclarationStatement($1);}
+	| Statement					{$$ = insert_LocalVariableDeclarationsOrStatements_Statement($1);}
 	;
 
 LocalVariableDeclarationStatement
@@ -249,7 +248,7 @@ Statement
 
 LabeledStatement
 	: ID ':' LocalVariableDeclarationOrStatement				{$$ = insert_LabeledStatement_ID($1, $3);}
-        | CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement	{$$ = insert_LabeledStatement_CASE($2, $4);}
+        | CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement	{$$ = insert_LabeledStatement_CASE($4, $2);}
 	| DEFAULT ':' LocalVariableDeclarationOrStatement			{$$ = insert_LabeledStatement_DEFAULT($3);}
         ;
 
@@ -261,24 +260,26 @@ SelectionStatement
 
 IterationStatement
 	: WHILE '(' Expression ')' Statement					{$$ = insert_IterationStatement_WHILE($3, $5);}
-	| DO Statement WHILE '(' Expression ')' ';'				{$$ = insert_IterationStatement_DO($2, $5);}
+	| DO Statement WHILE '(' Expression ')' ';'				{$$ = insert_IterationStatement_DO($5, $2);}
 	| FOR '(' ForInit ForExpr ForIncr ')' Statement				{$$ = insert_IterationStatement_FOR($4, $7, $3, $5);}
-	| FOR '(' ForInit ForExpr         ')' Statement				{$$ = insert_IterationStatement_FOR($4, $7, $3, NULL);}
+	| FOR '(' ForInit ForExpr         ')' Statement				{$$ = insert_IterationStatement_FOR($4, $6, $3, NULL);}
 	;
 
 ForInit
 	: Expressions ';'			{$$ = insert_ForInit($1, NULL);}
-	| LocalVariableDeclarationStatement	{$$ = insert_(NULL, $1);}
+	| LocalVariableDeclarationStatement	{$$ = insert_ForInit(NULL, $1);}
 	| ';'					{$$ = NULL;}
 	;
 
 ForExpr
-	: Expression ';'			{$$ = insert_Expression($1);}
-	| ';'					{$$ = NULL;}
+	: ConditionalExpression ';'	{$$ = insert_Expression_ConditionalExpression($1);}
+	| AssignmentExpression	';' 	{$$ = insert_Expression_AssignmentExpression($1);}
+	| '(' Expression ')'    ';'	{$$ = insert_Expression_Expression($2);}
+	| ';'				{$$ = NULL;}
 	;
 
 ForIncr
-	: Expressions				{$$ = insert_Expressions_list($1);}
+	: Expressions				{$$ = insert_Expressions_list($1, NULL);}
 	;
 
 Expressions
@@ -296,13 +297,9 @@ JumpStatement
 	;
 
 MethodCall
-	: ID '(' ArgumentList ')'		{$$ = insert_MethodCall($1, $3);}
+	/* List of arguments. */
+	: ID '(' Expressions ')'		{$$ = insert_MethodCall($1, $3);}
 	| ID '(' ')'				{$$ = insert_MethodCall($1, NULL);}
-	;
-
-ArgumentList
-	: Expression				{$$ = insert_Expression_list(NULL, $1);}
-	| ArgumentList ',' Expression		{$$ = insert_Expression_list($1, $3);}
 	;
 
 UnaryExpression
@@ -319,7 +316,7 @@ UnaryExpression
 /* The basic elements. */
 BasicElement
 	: LITERAL				{$$ = insert_BasicElement_LITERAL($1);}
-	| MethodCall				{$$ = insert_BasicElement_MethodCall($1);}
+	| MethodCall				{$$ = insert_BasicElement_METHOD_CALL($1);}
 	| ID					{$$ = insert_BasicElement_ID($1);}
 	;
 
@@ -351,7 +348,7 @@ RelationalExpression
         | ArithmeticExpression OP_EQUAL	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_EQUAL, $1, $3);}
         | ArithmeticExpression OP_DIFFERENT	RelationalExpression	{$$ = insert_RelationalExpression(is_OP_DIFFERENT, $1, $3);}
         | ArithmeticExpression '&'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SAND, $1, $3);}
-        | ArithmeticExpression '^'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_XOR, $1, $3);}
+        | ArithmeticExpression '^'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SXOR, $1, $3);}
         | ArithmeticExpression '|'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SOR, $1, $3);}
         | ArithmeticExpression OP_AND		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_AND, $1, $3);}
         | ArithmeticExpression OP_OR		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_OR, $1, $3);}
@@ -372,7 +369,7 @@ ConditionalExpression
 
 AssignmentExpression
 	: ID '='     Expression		{$$ = insert_AssignmentExpression($1, is_ASSIGN, $3);}
-	| ID ASS_MUL Expression		{$$ = insert_AssignmentExpression($1, is_ASS_MULL, $3);}
+	| ID ASS_MUL Expression		{$$ = insert_AssignmentExpression($1, is_ASS_MUL, $3);}
 	| ID ASS_DIV Expression		{$$ = insert_AssignmentExpression($1, is_ASS_DIV, $3);}
 	| ID ASS_ADD Expression		{$$ = insert_AssignmentExpression($1, is_ASS_ADD, $3);}
 	| ID ASS_SUB Expression		{$$ = insert_AssignmentExpression($1, is_ASS_SUB, $3);}

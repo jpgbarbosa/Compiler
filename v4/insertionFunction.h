@@ -34,7 +34,7 @@ is_SelectionStatement* insert_SelectionStatement_IFELSE(is_Expression* exp, is_S
 is_SelectionStatement* insert_SelectionStatement_SWITCH(is_Expression* exp, is_Block* block);
 is_IterationStatement* insert_IterationStatement_WHILE(is_Expression* exp, is_Statement* stat);
 is_IterationStatement* insert_IterationStatement_DO(is_Expression* exp, is_Statement* stat);
-is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Statement* stat,is_ForInit *forInit, is_Expressions_list *forIncr);
+is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Statement* stat, is_ForInit* forInit, is_Expressions_list *forIncr);
 is_ForInit* insert_ForInit(is_Expressions_list* list, is_LocalVariableDeclarationStatement* lvds);
 is_Expressions_list* insert_Expressions_list(is_Expressions_list* list, is_Expression* exp);
 is_Expression* insert_Expression_ConditionalExpression(is_ConditionalExpression *cExpression);
@@ -57,4 +57,4 @@ is_CastExpression* insert_CastExpression_ConditionalExpression(is_Typename* cast
 is_ArithmeticExpression* insert_ArithmeticExpression(is_ArithmeticOp op, is_ArithmeticExpression *firstAE, is_ArithmeticExpression *secondAE, is_CastExpression *cExpression);
 is_RelationalExpression* insert_RelationalExpression(is_RelationalOp op, is_ArithmeticExpression *aExpression, is_RelationalExpression *next);
 is_ConditionalExpression* insert_ConditionalExpression(is_ConditionalType type, is_RelationalExpression *rExpression, is_Expression *firstExp, is_Expression *secondExp);
-is_AssignmentExpression* insert_AssignmentExpression(is_AssignmentOp assOp, char *id, is_Expression* expression);
+is_AssignmentExpression* insert_AssignmentExpression(char *id, is_AssignmentOp assOp, is_Expression* expression);
