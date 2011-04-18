@@ -2,7 +2,7 @@
 #include "structures.h"
 
 is_TypeSpecifier* insert_TypeSpecifier( is_Typename* tyoeName);
-is_Typename* insert_Typename( int type);
+is_Typename* insert_Typename( is_PrimitiveType type);
 is_ProgramFile* insert_ProgramFile(is_ClassHeader *classHeader, is_FieldDeclaration_list *fieldDeclarations);
 is_ClassHeader* insert_ClassHeader(char *ID);
 is_FieldDeclaration_list* insert_FieldDeclaration_list(is_FieldDeclaration_list* list, is_FieldDeclaration* fD);
