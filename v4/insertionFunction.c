@@ -206,6 +206,26 @@ is_Block* insert_Block(is_LocalVariableDeclarationsOrStatements_list* list)
 	return block;
 }
 
+is_LocalVariableDeclarationsOrStatements_list* insert_LocalVariableDeclarationsOrStatements_list(is_LocalVariableDeclarationsOrStatements_list* list, is_LocalVariableDeclarationsOrStatements* lvdos)
+{
+	/* Creates a new node on the list and fills it with the correct information. */
+	is_LocalVariableDeclarationsOrStatements_list* ll = malloc(sizeof(is_LocalVariableDeclarationsOrStatements_list));
+	ll->lvdos = lvdos;
+	
+	/* It's an empty list, so this will be the first element. */
+	if(list == NULL)
+		return ll;
+
+	/* Else, we have to find the tail of the list and add this node in that position. */
+	is_LocalVariableDeclarationsOrStatements_list* aux;
+			
+	for(aux = list; aux->next != NULL; aux = aux->next);
+	aux->next = ll;
+	
+	/* Returns the head of the list. */
+	return list;
+}
+
 /* - - - - - - - - - - - - - - - - - - - - - - */
 
 /* - - - - - - - - - - - - - - - - - - - - - - */
