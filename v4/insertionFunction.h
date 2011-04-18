@@ -50,9 +50,9 @@ is_UnaryExpression* insert_UnaryExpression(is_UnaryOp op, is_BasicElement* eleme
 is_BasicElement* insert_BasicElement_ID(char *id);
 is_BasicElement* insert_BasicElement_LITERAL(char *literal);
 is_BasicElement* insert_BasicElement_METHOD_CALL(is_MethodCall* call);
-is_CastExpression* insert_CastExpression_UnaryExpression(is_PrimitiveType* castType, is_UnaryExpression *unaryExpression);
-is_CastExpression* insert_CastExpression_AssignmentExpression(is_PrimitiveType* castType,is_AssignmentExpression *assignmentExpression);
-is_CastExpression* insert_CastExpression_ConditionalExpression(is_PrimitiveType* castType, is_ConditionalExpression *conditionalExpression);
+is_CastExpression* insert_CastExpression_UnaryExpression(is_Typename* castType, is_UnaryExpression *unaryExpression);
+is_CastExpression* insert_CastExpression_AssignmentExpression(is_Typename* castType,is_AssignmentExpression *assignmentExpression);
+is_CastExpression* insert_CastExpression_ConditionalExpression(is_Typename* castType, is_ConditionalExpression *conditionalExpression);
 is_ArithmeticExpression* insert_ArithmeticExpression(is_ArithmeticOp op, is_ArithmeticExpression *firstAE, is_ArithmeticExpression *secondAE, is_CastExpression *cExpression);
 is_RelationalExpression* insert_RelationalExpression(is_RelationalOp op, is_ArithmeticExpression *aExpression, is_RelationalExpression *next);
 is_ConditionalExpression* insert_ConditionalExpression(is_ConditionalType type, is_RelationalExpression *rExpression, is_Expression *firstExp, is_Expression *secondExp);

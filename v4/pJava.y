@@ -31,7 +31,12 @@
 %token <id> ID
 %token LITERAL
 
+%type <_typeSpecifier> TypeSpecifier;
+%type <_typeName> TypeName;
+%type <_programFile> ProgramFile;
 %type <_classHeader> ClassHeader;
+//%type <_> ;
+
 
 /* Priorities */
 %right ASS_MUL ASS_DIV ASS_ADD ASS_SUB ASS_XOR ASS_MOD ASS_SHL ASS_SHR
@@ -94,22 +99,17 @@
 
 /* It can be a single variable or an array. */
 TypeSpecifier
-	: TypeName
+	: TypeName;
 	;
 
 /* TODO: We are keeping this in case we want to expand
  * our gramatic to accept types other than the basic ones.
  * In that case, up there, we have to change the PrimitiveType
  * to TypeName.
- *
-/
+ */
 
-/* Accepts a primitive type. */
 TypeName
-	: PrimitiveType
-	;
-
-PrimitiveType
+	/* The primitive types. */
 	: BOOLEAN
 	| CHAR
 	| BYTE
@@ -292,9 +292,9 @@ BasicElement
 
 CastExpression
 	: UnaryExpression
-	| '(' PrimitiveType ')' UnaryExpression
-	| '(' PrimitiveType ')' '(' AssignmentExpression ')'
-	| '(' PrimitiveType ')' '(' ConditionalExpression ')'
+	| '(' TypeName ')' UnaryExpression
+	| '(' TypeName ')' '(' AssignmentExpression ')'
+	| '(' TypeName ')' '(' ConditionalExpression ')'
 	;
 
 ArithmeticExpression

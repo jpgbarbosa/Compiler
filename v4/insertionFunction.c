@@ -548,7 +548,7 @@ is_BasicElement* insert_BasicElement_METHOD_CALL(is_MethodCall* call)
 
 /* - - - - - - is_Cast_Expression - - - - - -  */
 
-is_CastExpression* insert_CastExpression_UnaryExpression(is_PrimitiveType* castType, is_UnaryExpression *unaryExpression)
+is_CastExpression* insert_CastExpression_UnaryExpression(is_Typename* castType, is_UnaryExpression *unaryExpression)
 {
 	is_CastExpression* cE = malloc(sizeof(is_CastExpression));
 	cE->disc_d = d_UnaryExpression;
@@ -557,7 +557,7 @@ is_CastExpression* insert_CastExpression_UnaryExpression(is_PrimitiveType* castT
 	return cE;
 }
 
-is_CastExpression* insert_CastExpression_AssignmentExpression(is_PrimitiveType* castType,is_AssignmentExpression *assignmentExpression)
+is_CastExpression* insert_CastExpression_AssignmentExpression(is_Typename* castType,is_AssignmentExpression *assignmentExpression)
 {
 	is_CastExpression* cE = malloc(sizeof(is_CastExpression));
 	cE->disc_d = d_AssignmentExpression;
@@ -566,7 +566,7 @@ is_CastExpression* insert_CastExpression_AssignmentExpression(is_PrimitiveType* 
 	return cE;
 }
 
-is_CastExpression* insert_CastExpression_ConditionalExpression(is_PrimitiveType* castType, is_ConditionalExpression *conditionalExpression)
+is_CastExpression* insert_CastExpression_ConditionalExpression(is_Typename* castType, is_ConditionalExpression *conditionalExpression)
 {
 	is_CastExpression* cE = malloc(sizeof(is_CastExpression));
 	cE->disc_d = d_ConditionalExpression;
