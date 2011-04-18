@@ -141,16 +141,16 @@ MethodDeclarator /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	| ID '(' ')'
 	;
 
-ParameterList /*TODO: WITH STRUCT*/
+ParameterList /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: Parameter
 	| ParameterList ',' Parameter
 	;
 
-Parameter /*TODO: WITH STRUCT*/
+Parameter /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: TypeSpecifier ID
 	;
 
-Block /*TODO: WITH STRUCT*/
+Block /*TODO: WITH STRUCT*/ /*TODO: WITH FUNCTION*/
 	: '{' LocalVariableDeclarationsAndStatements '}'
 	| '{' '}'
         ;

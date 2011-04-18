@@ -13,4 +13,7 @@ is_VariablesDeclarator_list* insert_VariablesDeclarator_list(is_VariablesDeclara
 is_VariablesDeclarator* insert_VariablesDeclarator(char *id, is_Expression* exp);
 is_MethodDeclaration* insert_MethodDeclaration(is_TypeSpecifier* typeS, is_MethodDeclarator* methodD, is_Block* block);
 is_MethodDeclarator* insert_MethodDeclarator(char *id, is_Parameters_list* list);
+is_Parameters_list* insert_Parameters_list(is_Parameters_list* list, is_Parameter* par);
+is_Parameter* insert_Parameter(char *id, is_TypeSpecifier* typeS);
+is_Block* insert_Block(is_LocalVariableDeclarationsOrStatements_list* list);
 

@@ -168,6 +168,44 @@ is_MethodDeclarator* insert_MethodDeclarator(char *id, is_Parameters_list* list)
 	return mD;
 }
 
+is_Parameters_list* insert_Parameters_list(is_Parameters_list* list, is_Parameter* par)
+{
+	/* Creates a new node on the list and fills it with the correct information. */
+	is_Parameters_list* pl = malloc(sizeof(is_Parameters_list));
+	pl->parameter = par;
+	
+	/* It's an empty list, so this will be the first element. */
+	if(list == NULL)
+		return pl;
+
+	/* Else, we have to find the tail of the list and add this node in that position. */
+	is_Parameters_list* aux;
+			
+	for(aux = list; aux->next != NULL; aux = aux->next);
+	aux->next = pl;
+	
+	/* Returns the head of the list. */
+	return list;
+}
+
+is_Parameter* insert_Parameter(char *id, is_TypeSpecifier* typeS)
+{
+	is_Parameter* p = malloc(sizeof(is_Parameter));
+	p->typeSpecifier = typeS;
+	strcpy(p->id, id);
+	
+	return p;
+	
+}
+
+is_Block* insert_Block(is_LocalVariableDeclarationsOrStatements_list* list)
+{
+	is_Block* block = malloc(sizeof(is_Block));
+	block->lvdos_list = list;
+	
+	return block;
+}
+
 /* - - - - - - - - - - - - - - - - - - - - - - */
 
 /* - - - - - - - - - - - - - - - - - - - - - - */

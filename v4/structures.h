@@ -155,7 +155,7 @@ struct _a14{
 
 struct _a13{
 	is_Parameter *parameter;
-	struct _a13 *next;
+	is_Parameters_list *next;
 }/*is_Parameters_list*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
