@@ -1,5 +1,5 @@
 public class gcdRrec{
-	static int a;
+	static int a, b;
 
 	public static void main(String[] args) {
 		int a, b, c = 5;

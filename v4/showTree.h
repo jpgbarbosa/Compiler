@@ -5,3 +5,6 @@ void showClassHeader(is_ClassHeader *cH);
 void showFieldDeclaration(is_FieldDeclaration* fD);
 void showAttrDeclaration(is_AttrDeclaration* aD);
 void showMethodDeclaration(is_MethodDeclaration* mD);
+void showVariablesDeclarator(is_VariablesDeclarator* vD);
+void showTypeSpecifier(is_TypeSpecifier* tS);
+void showTypename(is_Typename* tn);
