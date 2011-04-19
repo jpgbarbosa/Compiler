@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include "insertionFunction.h"
 #include "structures.h"
+#include "showTree.h"
+
+/* The pointer that will hold the start of the AST. */
+is_ProgramFile* myProgram;
 
 %}
 
@@ -157,7 +161,7 @@ TypeName
 
 /* We can have imports or only a class. */
 ProgramFile
-	: ClassHeader '{' FieldDeclarations '}'		{$$ = insert_ProgramFile($1, $3);}
+	: ClassHeader '{' FieldDeclarations '}'		{$$ = insert_ProgramFile($1, $3); myProgram = $$;}
 	;
 
 ClassHeader
@@ -384,6 +388,7 @@ AssignmentExpression
 
 int main()
 {
-yyparse();
-return 0;
+	yyparse();
+	showProgramFile(myProgram);
+	return 0;
 }

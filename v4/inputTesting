@@ -1,21 +1,7 @@
 public class gcdRrec{
-	static int a;
-
 	public static void main(String[] args) {
-		int a, b;
-		
-		if (a == b)
-			return 1;
-			
-		for (i = 0; i < a; i++){
-			a = b;
-		}
-		
-		gcd(5,5);
+
 	}
 
-	public static int gcd(int a, int b) {
-		
-	}
 }
 

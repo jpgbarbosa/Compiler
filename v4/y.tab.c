@@ -73,11 +73,15 @@
 #include <stdio.h>
 #include "insertionFunction.h"
 #include "structures.h"
+#include "showTree.h"
+
+/* The pointer that will hold the start of the AST. */
+is_ProgramFile* myProgram;
 
 
 
 /* Line 189 of yacc.c  */
-#line 81 "y.tab.c"
+#line 85 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -218,7 +222,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 88 "pJava.y"
+#line 92 "pJava.y"
 
 	int i;
 	double d;
@@ -260,7 +264,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 264 "y.tab.c"
+#line 268 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -272,7 +276,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 276 "y.tab.c"
+#line 280 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -613,19 +617,19 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   134,   134,   145,   146,   147,   148,   149,   150,   151,
-     152,   153,   154,   155,   160,   164,   165,   169,   170,   174,
-     175,   179,   180,   184,   185,   189,   190,   196,   197,   201,
-     202,   206,   207,   211,   215,   216,   223,   224,   228,   229,
-     233,   237,   238,   239,   240,   241,   242,   246,   250,   251,
-     252,   256,   257,   258,   262,   263,   264,   265,   269,   270,
-     271,   275,   276,   277,   278,   282,   286,   287,   291,   292,
-     293,   294,   295,   296,   301,   302,   306,   307,   308,   309,
-     310,   314,   318,   319,   320,   324,   325,   326,   327,   331,
-     332,   333,   334,   335,   336,   337,   338,   343,   344,   345,
-     346,   347,   348,   349,   350,   351,   352,   353,   354,   358,
-     359,   360,   365,   366,   367,   371,   372,   373,   374,   375,
-     376,   377,   378,   379
+       0,   138,   138,   149,   150,   151,   152,   153,   154,   155,
+     156,   157,   158,   159,   164,   168,   169,   173,   174,   178,
+     179,   183,   184,   188,   189,   193,   194,   200,   201,   205,
+     206,   210,   211,   215,   219,   220,   227,   228,   232,   233,
+     237,   241,   242,   243,   244,   245,   246,   250,   254,   255,
+     256,   260,   261,   262,   266,   267,   268,   269,   273,   274,
+     275,   279,   280,   281,   282,   286,   290,   291,   295,   296,
+     297,   298,   299,   300,   305,   306,   310,   311,   312,   313,
+     314,   318,   322,   323,   324,   328,   329,   330,   331,   335,
+     336,   337,   338,   339,   340,   341,   342,   347,   348,   349,
+     350,   351,   352,   353,   354,   355,   356,   357,   358,   362,
+     363,   364,   369,   370,   371,   375,   376,   377,   378,   379,
+     380,   381,   382,   383
 };
 #endif
 
@@ -1752,861 +1756,861 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 134 "pJava.y"
+#line 138 "pJava.y"
     {(yyval._typeSpecifier) = insert_TypeSpecifier((yyvsp[(1) - (1)]._typename));}
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 145 "pJava.y"
+#line 149 "pJava.y"
     {(yyval._typename) = insert_Typename(is_BOOLEAN);}
     break;
 
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 146 "pJava.y"
+#line 150 "pJava.y"
     {(yyval._typename) = insert_Typename(is_CHAR);}
     break;
 
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 147 "pJava.y"
+#line 151 "pJava.y"
     {(yyval._typename) = insert_Typename(is_BYTE);}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 148 "pJava.y"
+#line 152 "pJava.y"
     {(yyval._typename) = insert_Typename(is_SHORT);}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 149 "pJava.y"
+#line 153 "pJava.y"
     {(yyval._typename) = insert_Typename(is_INT);}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 150 "pJava.y"
+#line 154 "pJava.y"
     {(yyval._typename) = insert_Typename(is_LONG);}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 151 "pJava.y"
+#line 155 "pJava.y"
     {(yyval._typename) = insert_Typename(is_FLOAT);}
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 152 "pJava.y"
+#line 156 "pJava.y"
     {(yyval._typename) = insert_Typename(is_DOUBLE);}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 153 "pJava.y"
+#line 157 "pJava.y"
     {(yyval._typename) = insert_Typename(is_VOID);}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 154 "pJava.y"
+#line 158 "pJava.y"
     {(yyval._typename) = insert_Typename(is_STRING);}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 155 "pJava.y"
+#line 159 "pJava.y"
     {(yyval._typename) = insert_Typename(is_STRING_ARRAY);}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 160 "pJava.y"
-    {(yyval._programFile) = insert_ProgramFile((yyvsp[(1) - (4)]._classHeader), (yyvsp[(3) - (4)]._fieldDeclaration_list));}
+#line 164 "pJava.y"
+    {(yyval._programFile) = insert_ProgramFile((yyvsp[(1) - (4)]._classHeader), (yyvsp[(3) - (4)]._fieldDeclaration_list)); myProgram = (yyval._programFile);}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 164 "pJava.y"
+#line 168 "pJava.y"
     {(yyval._classHeader) = insert_ClassHeader((yyvsp[(3) - (3)].id));}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 165 "pJava.y"
+#line 169 "pJava.y"
     {(yyval._classHeader) = insert_ClassHeader((yyvsp[(2) - (2)].id));}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 169 "pJava.y"
+#line 173 "pJava.y"
     {(yyval._fieldDeclaration_list) = insert_FieldDeclaration_list(NULL, (yyvsp[(1) - (1)]._fieldDeclaration));}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 170 "pJava.y"
+#line 174 "pJava.y"
     {(yyval._fieldDeclaration_list) = insert_FieldDeclaration_list((yyvsp[(1) - (2)]._fieldDeclaration_list), (yyvsp[(2) - (2)]._fieldDeclaration));}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 174 "pJava.y"
+#line 178 "pJava.y"
     {(yyval._fieldDeclaration) = insert_FieldDeclaration_AttrDeclaration((yyvsp[(1) - (2)]._attrDeclaration));}
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 175 "pJava.y"
+#line 179 "pJava.y"
     {(yyval._fieldDeclaration) = insert_FieldDeclaration_MethodDeclaration((yyvsp[(1) - (1)]._methodDeclaration));}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 179 "pJava.y"
+#line 183 "pJava.y"
     {(yyval._attrDeclaration) = insert_AttrDeclaration((yyvsp[(3) - (4)]._typeSpecifier), (yyvsp[(4) - (4)]._variablesDeclarator_list));}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 180 "pJava.y"
+#line 184 "pJava.y"
     {(yyval._attrDeclaration) = insert_AttrDeclaration((yyvsp[(2) - (3)]._typeSpecifier), (yyvsp[(3) - (3)]._variablesDeclarator_list));}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 184 "pJava.y"
+#line 188 "pJava.y"
     {(yyval._variablesDeclarator_list) = insert_VariablesDeclarator_list(NULL, (yyvsp[(1) - (1)]._variablesDeclarator));}
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 185 "pJava.y"
+#line 189 "pJava.y"
     {(yyval._variablesDeclarator_list) = insert_VariablesDeclarator_list((yyvsp[(1) - (3)]._variablesDeclarator_list), (yyvsp[(3) - (3)]._variablesDeclarator));}
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 189 "pJava.y"
+#line 193 "pJava.y"
     {(yyval._variablesDeclarator) = insert_VariablesDeclarator((yyvsp[(1) - (1)].id), NULL);}
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 190 "pJava.y"
+#line 194 "pJava.y"
     {(yyval._variablesDeclarator) = insert_VariablesDeclarator((yyvsp[(1) - (3)].id), (yyvsp[(3) - (3)]._expression));}
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 196 "pJava.y"
+#line 200 "pJava.y"
     {(yyval._methodDeclaration) = insert_MethodDeclaration((yyvsp[(3) - (5)]._typeSpecifier), (yyvsp[(4) - (5)]._methodDeclarator), (yyvsp[(5) - (5)]._block));}
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 197 "pJava.y"
+#line 201 "pJava.y"
     {(yyval._methodDeclaration) = insert_MethodDeclaration((yyvsp[(2) - (4)]._typeSpecifier), (yyvsp[(3) - (4)]._methodDeclarator), (yyvsp[(4) - (4)]._block));}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 201 "pJava.y"
+#line 205 "pJava.y"
     {(yyval._methodDeclarator) = insert_MethodDeclarator((yyvsp[(1) - (4)].id), (yyvsp[(3) - (4)]._parameters_list));}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 202 "pJava.y"
+#line 206 "pJava.y"
     {(yyval._methodDeclarator) = insert_MethodDeclarator((yyvsp[(1) - (3)].id), NULL);}
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 206 "pJava.y"
+#line 210 "pJava.y"
     {(yyval._parameters_list) = insert_Parameters_list(NULL, (yyvsp[(1) - (1)]._parameter));}
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 207 "pJava.y"
+#line 211 "pJava.y"
     {(yyval._parameters_list) = insert_Parameters_list((yyvsp[(1) - (3)]._parameters_list), (yyvsp[(3) - (3)]._parameter));}
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 211 "pJava.y"
+#line 215 "pJava.y"
     {(yyval._parameter) = insert_Parameter((yyvsp[(2) - (2)].id), (yyvsp[(1) - (2)]._typeSpecifier));}
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 215 "pJava.y"
+#line 219 "pJava.y"
     {(yyval._block) = insert_Block((yyvsp[(2) - (3)]._localVariableDeclarationsOrStatements_list));}
     break;
 
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 216 "pJava.y"
+#line 220 "pJava.y"
     {(yyval._block) = insert_Block(NULL);}
     break;
 
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 223 "pJava.y"
+#line 227 "pJava.y"
     {(yyval._localVariableDeclarationsOrStatements_list) = insert_LocalVariableDeclarationsOrStatements_list(NULL, (yyvsp[(1) - (1)]._localVariableDeclarationsOrStatements));}
     break;
 
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 224 "pJava.y"
+#line 228 "pJava.y"
     {(yyval._localVariableDeclarationsOrStatements_list) = insert_LocalVariableDeclarationsOrStatements_list((yyvsp[(1) - (2)]._localVariableDeclarationsOrStatements_list), (yyvsp[(2) - (2)]._localVariableDeclarationsOrStatements));}
     break;
 
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 228 "pJava.y"
+#line 232 "pJava.y"
     {(yyval._localVariableDeclarationsOrStatements) = insert_LocalVariableDeclarationsOrStatements_LocalVariableDeclarationStatement((yyvsp[(1) - (1)]._localVariableDeclarationStatement));}
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 229 "pJava.y"
+#line 233 "pJava.y"
     {(yyval._localVariableDeclarationsOrStatements) = insert_LocalVariableDeclarationsOrStatements_Statement((yyvsp[(1) - (1)]._statement));}
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 233 "pJava.y"
+#line 237 "pJava.y"
     {(yyval._localVariableDeclarationStatement) = insert_LocalVariableDeclarationStatement((yyvsp[(1) - (3)]._typeSpecifier), (yyvsp[(2) - (3)]._variablesDeclarator_list));}
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 237 "pJava.y"
+#line 241 "pJava.y"
     {(yyval._statement) = insert_Statement_LabeledStatement((yyvsp[(1) - (1)]._labeledStatement));}
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 238 "pJava.y"
+#line 242 "pJava.y"
     {(yyval._statement) = insert_Statement_Expression((yyvsp[(1) - (2)]._expression));}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 239 "pJava.y"
+#line 243 "pJava.y"
     {(yyval._statement) = insert_Statement_SelectionStatement((yyvsp[(1) - (1)]._selectionStatement));}
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 240 "pJava.y"
+#line 244 "pJava.y"
     {(yyval._statement) = insert_Statement_IterationStatement((yyvsp[(1) - (1)]._iterationStatement));}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 241 "pJava.y"
+#line 245 "pJava.y"
     {(yyval._statement) = insert_Statement_JumpStatement((yyvsp[(1) - (1)]._jumpStatement));}
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 242 "pJava.y"
+#line 246 "pJava.y"
     {(yyval._statement) = insert_Statement_Block((yyvsp[(1) - (1)]._block));}
     break;
 
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 246 "pJava.y"
+#line 250 "pJava.y"
     {(yyval._statement) = NULL;}
     break;
 
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 250 "pJava.y"
+#line 254 "pJava.y"
     {(yyval._labeledStatement) = insert_LabeledStatement_ID((yyvsp[(1) - (3)].id), (yyvsp[(3) - (3)]._localVariableDeclarationsOrStatements));}
     break;
 
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 251 "pJava.y"
+#line 255 "pJava.y"
     {(yyval._labeledStatement) = insert_LabeledStatement_CASE((yyvsp[(4) - (4)]._localVariableDeclarationsOrStatements), (yyvsp[(2) - (4)]._conditionalExpression));}
     break;
 
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 252 "pJava.y"
+#line 256 "pJava.y"
     {(yyval._labeledStatement) = insert_LabeledStatement_DEFAULT((yyvsp[(3) - (3)]._localVariableDeclarationsOrStatements));}
     break;
 
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 256 "pJava.y"
+#line 260 "pJava.y"
     {(yyval._selectionStatement) = insert_SelectionStatement_IF((yyvsp[(3) - (5)]._expression), (yyvsp[(5) - (5)]._statement));}
     break;
 
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 257 "pJava.y"
+#line 261 "pJava.y"
     {(yyval._selectionStatement) = insert_SelectionStatement_IFELSE((yyvsp[(3) - (7)]._expression), (yyvsp[(5) - (7)]._statement), (yyvsp[(7) - (7)]._statement));}
     break;
 
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 258 "pJava.y"
+#line 262 "pJava.y"
     {(yyval._selectionStatement) = insert_SelectionStatement_SWITCH((yyvsp[(3) - (5)]._expression), (yyvsp[(5) - (5)]._block));}
     break;
 
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 262 "pJava.y"
+#line 266 "pJava.y"
     {(yyval._iterationStatement) = insert_IterationStatement_WHILE((yyvsp[(3) - (5)]._expression), (yyvsp[(5) - (5)]._statement));}
     break;
 
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 263 "pJava.y"
+#line 267 "pJava.y"
     {(yyval._iterationStatement) = insert_IterationStatement_DO((yyvsp[(5) - (7)]._expression), (yyvsp[(2) - (7)]._statement));}
     break;
 
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 264 "pJava.y"
+#line 268 "pJava.y"
     {(yyval._iterationStatement) = insert_IterationStatement_FOR((yyvsp[(4) - (7)]._expression), (yyvsp[(7) - (7)]._statement), (yyvsp[(3) - (7)]._forInit), (yyvsp[(5) - (7)]._expressions_list));}
     break;
 
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 265 "pJava.y"
+#line 269 "pJava.y"
     {(yyval._iterationStatement) = insert_IterationStatement_FOR((yyvsp[(4) - (6)]._expression), (yyvsp[(6) - (6)]._statement), (yyvsp[(3) - (6)]._forInit), NULL);}
     break;
 
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 269 "pJava.y"
+#line 273 "pJava.y"
     {(yyval._forInit) = insert_ForInit((yyvsp[(1) - (2)]._expressions_list), NULL);}
     break;
 
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 270 "pJava.y"
+#line 274 "pJava.y"
     {(yyval._forInit) = insert_ForInit(NULL, (yyvsp[(1) - (1)]._localVariableDeclarationStatement));}
     break;
 
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 271 "pJava.y"
+#line 275 "pJava.y"
     {(yyval._forInit) = NULL;}
     break;
 
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 275 "pJava.y"
+#line 279 "pJava.y"
     {(yyval._expression) = insert_Expression_ConditionalExpression((yyvsp[(1) - (2)]._conditionalExpression));}
     break;
 
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 276 "pJava.y"
+#line 280 "pJava.y"
     {(yyval._expression) = insert_Expression_AssignmentExpression((yyvsp[(1) - (2)]._assignmentExpression));}
     break;
 
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 277 "pJava.y"
+#line 281 "pJava.y"
     {(yyval._expression) = insert_Expression_Expression((yyvsp[(2) - (4)]._expression));}
     break;
 
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 278 "pJava.y"
+#line 282 "pJava.y"
     {(yyval._expression) = NULL;}
     break;
 
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 282 "pJava.y"
+#line 286 "pJava.y"
     {(yyval._expressions_list) = insert_Expressions_list((yyvsp[(1) - (1)]._expressions_list), NULL);}
     break;
 
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 286 "pJava.y"
+#line 290 "pJava.y"
     {(yyval._expressions_list) = insert_Expressions_list(NULL, (yyvsp[(1) - (1)]._expression));}
     break;
 
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 287 "pJava.y"
+#line 291 "pJava.y"
     {(yyval._expressions_list) = insert_Expressions_list((yyvsp[(1) - (3)]._expressions_list), (yyvsp[(3) - (3)]._expression));}
     break;
 
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 291 "pJava.y"
+#line 295 "pJava.y"
     {(yyval._jumpStatement) = insert_JumpStatement_BREAK_ID((yyvsp[(2) - (3)].id));}
     break;
 
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 292 "pJava.y"
+#line 296 "pJava.y"
     {(yyval._jumpStatement) = insert_JumpStatement_BREAK();}
     break;
 
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 293 "pJava.y"
+#line 297 "pJava.y"
     {(yyval._jumpStatement) = insert_JumpStatement_CONTINUE_ID((yyvsp[(2) - (3)].id));}
     break;
 
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 294 "pJava.y"
+#line 298 "pJava.y"
     {(yyval._jumpStatement) = insert_JumpStatement_CONTINUE();}
     break;
 
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 295 "pJava.y"
+#line 299 "pJava.y"
     {(yyval._jumpStatement) = insert_JumpStatement_RETURN_EXP((yyvsp[(2) - (3)]._expression));}
     break;
 
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 296 "pJava.y"
+#line 300 "pJava.y"
     {(yyval._jumpStatement) = insert_JumpStatement_RETURN();}
     break;
 
   case 74:
 
 /* Line 1455 of yacc.c  */
-#line 301 "pJava.y"
+#line 305 "pJava.y"
     {(yyval._methodCall) = insert_MethodCall((yyvsp[(1) - (4)].id), (yyvsp[(3) - (4)]._expressions_list));}
     break;
 
   case 75:
 
 /* Line 1455 of yacc.c  */
-#line 302 "pJava.y"
+#line 306 "pJava.y"
     {(yyval._methodCall) = insert_MethodCall((yyvsp[(1) - (3)].id), NULL);}
     break;
 
   case 76:
 
 /* Line 1455 of yacc.c  */
-#line 306 "pJava.y"
+#line 310 "pJava.y"
     {(yyval._unaryExpression) = insert_UnaryExpression(is_OP_INC_BEFORE, (yyvsp[(2) - (2)]._basicElement));}
     break;
 
   case 77:
 
 /* Line 1455 of yacc.c  */
-#line 307 "pJava.y"
+#line 311 "pJava.y"
     {(yyval._unaryExpression) = insert_UnaryExpression(is_OP_DCR_BEFORE, (yyvsp[(2) - (2)]._basicElement));}
     break;
 
   case 78:
 
 /* Line 1455 of yacc.c  */
-#line 308 "pJava.y"
+#line 312 "pJava.y"
     {(yyval._unaryExpression) = insert_UnaryExpression(is_OP_INC_AFTER, (yyvsp[(1) - (2)]._basicElement));}
     break;
 
   case 79:
 
 /* Line 1455 of yacc.c  */
-#line 309 "pJava.y"
+#line 313 "pJava.y"
     {(yyval._unaryExpression) = insert_UnaryExpression(is_OP_DCR_AFTER, (yyvsp[(1) - (2)]._basicElement));}
     break;
 
   case 80:
 
 /* Line 1455 of yacc.c  */
-#line 310 "pJava.y"
+#line 314 "pJava.y"
     {(yyval._unaryExpression) = insert_UnaryExpression(is_NONE, (yyvsp[(1) - (1)]._basicElement));}
     break;
 
   case 81:
 
 /* Line 1455 of yacc.c  */
-#line 314 "pJava.y"
+#line 318 "pJava.y"
     {(yyval._unaryExpression) = insert_UnaryExpression(is_OP_DIFFERENT_UNARY, (yyvsp[(2) - (2)]._basicElement));}
     break;
 
   case 82:
 
 /* Line 1455 of yacc.c  */
-#line 318 "pJava.y"
+#line 322 "pJava.y"
     {(yyval._basicElement) = insert_BasicElement_LITERAL((yyvsp[(1) - (1)].id));}
     break;
 
   case 83:
 
 /* Line 1455 of yacc.c  */
-#line 319 "pJava.y"
+#line 323 "pJava.y"
     {(yyval._basicElement) = insert_BasicElement_METHOD_CALL((yyvsp[(1) - (1)]._methodCall));}
     break;
 
   case 84:
 
 /* Line 1455 of yacc.c  */
-#line 320 "pJava.y"
+#line 324 "pJava.y"
     {(yyval._basicElement) = insert_BasicElement_ID((yyvsp[(1) - (1)].id));}
     break;
 
   case 85:
 
 /* Line 1455 of yacc.c  */
-#line 324 "pJava.y"
+#line 328 "pJava.y"
     {(yyval._castExpression) = insert_CastExpression_UnaryExpression(NULL, (yyvsp[(1) - (1)]._unaryExpression));}
     break;
 
   case 86:
 
 /* Line 1455 of yacc.c  */
-#line 325 "pJava.y"
+#line 329 "pJava.y"
     {(yyval._castExpression) = insert_CastExpression_UnaryExpression((yyvsp[(2) - (4)]._typename), (yyvsp[(4) - (4)]._unaryExpression));}
     break;
 
   case 87:
 
 /* Line 1455 of yacc.c  */
-#line 326 "pJava.y"
+#line 330 "pJava.y"
     {(yyval._castExpression) = insert_CastExpression_AssignmentExpression((yyvsp[(2) - (6)]._typename), (yyvsp[(5) - (6)]._assignmentExpression));}
     break;
 
   case 88:
 
 /* Line 1455 of yacc.c  */
-#line 327 "pJava.y"
+#line 331 "pJava.y"
     {(yyval._castExpression) = insert_CastExpression_ConditionalExpression((yyvsp[(2) - (6)]._typename), (yyvsp[(5) - (6)]._conditionalExpression));}
     break;
 
   case 89:
 
 /* Line 1455 of yacc.c  */
-#line 331 "pJava.y"
+#line 335 "pJava.y"
     {(yyval._arithmeticExpression) = insert_ArithmeticExpression(is_AE_NONE, NULL, NULL, (yyvsp[(1) - (1)]._castExpression));}
     break;
 
   case 90:
 
 /* Line 1455 of yacc.c  */
-#line 332 "pJava.y"
+#line 336 "pJava.y"
     {(yyval._arithmeticExpression) = insert_ArithmeticExpression(is_PLUS, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._arithmeticExpression), NULL);}
     break;
 
   case 91:
 
 /* Line 1455 of yacc.c  */
-#line 333 "pJava.y"
+#line 337 "pJava.y"
     {(yyval._arithmeticExpression) = insert_ArithmeticExpression(is_MINUS, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._arithmeticExpression), NULL);}
     break;
 
   case 92:
 
 /* Line 1455 of yacc.c  */
-#line 334 "pJava.y"
+#line 338 "pJava.y"
     {(yyval._arithmeticExpression) = insert_ArithmeticExpression(is_SLASH, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._arithmeticExpression), NULL);}
     break;
 
   case 93:
 
 /* Line 1455 of yacc.c  */
-#line 335 "pJava.y"
+#line 339 "pJava.y"
     {(yyval._arithmeticExpression) = insert_ArithmeticExpression(is_TIMES, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._arithmeticExpression), NULL);}
     break;
 
   case 94:
 
 /* Line 1455 of yacc.c  */
-#line 336 "pJava.y"
+#line 340 "pJava.y"
     {(yyval._arithmeticExpression) = insert_ArithmeticExpression(is_MODULO, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._arithmeticExpression), NULL);}
     break;
 
   case 95:
 
 /* Line 1455 of yacc.c  */
-#line 337 "pJava.y"
+#line 341 "pJava.y"
     {(yyval._arithmeticExpression) = insert_ArithmeticExpression(is_OP_SHL, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._arithmeticExpression), NULL);}
     break;
 
   case 96:
 
 /* Line 1455 of yacc.c  */
-#line 338 "pJava.y"
+#line 342 "pJava.y"
     {(yyval._arithmeticExpression) = insert_ArithmeticExpression(is_OP_SHR, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._arithmeticExpression), NULL);}
     break;
 
   case 97:
 
 /* Line 1455 of yacc.c  */
-#line 343 "pJava.y"
+#line 347 "pJava.y"
     {(yyval._relationalExpression) = insert_RelationalExpression(is_RE_NONE, (yyvsp[(1) - (1)]._arithmeticExpression), NULL);}
     break;
 
   case 98:
 
 /* Line 1455 of yacc.c  */
-#line 344 "pJava.y"
+#line 348 "pJava.y"
     {(yyval._relationalExpression) = insert_RelationalExpression(is_OP_GREATER, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._relationalExpression));}
     break;
 
   case 99:
 
 /* Line 1455 of yacc.c  */
-#line 345 "pJava.y"
+#line 349 "pJava.y"
     {(yyval._relationalExpression) = insert_RelationalExpression(is_OP_LESS, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._relationalExpression));}
     break;
 
   case 100:
 
 /* Line 1455 of yacc.c  */
-#line 346 "pJava.y"
+#line 350 "pJava.y"
     {(yyval._relationalExpression) = insert_RelationalExpression(is_OP_LESS_EQUAL, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._relationalExpression));}
     break;
 
   case 101:
 
 /* Line 1455 of yacc.c  */
-#line 347 "pJava.y"
+#line 351 "pJava.y"
     {(yyval._relationalExpression) = insert_RelationalExpression(is_OP_GREATER_EQUAL, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._relationalExpression));}
     break;
 
   case 102:
 
 /* Line 1455 of yacc.c  */
-#line 348 "pJava.y"
+#line 352 "pJava.y"
     {(yyval._relationalExpression) = insert_RelationalExpression(is_OP_EQUAL, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._relationalExpression));}
     break;
 
   case 103:
 
 /* Line 1455 of yacc.c  */
-#line 349 "pJava.y"
+#line 353 "pJava.y"
     {(yyval._relationalExpression) = insert_RelationalExpression(is_OP_DIFFERENT, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._relationalExpression));}
     break;
 
   case 104:
 
 /* Line 1455 of yacc.c  */
-#line 350 "pJava.y"
+#line 354 "pJava.y"
     {(yyval._relationalExpression) = insert_RelationalExpression(is_OP_SAND, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._relationalExpression));}
     break;
 
   case 105:
 
 /* Line 1455 of yacc.c  */
-#line 351 "pJava.y"
+#line 355 "pJava.y"
     {(yyval._relationalExpression) = insert_RelationalExpression(is_OP_SXOR, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._relationalExpression));}
     break;
 
   case 106:
 
 /* Line 1455 of yacc.c  */
-#line 352 "pJava.y"
+#line 356 "pJava.y"
     {(yyval._relationalExpression) = insert_RelationalExpression(is_OP_SOR, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._relationalExpression));}
     break;
 
   case 107:
 
 /* Line 1455 of yacc.c  */
-#line 353 "pJava.y"
+#line 357 "pJava.y"
     {(yyval._relationalExpression) = insert_RelationalExpression(is_OP_AND, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._relationalExpression));}
     break;
 
   case 108:
 
 /* Line 1455 of yacc.c  */
-#line 354 "pJava.y"
+#line 358 "pJava.y"
     {(yyval._relationalExpression) = insert_RelationalExpression(is_OP_OR, (yyvsp[(1) - (3)]._arithmeticExpression), (yyvsp[(3) - (3)]._relationalExpression));}
     break;
 
   case 109:
 
 /* Line 1455 of yacc.c  */
-#line 358 "pJava.y"
+#line 362 "pJava.y"
     {(yyval._expression) = insert_Expression_ConditionalExpression((yyvsp[(1) - (1)]._conditionalExpression));}
     break;
 
   case 110:
 
 /* Line 1455 of yacc.c  */
-#line 359 "pJava.y"
+#line 363 "pJava.y"
     {(yyval._expression) = insert_Expression_AssignmentExpression((yyvsp[(1) - (1)]._assignmentExpression));}
     break;
 
   case 111:
 
 /* Line 1455 of yacc.c  */
-#line 360 "pJava.y"
+#line 364 "pJava.y"
     {(yyval._expression) = insert_Expression_Expression((yyvsp[(2) - (3)]._expression));}
     break;
 
   case 112:
 
 /* Line 1455 of yacc.c  */
-#line 365 "pJava.y"
+#line 369 "pJava.y"
     {(yyval._conditionalExpression) = insert_ConditionalExpression(is_UNARY, (yyvsp[(1) - (1)]._relationalExpression), NULL, NULL);}
     break;
 
   case 113:
 
 /* Line 1455 of yacc.c  */
-#line 366 "pJava.y"
+#line 370 "pJava.y"
     {(yyval._conditionalExpression) = insert_ConditionalExpression(is_UNARY_NOT, (yyvsp[(3) - (4)]._relationalExpression), NULL, NULL);}
     break;
 
   case 114:
 
 /* Line 1455 of yacc.c  */
-#line 367 "pJava.y"
+#line 371 "pJava.y"
     {(yyval._conditionalExpression) = insert_ConditionalExpression(is_TRINARY, (yyvsp[(1) - (5)]._relationalExpression), (yyvsp[(3) - (5)]._expression), (yyvsp[(5) - (5)]._expression));}
     break;
 
   case 115:
 
 /* Line 1455 of yacc.c  */
-#line 371 "pJava.y"
+#line 375 "pJava.y"
     {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASSIGN, (yyvsp[(3) - (3)]._expression));}
     break;
 
   case 116:
 
 /* Line 1455 of yacc.c  */
-#line 372 "pJava.y"
+#line 376 "pJava.y"
     {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_MUL, (yyvsp[(3) - (3)]._expression));}
     break;
 
   case 117:
 
 /* Line 1455 of yacc.c  */
-#line 373 "pJava.y"
+#line 377 "pJava.y"
     {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_DIV, (yyvsp[(3) - (3)]._expression));}
     break;
 
   case 118:
 
 /* Line 1455 of yacc.c  */
-#line 374 "pJava.y"
+#line 378 "pJava.y"
     {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_ADD, (yyvsp[(3) - (3)]._expression));}
     break;
 
   case 119:
 
 /* Line 1455 of yacc.c  */
-#line 375 "pJava.y"
+#line 379 "pJava.y"
     {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_SUB, (yyvsp[(3) - (3)]._expression));}
     break;
 
   case 120:
 
 /* Line 1455 of yacc.c  */
-#line 376 "pJava.y"
+#line 380 "pJava.y"
     {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_XOR, (yyvsp[(3) - (3)]._expression));}
     break;
 
   case 121:
 
 /* Line 1455 of yacc.c  */
-#line 377 "pJava.y"
+#line 381 "pJava.y"
     {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_MOD, (yyvsp[(3) - (3)]._expression));}
     break;
 
   case 122:
 
 /* Line 1455 of yacc.c  */
-#line 378 "pJava.y"
+#line 382 "pJava.y"
     {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_SHL, (yyvsp[(3) - (3)]._expression));}
     break;
 
   case 123:
 
 /* Line 1455 of yacc.c  */
-#line 379 "pJava.y"
+#line 383 "pJava.y"
     {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_SHR, (yyvsp[(3) - (3)]._expression));}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 2610 "y.tab.c"
+#line 2614 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2818,12 +2822,13 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 383 "pJava.y"
+#line 387 "pJava.y"
 
 
 int main()
 {
-yyparse();
-return 0;
+	yyparse();
+	showProgramFile(myProgram);
+	return 0;
 }
 
