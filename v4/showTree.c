@@ -68,8 +68,28 @@ void showMethodDeclaration(is_MethodDeclaration* mD)
 
 void showMethodDeclarator(is_MethodDeclarator* mD)
 {
-	/*TODO: Missing the parameters part. */
+	/*TODO: Check if this is correct! */
 	printf("%s ", mD->id);
+
+	/* And now the parameters. */
+	is_Parameters_list* aux;
+
+	printf("(");
+	
+	for(aux = mD->parametersList; aux != NULL; aux = aux->next)
+	{
+		if(mD->parametersList != aux){
+			printf(", ");
+		}
+
+		showTypeSpecifier(aux->parameter->typeSpecifier);
+		printf(" %s",aux->parameter->id);
+	}
+
+	printf(")");
+
+	printf("\n");
+
 	return;
 }
 
