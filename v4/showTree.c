@@ -97,7 +97,18 @@ void showVariablesDeclarator(is_VariablesDeclarator* vD)
 {
 	/* TODO: Missing the initialization part. */
 	printf("%s ", vD->id);
+
+	//showExpression(cD->isExpression);
+
 	return;
+}
+
+void showExpression(is_Expression* exp){
+	/* TODO: method is not implemented 
+
+	   Can this method be recursive?
+	
+	*/
 }
 
 void showTypeSpecifier(is_TypeSpecifier* tS)
