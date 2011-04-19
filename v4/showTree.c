@@ -60,7 +60,16 @@ void showAttrDeclaration(is_AttrDeclaration* aD)
 
 void showMethodDeclaration(is_MethodDeclaration* mD)
 {
-	printf("Method.\n");
+	showTypeSpecifier(mD->typeSpecifier);
+	showMethodDeclarator(mD->methodDeclarator);
+	printf("{\n}\n");
+	return;
+}
+
+void showMethodDeclarator(is_MethodDeclarator* mD)
+{
+	/*TODO: Missing the parameters part. */
+	printf("%s ", mD->id);
 	return;
 }
 
