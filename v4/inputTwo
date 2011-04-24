@@ -19,6 +19,23 @@ public class gcdRrec{
 
 		for (i = 0; i < 5; i++)
 			i = 2;
+			
+		switch (a == 2)
+		{
+			case (a < 4):
+				a = 2;
+				i = 2;
+				break;
+			case 2: return;
+		}
+		
+		do{
+			a = 5;
+			a = 2;
+		}while (i < 5);
+		
+		while (i < 5)
+			continue;
 		
 		for (a = 0; a < 2; a++){
 			int c;			
