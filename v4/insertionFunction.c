@@ -324,7 +324,8 @@ is_SelectionStatement* insert_SelectionStatement_IF(is_Expression* exp, is_State
 	is_SelectionStatement* sS = malloc(sizeof(is_SelectionStatement));
 	sS->disc_d = is_IF;
 	sS->exp = exp;
-	sS->data_SelectionStatement.stat = stat;
+	sS->stat = stat;
+	sS->statSecond = NULL;
 	
 	return sS;
 	
@@ -335,8 +336,8 @@ is_SelectionStatement* insert_SelectionStatement_IFELSE(is_Expression* exp, is_S
 	is_SelectionStatement* sS = malloc(sizeof(is_SelectionStatement));
 	sS->disc_d = is_IFELSE;
 	sS->exp = exp;
-	sS->data_SelectionStatement.stat = stat;
-	sS->data_SelectionStatement.statSecond = statTwo;
+	sS->stat = stat;
+	sS->statSecond = statTwo;
 	
 	return sS;
 	
@@ -347,7 +348,7 @@ is_SelectionStatement* insert_SelectionStatement_SWITCH(is_Expression* exp, is_B
 	is_SelectionStatement* sS = malloc(sizeof(is_SelectionStatement));
 	sS->disc_d = is_SWITCH;
 	sS->exp = exp;
-	sS->data_SelectionStatement.block = block;
+	sS->block = block;
 	
 	return sS;
 	
@@ -384,8 +385,8 @@ is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Stat
 	iS->exp = exp;
 	iS->statement = stat;
 	
-	iS->data_FOR.forInit = forInit;
-	iS->data_FOR.forIncr = forIncr;
+	iS->forInit = forInit;
+	iS->forIncr = forIncr;
 	
 	return iS;
 	

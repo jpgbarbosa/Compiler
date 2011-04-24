@@ -29,4 +29,4 @@ void showCastExpression(is_CastExpression* cExp, bool nextLine, bool isTabs);
 void showUnaryExpression(is_UnaryExpression* uE, bool nextLine, bool isTabs);
 void showBasicElement(is_BasicElement* bE, bool nextLine, bool isTabs);
 void showMethodCall(is_MethodCall* mC, bool nextLine, bool isTabs);
-
+void showForInit(is_ForInit* fI);

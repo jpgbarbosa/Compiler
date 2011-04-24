@@ -114,6 +114,7 @@ void showVariablesDeclarator(is_VariablesDeclarator* vD)
 	/* It is initialiazed. */
 	if (vD->expression != NULL)
 	{
+		printf(" = ");
 		showExpression(vD->expression, false, false);
 	}
 	return;
@@ -152,14 +153,16 @@ void showBlock(is_Block* block)
 	/* Shows the list of variables declarations or statements. */
 	is_LocalVariableDeclarationsOrStatements_list* aux;
 	
-	printf("\n{\n");
+	printTabs();
+	printf("{\n");
 	noTabs++;
 	
 	for (aux = block->lvdos_list; aux != NULL; aux = aux->next)
 		showLocalVariableDeclarationsOrStatements(aux->lvdos);
 	
 	noTabs--;
-	printf("\n}\n");
+	printTabs();
+	printf("}\n");
 }
 
 void showLocalVariableDeclarationsOrStatements(is_LocalVariableDeclarationsOrStatements* lvdos)
@@ -178,7 +181,7 @@ void showLocalVariableDeclarationsOrStatements(is_LocalVariableDeclarationsOrSta
 
 void showLocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement* lvds)
 {
-	/* We make the right indentation. */
+	/* We do the right indentation. */
 	printTabs();
 	
 	/* Shows the list of variables. */
@@ -344,7 +347,7 @@ void showSelectionStatement(is_SelectionStatement* sS)
 			showExpression(sS->exp, false, false);
 			printf(")\n");
 			noTabs++;
-			showStatement(sS->data_SelectionStatement.stat);
+			showStatement(sS->stat);
 			noTabs--;
 			break;
 		case (is_IFELSE):
@@ -353,13 +356,11 @@ void showSelectionStatement(is_SelectionStatement* sS)
 			showExpression(sS->exp, false, false);
 			printf(")\n");
 			noTabs++;
-			printTabs();
-			printf("IFEXP...\n");
-			//showStatement(sS->data_SelectionStatement.stat);
+			showStatement(sS->stat);
 			noTabs--;
 			printTabs();
 			printf("else ");
-			showStatement(sS->data_SelectionStatement.statSecond);
+			showStatement(sS->statSecond);
 			break;
 		case (is_SWITCH):
 			printf("SWITCH! NOT YET HANDLED...\n");
@@ -371,6 +372,8 @@ void showSelectionStatement(is_SelectionStatement* sS)
 
 void showIterationStatement(is_IterationStatement* iS)
 {
+	is_Expressions_list* aux;
+	
 	switch(iS->disc_d)
 	{
 		case (is_WHILE):
@@ -394,8 +397,19 @@ void showIterationStatement(is_IterationStatement* iS)
 			break;
 		case (is_FOR):
 			printTabs();
-			printf("for (");
-			printf(")\n");
+			printf("for ( ");
+			showForInit(iS->forInit);
+			showExpression(iS->exp, false, false);
+			printf("; ");
+			/* The incrementation expressions. */
+			for(aux = iS->forIncr; aux != NULL; aux = aux->next)
+			{
+				showExpression(aux->exp, false, false);
+				// We aren't yet at the last element.
+				if (aux->next != NULL)
+					printf(", ");
+			}
+			printf(" )\n");
 			noTabs++;
 			showStatement(iS->statement);
 			noTabs--;
@@ -404,6 +418,36 @@ void showIterationStatement(is_IterationStatement* iS)
 	}
 	
 	return;
+}
+
+void showForInit(is_ForInit* fI)
+{
+		if (fI != NULL)
+		{
+			/* It's a list of expressions. */
+			if (fI->list != NULL)
+			{
+				/* And now the list of parameters. */
+				is_Expressions_list* aux;
+				
+				for(aux = fI->list; aux != NULL; aux = aux->next)
+				{
+					showExpression(aux->exp, false, false);
+					/* We aren't yet at the last element. */
+					if (aux->next != NULL)
+						printf(", ");
+				}
+			}
+			/* It's a declaration statement. */
+			else
+			{
+				showLocalVariableDeclarationStatement(fI->lvds);
+			}
+		}
+		
+		printf(" ;");
+		
+		return;
 }
 
 void showJumpStatement(is_JumpStatement* jS)
@@ -438,7 +482,7 @@ void showJumpStatement(is_JumpStatement* jS)
 
 void showRelationalExpression(is_RelationalExpression* rExp, bool nextLine, bool isTabs)
 {
-	showArithmeticExpression(rExp->aExpression, false, false);
+	showArithmeticExpression(rExp->aExpression, nextLine, isTabs);
 	/* Prints the correct operator. */
 	switch(rExp->op)
 	{
@@ -481,8 +525,8 @@ void showRelationalExpression(is_RelationalExpression* rExp, bool nextLine, bool
 	 * print them.
 	 */
 	if (rExp->next != NULL)
-		showRelationalExpression(rExp->next, nextLine, isTabs);
-		
+		showRelationalExpression(rExp->next, false, false);
+	
 	return;
 }
 
@@ -553,13 +597,13 @@ void showCastExpression(is_CastExpression* cExp, bool nextLine, bool isTabs)
 	switch(cExp->disc_d)
 	{
 		case (d_UnaryExpression):
-			showUnaryExpression(cExp->data_CastExpression.unaryExpression, nextLine, isTabs);
+			showUnaryExpression(cExp->data_CastExpression.unaryExpression, nextLine, false);
 			break;
 		case (d_AssignmentExpression):
-			showAssignmentExpression(cExp->data_CastExpression.assignmentExpression, nextLine, isTabs);
+			showAssignmentExpression(cExp->data_CastExpression.assignmentExpression, nextLine, false);
 			break;
 		case (d_ConditionalExpression):
-			showConditionalExpression(cExp->data_CastExpression.conditionalExpression, nextLine, isTabs);
+			showConditionalExpression(cExp->data_CastExpression.conditionalExpression, nextLine, false);
 			break;
 	}
 }
@@ -599,7 +643,6 @@ void showUnaryExpression(is_UnaryExpression* uE, bool nextLine, bool isTabs)
 
 void showBasicElement(is_BasicElement* bE, bool nextLine, bool isTabs)
 {
-	printf("HERE with %d and %d!\n", nextLine, isTabs);
 	if (isTabs && bE->disc_d != is_METHOD_CALL)
 		printTabs();
 		

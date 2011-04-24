@@ -192,12 +192,10 @@ struct _a29{
 	is_Statement *statement;
 	
 	/* Only concerns the FOR. */
-	union{
-		/* ForInit. */
-		is_ForInit *forInit;
-		/* ForIncr. */
-		is_Expressions_list *forIncr;
-	}data_FOR;
+	/* ForInit. */
+	is_ForInit *forInit;
+	/* ForIncr. */
+	is_Expressions_list *forIncr;
 	
 } /*is_IterationStatement */;
 
@@ -244,11 +242,9 @@ struct _a32{
 	disc_SelectionStatement disc_d;
 	is_Expression *exp;
 	/* We might or not use these depending on value of the above enumeration. */
-	union{
-		is_Statement *stat;
-		is_Statement *statSecond;
-		is_Block *block;
-	}data_SelectionStatement;
+	is_Statement *stat;
+	is_Statement *statSecond;
+	is_Block *block;
 	
 } /*is_SelectionStatement */;
 
@@ -304,8 +300,8 @@ struct _a11{
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
 struct _a8{
-		is_TypeSpecifier *typeSpecifier;
-		is_VariablesDeclarator_list * variablesDeclarators;
+	is_TypeSpecifier *typeSpecifier;
+	is_VariablesDeclarator_list * variablesDeclarators;
 } /*is_AttrDeclaration*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */

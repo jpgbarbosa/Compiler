@@ -113,6 +113,8 @@ Literal		({Numeric}|{Character}|{String})
 
 {Identifier}	{yylval.id = (char*)strdup(yytext); return ID;}
 
+{Numeric}		{yylval.id = (char*)strdup(yytext); return LITERAL;}
+
 {Literal}	{return LITERAL;}
 
 {WhiteSpace}    {;}

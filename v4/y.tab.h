@@ -153,7 +153,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 92 "pJava.y"
+#line 91 "pJava.y"
 
 	int i;
 	double d;

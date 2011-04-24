@@ -58,7 +58,6 @@ is_ProgramFile* myProgram;
 %type <_iterationStatement> IterationStatement;
 %type <_forInit> ForInit;
 %type <_expression> ForExpr;
-%type <_expressions_list> ForIncr;
 %type <_expressions_list> Expressions;
 %type <_jumpStatement> JumpStatement;
 %type <_methodCall> MethodCall;
@@ -257,15 +256,15 @@ LabeledStatement
 	;
 
 SelectionStatement
-	: IF '(' Expression ')' Statement ELSE Statement			{$$ = insert_SelectionStatement_IFELSE($3, $7, $7);printf("ELSE IF!!\n");}
-	| IF '(' Expression ')' Statement					{$$ = insert_SelectionStatement_IF($3, $5);printf("IF!!\n");}
+	: IF '(' Expression ')' Statement ELSE Statement			{$$ = insert_SelectionStatement_IFELSE($3, $5, $7);}
+	| IF '(' Expression ')' Statement					{$$ = insert_SelectionStatement_IF($3, $5);}
 	| SWITCH '(' Expression ')' Block					{$$ = insert_SelectionStatement_SWITCH($3, $5);}
 	;
 
 IterationStatement
 	: WHILE '(' Expression ')' Statement					{$$ = insert_IterationStatement_WHILE($3, $5);}
 	| DO Statement WHILE '(' Expression ')' ';'				{$$ = insert_IterationStatement_DO($5, $2);}
-	| FOR '(' ForInit ForExpr ForIncr ')' Statement				{$$ = insert_IterationStatement_FOR($4, $7, $3, $5);}
+	| FOR '(' ForInit ForExpr Expressions ')' Statement				{$$ = insert_IterationStatement_FOR($4, $7, $3, $5);}
 	| FOR '(' ForInit ForExpr         ')' Statement				{$$ = insert_IterationStatement_FOR($4, $6, $3, NULL);}
 	;
 
@@ -282,10 +281,6 @@ ForExpr
 	| ';'				{$$ = NULL;}
 	;
 
-ForIncr
-	: Expressions				{$$ = insert_Expressions_list($1, NULL);}
-	;
-
 Expressions
 	: Expression				{$$ = insert_Expressions_list(NULL, $1);}
 	| Expressions ',' Expression		{$$ = insert_Expressions_list($1, $3);}
@@ -294,7 +289,7 @@ Expressions
 JumpStatement
 	: BREAK    ID         ';'		{$$ = insert_JumpStatement_BREAK_ID($2);}
 	| BREAK               ';'		{$$ = insert_JumpStatement_BREAK();}
-        | CONTINUE ID 	      ';'		{$$ = insert_JumpStatement_CONTINUE_ID($2);}
+	| CONTINUE ID 	      ';'		{$$ = insert_JumpStatement_CONTINUE_ID($2);}
 	| CONTINUE            ';'		{$$ = insert_JumpStatement_CONTINUE();}
 	| RETURN   Expression ';'		{$$ = insert_JumpStatement_RETURN_EXP($2);}
 	| RETURN              ';'		{$$ = insert_JumpStatement_RETURN();}
@@ -345,17 +340,17 @@ ArithmeticExpression
 
 RelationalExpression
 	: ArithmeticExpression						{$$ = insert_RelationalExpression(is_RE_NONE, $1, NULL);}
-        | ArithmeticExpression '<' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS, $1, $3);}
-        | ArithmeticExpression '>' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_GREATER, $1, $3);}
-        | ArithmeticExpression OP_LESS_EQUAL    RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS_EQUAL, $1, $3);}
-        | ArithmeticExpression OP_GREATER_EQUAL RelationalExpression	{$$ = insert_RelationalExpression(is_OP_GREATER_EQUAL, $1, $3);}
-        | ArithmeticExpression OP_EQUAL	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_EQUAL, $1, $3);}
-        | ArithmeticExpression OP_DIFFERENT	RelationalExpression	{$$ = insert_RelationalExpression(is_OP_DIFFERENT, $1, $3);}
-        | ArithmeticExpression '&'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SAND, $1, $3);}
-        | ArithmeticExpression '^'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SXOR, $1, $3);}
-        | ArithmeticExpression '|'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SOR, $1, $3);}
-        | ArithmeticExpression OP_AND		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_AND, $1, $3);}
-        | ArithmeticExpression OP_OR		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_OR, $1, $3);}
+	| ArithmeticExpression '<' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS, $1, $3);}
+	| ArithmeticExpression '>' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_GREATER, $1, $3);}
+	| ArithmeticExpression OP_LESS_EQUAL    RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS_EQUAL, $1, $3);}
+	| ArithmeticExpression OP_GREATER_EQUAL RelationalExpression	{$$ = insert_RelationalExpression(is_OP_GREATER_EQUAL, $1, $3);}
+	| ArithmeticExpression OP_EQUAL	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_EQUAL, $1, $3);}
+	| ArithmeticExpression OP_DIFFERENT	RelationalExpression	{$$ = insert_RelationalExpression(is_OP_DIFFERENT, $1, $3);}
+	| ArithmeticExpression '&'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SAND, $1, $3);}
+	| ArithmeticExpression '^'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SXOR, $1, $3);}
+	| ArithmeticExpression '|'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SOR, $1, $3);}
+	| ArithmeticExpression OP_AND		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_AND, $1, $3);}
+	| ArithmeticExpression OP_OR		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_OR, $1, $3);}
 	;
 
 Expression
