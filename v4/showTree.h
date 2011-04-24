@@ -15,7 +15,7 @@ void showTypename(is_Typename* tn);
 void showBlock(is_Block* block);
 void showLocalVariableDeclarationsOrStatements(is_LocalVariableDeclarationsOrStatements* lvdos);
 void showLocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement* lvds);
-void showStatement(is_Statement* s);
+void showStatement(is_Statement* s, bool isToTab);
 void showExpression(is_Expression* exp, bool nextLine, bool isTabs);
 void showConditionalExpression(is_ConditionalExpression* cExp, bool nextLine, bool isTabs);
 void showAssignmentExpression(is_AssignmentExpression* aExp, bool nextLine, bool isTabs);

@@ -79,6 +79,7 @@ void showMethodDeclaration(is_MethodDeclaration* mD)
 {
 	showTypeSpecifier(mD->typeSpecifier);
 	showMethodDeclarator(mD->methodDeclarator);
+	printf("\n");
 	showBlock(mD->block);
 	
 	return;
@@ -152,7 +153,6 @@ void showBlock(is_Block* block)
 {
 	/* Shows the list of variables declarations or statements. */
 	is_LocalVariableDeclarationsOrStatements_list* aux;
-	
 	printTabs();
 	printf("{\n");
 	noTabs++;
@@ -173,7 +173,7 @@ void showLocalVariableDeclarationsOrStatements(is_LocalVariableDeclarationsOrSta
 			showLocalVariableDeclarationStatement(lvdos->data_LocalVariableDeclarationsOrStatements.u_lvds);
 			break;
 		case (d_Statement):
-			showStatement(lvdos->data_LocalVariableDeclarationsOrStatements.u_statement);
+			showStatement(lvdos->data_LocalVariableDeclarationsOrStatements.u_statement, false);
 			break;
 	}
 	return;
@@ -201,8 +201,11 @@ void showLocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement*
 	printf(";\n");
 }
 
-void showStatement(is_Statement* s)
+void showStatement(is_Statement* s, bool isToTab)
 {
+	if (isToTab && s->disc_d != d_StatementBlock)
+		noTabs++;
+		
 	switch(s->disc_d)
 	{
 		case (d_LabeledStatement):
@@ -224,6 +227,10 @@ void showStatement(is_Statement* s)
 			showBlock(s->data_Statement.block);
 			break;
 	}
+	
+	if (isToTab && s->disc_d != d_StatementBlock)
+		noTabs--;
+	
 	return;
 }
 
@@ -346,24 +353,23 @@ void showSelectionStatement(is_SelectionStatement* sS)
 			printf("if (");
 			showExpression(sS->exp, false, false);
 			printf(")\n");
-			noTabs++;
-			showStatement(sS->stat);
-			noTabs--;
+			showStatement(sS->stat, true);
 			break;
 		case (is_IFELSE):
 			printTabs();
 			printf("if (");
 			showExpression(sS->exp, false, false);
 			printf(")\n");
-			noTabs++;
-			showStatement(sS->stat);
-			noTabs--;
+			showStatement(sS->stat, true);
 			printTabs();
 			printf("else ");
-			showStatement(sS->statSecond);
+			showStatement(sS->statSecond, false);
 			break;
 		case (is_SWITCH):
-			printf("SWITCH! NOT YET HANDLED...\n");
+			printf("switch (");
+			showExpression(sS->exp, false, false);
+			printf(")\n");
+			showBlock(sS->block);
 			break;
 	}
 	
@@ -382,14 +388,14 @@ void showIterationStatement(is_IterationStatement* iS)
 			showExpression(iS->exp, false, false);
 			printf(")\n");
 			noTabs++;
-			showStatement(iS->statement);
+			showStatement(iS->statement, true);
 			noTabs--;
 			break;
 		case (is_DO):
 			printTabs();
 			printf("do {\n");
 			noTabs++;
-			showStatement(iS->statement);
+			showStatement(iS->statement, true);
 			noTabs--;
 			printf("\n}while(");
 			showExpression(iS->exp, false, false);
@@ -410,9 +416,7 @@ void showIterationStatement(is_IterationStatement* iS)
 					printf(", ");
 			}
 			printf(" )\n");
-			noTabs++;
-			showStatement(iS->statement);
-			noTabs--;
+			showStatement(iS->statement, true);
 			printf("\n");
 			break;
 	}

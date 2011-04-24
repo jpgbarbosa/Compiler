@@ -17,6 +17,9 @@ public class gcdRrec{
 		
 		//System.out.println(gcd(a,b));
 
+		for (i = 0; i < 5; i++)
+			i = 2;
+		
 		for (a = 0; a < 2; a++){
 			int c;			
 			b = 2 +2 + c*4;
@@ -26,8 +29,10 @@ public class gcdRrec{
 			b = c << 5;
 		}
 
-		if (a == 2 && b > 4)
+		if (a == 2 && b > 4){
 			a = 2;
+			a = b;
+		}
 			
 		a = (a++);
 	}
