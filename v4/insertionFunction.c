@@ -204,7 +204,7 @@ is_LocalVariableDeclarationsOrStatements_list* insert_LocalVariableDeclarationsO
 is_LocalVariableDeclarationsOrStatements* insert_LocalVariableDeclarationsOrStatements_LocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement* lvds)
 {
 	is_LocalVariableDeclarationsOrStatements* lvdos = malloc(sizeof(is_LocalVariableDeclarationsOrStatements));
-	lvdos->disc_d = d_LocalVariableDelcarationStatement;
+	lvdos->disc_d = d_LocalVariableDeclarationStatement;
 	lvdos->data_LocalVariableDeclarationsOrStatements.u_lvds = lvds;
 	
 	return lvdos;
@@ -559,29 +559,32 @@ is_BasicElement* insert_BasicElement_METHOD_CALL(is_MethodCall* call)
 
 /* - - - - - - is_Cast_Expression - - - - - -  */
 
-is_CastExpression* insert_CastExpression_UnaryExpression(is_Typename* castType, is_UnaryExpression *unaryExpression)
+is_CastExpression* insert_CastExpression_UnaryExpression(is_TypeSpecifier* castType, is_UnaryExpression *unaryExpression)
 {
 	is_CastExpression* cE = malloc(sizeof(is_CastExpression));
 	cE->disc_d = d_UnaryExpression;
 	cE->data_CastExpression.unaryExpression = unaryExpression;
+	cE->castType = castType;
 	
 	return cE;
 }
 
-is_CastExpression* insert_CastExpression_AssignmentExpression(is_Typename* castType,is_AssignmentExpression *assignmentExpression)
+is_CastExpression* insert_CastExpression_AssignmentExpression(is_TypeSpecifier* castType,is_AssignmentExpression *assignmentExpression)
 {
 	is_CastExpression* cE = malloc(sizeof(is_CastExpression));
 	cE->disc_d = d_AssignmentExpression;
 	cE->data_CastExpression.assignmentExpression = assignmentExpression;
+	cE->castType = castType;
 	
 	return cE;
 }
 
-is_CastExpression* insert_CastExpression_ConditionalExpression(is_Typename* castType, is_ConditionalExpression *conditionalExpression)
+is_CastExpression* insert_CastExpression_ConditionalExpression(is_TypeSpecifier* castType, is_ConditionalExpression *conditionalExpression)
 {
 	is_CastExpression* cE = malloc(sizeof(is_CastExpression));
 	cE->disc_d = d_ConditionalExpression;
 	cE->data_CastExpression.conditionalExpression = conditionalExpression;
+	cE->castType = castType;
 	
 	return cE;
 }

@@ -215,8 +215,8 @@ LabeledStatement
         ;
 
 SelectionStatement
-	: IF '(' Expression ')' Statement
-        | IF '(' Expression ')' Statement ELSE Statement
+	: IF '(' Expression ')' Statement ELSE Statement {printf("ELSE IF\n");}
+		|IF '(' Expression ')' Statement {printf("IF\n");}
         | SWITCH '(' Expression ')' Block
         ;
 

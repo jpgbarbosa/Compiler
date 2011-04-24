@@ -108,8 +108,8 @@ Grammar
    67                 | CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement
    68                 | DEFAULT ':' LocalVariableDeclarationOrStatement
 
-   69 SelectionStatement: IF '(' Expression ')' Statement
-   70                   | IF '(' Expression ')' Statement ELSE Statement
+   69 SelectionStatement: IF '(' Expression ')' Statement ELSE Statement
+   70                   | IF '(' Expression ')' Statement
    71                   | SWITCH '(' Expression ')' Block
 
    72 IterationStatement: WHILE '(' Expression ')' Statement
@@ -241,7 +241,7 @@ CONTINUE (264) 86 87
 DEFAULT (265) 68
 DO (266) 73
 DOUBLE (267) 13
-ELSE (268) 70
+ELSE (268) 69
 FLOAT (269) 12
 FOR (270) 74 75
 IF (271) 69 70
@@ -1053,8 +1053,8 @@ state 60
 
 state 61
 
-   69 SelectionStatement: IF . '(' Expression ')' Statement
-   70                   | IF . '(' Expression ')' Statement ELSE Statement
+   69 SelectionStatement: IF . '(' Expression ')' Statement ELSE Statement
+   70                   | IF . '(' Expression ')' Statement
 
     '('  shift, and go to state 112
 
@@ -1753,8 +1753,8 @@ state 111
 
 state 112
 
-   69 SelectionStatement: IF '(' . Expression ')' Statement
-   70                   | IF '(' . Expression ')' Statement ELSE Statement
+   69 SelectionStatement: IF '(' . Expression ')' Statement ELSE Statement
+   70                   | IF '(' . Expression ')' Statement
 
     OP_INC   shift, and go to state 65
     OP_DEC   shift, and go to state 66
@@ -2828,8 +2828,8 @@ state 176
 
 state 177
 
-   69 SelectionStatement: IF '(' Expression . ')' Statement
-   70                   | IF '(' Expression . ')' Statement ELSE Statement
+   69 SelectionStatement: IF '(' Expression . ')' Statement ELSE Statement
+   70                   | IF '(' Expression . ')' Statement
 
     ')'  shift, and go to state 230
 
@@ -3386,8 +3386,8 @@ state 229
 
 state 230
 
-   69 SelectionStatement: IF '(' Expression ')' . Statement
-   70                   | IF '(' Expression ')' . Statement ELSE Statement
+   69 SelectionStatement: IF '(' Expression ')' . Statement ELSE Statement
+   70                   | IF '(' Expression ')' . Statement
 
     BREAK     shift, and go to state 55
     CASE      shift, and go to state 56
@@ -3692,12 +3692,12 @@ state 247
 
 state 248
 
-   69 SelectionStatement: IF '(' Expression ')' Statement .
-   70                   | IF '(' Expression ')' Statement . ELSE Statement
+   69 SelectionStatement: IF '(' Expression ')' Statement . ELSE Statement
+   70                   | IF '(' Expression ')' Statement .
 
     ELSE  shift, and go to state 263
 
-    $default  reduce using rule 69 (SelectionStatement)
+    $default  reduce using rule 70 (SelectionStatement)
 
 
 state 249
@@ -3854,7 +3854,7 @@ state 262
 
 state 263
 
-   70 SelectionStatement: IF '(' Expression ')' Statement ELSE . Statement
+   69 SelectionStatement: IF '(' Expression ')' Statement ELSE . Statement
 
     BREAK     shift, and go to state 55
     CASE      shift, and go to state 56
@@ -3958,9 +3958,9 @@ state 270
 
 state 271
 
-   70 SelectionStatement: IF '(' Expression ')' Statement ELSE Statement .
+   69 SelectionStatement: IF '(' Expression ')' Statement ELSE Statement .
 
-    $default  reduce using rule 70 (SelectionStatement)
+    $default  reduce using rule 69 (SelectionStatement)
 
 
 state 272

@@ -123,7 +123,7 @@ struct _a24{
 		is_ConditionalExpression *conditionalExpression;
 	}data_CastExpression;
 	
-	is_PrimitiveType primitiveType; /* It is used when we make a cast. Otherwise, it remains NULL. */
+	is_TypeSpecifier* castType; /* It is used when we make a cast. Otherwise, it remains NULL. */
 	
 } /*is_CastExpression*/;
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -199,13 +199,13 @@ struct _a29{
 		is_Expressions_list *forIncr;
 	}data_FOR;
 	
-} /* is_IterationStatement */;
+} /*is_IterationStatement */;
 
 struct _a33{
 	is_Expressions_list* list;
 	is_LocalVariableDeclarationStatement* lvds;
 	
-} /* is_ForInit */;
+} /*is_ForInit */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
@@ -220,7 +220,7 @@ struct _a30{
 		is_ConditionalExpression *exp;
 	}data_LabeledStatement;
 	
-} /* is_LabeledStatement */;
+} /*is_LabeledStatement */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
@@ -234,7 +234,7 @@ struct _a31{
 		is_Expression *exp;
 	}data_JumpStatement;
 	
-} /* is_JumpStatement. */;
+} /*is_JumpStatement. */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
@@ -250,7 +250,7 @@ struct _a32{
 		is_Block *block;
 	}data_SelectionStatement;
 	
-} /* is_SelectionStatement */;
+} /*is_SelectionStatement */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
@@ -270,7 +270,7 @@ struct _a19{
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {d_LocalVariableDelcarationStatement, d_Statement} disc_LocalVariableDeclarationsOrStatements;
+typedef enum {d_LocalVariableDeclarationStatement, d_Statement} disc_LocalVariableDeclarationsOrStatements;
 struct _a17{
 	disc_LocalVariableDeclarationsOrStatements disc_d;
 	union{

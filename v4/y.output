@@ -82,8 +82,8 @@ Grammar
    48                 | CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement
    49                 | DEFAULT ':' LocalVariableDeclarationOrStatement
 
-   50 SelectionStatement: IF '(' Expression ')' Statement
-   51                   | IF '(' Expression ')' Statement ELSE Statement
+   50 SelectionStatement: IF '(' Expression ')' Statement ELSE Statement
+   51                   | IF '(' Expression ')' Statement
    52                   | SWITCH '(' Expression ')' Block
 
    53 IterationStatement: WHILE '(' Expression ')' Statement
@@ -127,9 +127,9 @@ Grammar
    83             | ID
 
    84 CastExpression: UnaryExpression
-   85               | '(' TypeName ')' UnaryExpression
-   86               | '(' TypeName ')' '(' AssignmentExpression ')'
-   87               | '(' TypeName ')' '(' ConditionalExpression ')'
+   85               | '(' TypeSpecifier ')' UnaryExpression
+   86               | '(' TypeSpecifier ')' '(' AssignmentExpression ')'
+   87               | '(' TypeSpecifier ')' '(' ConditionalExpression ')'
 
    88 ArithmeticExpression: CastExpression
    89                     | ArithmeticExpression '+' ArithmeticExpression
@@ -209,7 +209,7 @@ CONTINUE (264) 69 70
 DEFAULT (265) 49
 DO (266) 54
 DOUBLE (267) 9
-ELSE (268) 51
+ELSE (268) 50
 FLOAT (269) 8
 FOR (270) 55 56
 IF (271) 50 51
@@ -258,9 +258,9 @@ Nonterminals, with rules where they appear
 $accept (77)
     on left: 0
 TypeSpecifier (78)
-    on left: 1, on right: 20 21 26 27 32 39
+    on left: 1, on right: 20 21 26 27 32 39 85 86 87
 TypeName (79)
-    on left: 2 3 4 5 6 7 8 9 10 11 12, on right: 1 85 86 87
+    on left: 2 3 4 5 6 7 8 9 10 11 12, on right: 1
 ProgramFile (80)
     on left: 13, on right: 0
 ClassHeader (81)
@@ -877,9 +877,9 @@ state 50
 
 state 51
 
-   85 CastExpression: '(' . TypeName ')' UnaryExpression
-   86               | '(' . TypeName ')' '(' AssignmentExpression ')'
-   87               | '(' . TypeName ')' '(' ConditionalExpression ')'
+   85 CastExpression: '(' . TypeSpecifier ')' UnaryExpression
+   86               | '(' . TypeSpecifier ')' '(' AssignmentExpression ')'
+   87               | '(' . TypeSpecifier ')' '(' ConditionalExpression ')'
   110 Expression: '(' . Expression ')'
 
     BOOLEAN  shift, and go to state 17
@@ -899,7 +899,8 @@ state 51
     '('      shift, and go to state 51
     '!'      shift, and go to state 52
 
-    TypeName               go to state 105
+    TypeSpecifier          go to state 105
+    TypeName               go to state 28
     MethodCall             go to state 53
     UnaryExpression        go to state 54
     BasicElement           go to state 55
@@ -1174,8 +1175,8 @@ state 73
 
 state 74
 
-   50 SelectionStatement: IF . '(' Expression ')' Statement
-   51                   | IF . '(' Expression ')' Statement ELSE Statement
+   50 SelectionStatement: IF . '(' Expression ')' Statement ELSE Statement
+   51                   | IF . '(' Expression ')' Statement
 
     '('  shift, and go to state 142
 
@@ -1642,9 +1643,9 @@ state 104
 
 state 105
 
-   85 CastExpression: '(' TypeName . ')' UnaryExpression
-   86               | '(' TypeName . ')' '(' AssignmentExpression ')'
-   87               | '(' TypeName . ')' '(' ConditionalExpression ')'
+   85 CastExpression: '(' TypeSpecifier . ')' UnaryExpression
+   86               | '(' TypeSpecifier . ')' '(' AssignmentExpression ')'
+   87               | '(' TypeSpecifier . ')' '(' ConditionalExpression ')'
 
     ')'  shift, and go to state 164
 
@@ -2103,9 +2104,9 @@ state 134
 
 state 135
 
-   85 CastExpression: '(' . TypeName ')' UnaryExpression
-   86               | '(' . TypeName ')' '(' AssignmentExpression ')'
-   87               | '(' . TypeName ')' '(' ConditionalExpression ')'
+   85 CastExpression: '(' . TypeSpecifier ')' UnaryExpression
+   86               | '(' . TypeSpecifier ')' '(' AssignmentExpression ')'
+   87               | '(' . TypeSpecifier ')' '(' ConditionalExpression ')'
 
     BOOLEAN  shift, and go to state 17
     BYTE     shift, and go to state 18
@@ -2118,7 +2119,8 @@ state 135
     STRING   shift, and go to state 25
     VOID     shift, and go to state 26
 
-    TypeName  go to state 105
+    TypeSpecifier  go to state 105
+    TypeName       go to state 28
 
 
 state 136
@@ -2244,8 +2246,8 @@ state 141
 
 state 142
 
-   50 SelectionStatement: IF '(' . Expression ')' Statement
-   51                   | IF '(' . Expression ')' Statement ELSE Statement
+   50 SelectionStatement: IF '(' . Expression ')' Statement ELSE Statement
+   51                   | IF '(' . Expression ')' Statement
 
     OP_INC   shift, and go to state 47
     OP_DEC   shift, and go to state 48
@@ -2495,9 +2497,9 @@ state 163
 
 state 164
 
-   85 CastExpression: '(' TypeName ')' . UnaryExpression
-   86               | '(' TypeName ')' . '(' AssignmentExpression ')'
-   87               | '(' TypeName ')' . '(' ConditionalExpression ')'
+   85 CastExpression: '(' TypeSpecifier ')' . UnaryExpression
+   86               | '(' TypeSpecifier ')' . '(' AssignmentExpression ')'
+   87               | '(' TypeSpecifier ')' . '(' ConditionalExpression ')'
 
     OP_INC   shift, and go to state 47
     OP_DEC   shift, and go to state 48
@@ -2876,8 +2878,8 @@ state 196
 
 state 197
 
-   50 SelectionStatement: IF '(' Expression . ')' Statement
-   51                   | IF '(' Expression . ')' Statement ELSE Statement
+   50 SelectionStatement: IF '(' Expression . ')' Statement ELSE Statement
+   51                   | IF '(' Expression . ')' Statement
 
     ')'  shift, and go to state 217
 
@@ -2948,8 +2950,8 @@ state 204
 
 state 205
 
-   86 CastExpression: '(' TypeName ')' '(' . AssignmentExpression ')'
-   87               | '(' TypeName ')' '(' . ConditionalExpression ')'
+   86 CastExpression: '(' TypeSpecifier ')' '(' . AssignmentExpression ')'
+   87               | '(' TypeSpecifier ')' '(' . ConditionalExpression ')'
 
     OP_INC   shift, and go to state 47
     OP_DEC   shift, and go to state 48
@@ -2970,7 +2972,7 @@ state 205
 
 state 206
 
-   85 CastExpression: '(' TypeName ')' UnaryExpression .
+   85 CastExpression: '(' TypeSpecifier ')' UnaryExpression .
 
     $default  reduce using rule 85 (CastExpression)
 
@@ -3036,9 +3038,9 @@ state 210
 state 211
 
    62 ForExpr: '(' . Expression ')' ';'
-   85 CastExpression: '(' . TypeName ')' UnaryExpression
-   86               | '(' . TypeName ')' '(' AssignmentExpression ')'
-   87               | '(' . TypeName ')' '(' ConditionalExpression ')'
+   85 CastExpression: '(' . TypeSpecifier ')' UnaryExpression
+   86               | '(' . TypeSpecifier ')' '(' AssignmentExpression ')'
+   87               | '(' . TypeSpecifier ')' '(' ConditionalExpression ')'
 
     BOOLEAN  shift, and go to state 17
     BYTE     shift, and go to state 18
@@ -3057,7 +3059,8 @@ state 211
     '('      shift, and go to state 51
     '!'      shift, and go to state 52
 
-    TypeName               go to state 105
+    TypeSpecifier          go to state 105
+    TypeName               go to state 28
     MethodCall             go to state 53
     UnaryExpression        go to state 54
     BasicElement           go to state 55
@@ -3125,8 +3128,8 @@ state 216
 
 state 217
 
-   50 SelectionStatement: IF '(' Expression ')' . Statement
-   51                   | IF '(' Expression ')' . Statement ELSE Statement
+   50 SelectionStatement: IF '(' Expression ')' . Statement ELSE Statement
+   51                   | IF '(' Expression ')' . Statement
 
     BREAK     shift, and go to state 68
     CASE      shift, and go to state 69
@@ -3222,14 +3225,14 @@ state 220
 
 state 221
 
-   87 CastExpression: '(' TypeName ')' '(' ConditionalExpression . ')'
+   87 CastExpression: '(' TypeSpecifier ')' '(' ConditionalExpression . ')'
 
     ')'  shift, and go to state 234
 
 
 state 222
 
-   86 CastExpression: '(' TypeName ')' '(' AssignmentExpression . ')'
+   86 CastExpression: '(' TypeSpecifier ')' '(' AssignmentExpression . ')'
 
     ')'  shift, and go to state 235
 
@@ -3328,12 +3331,12 @@ state 230
 
 state 231
 
-   50 SelectionStatement: IF '(' Expression ')' Statement .
-   51                   | IF '(' Expression ')' Statement . ELSE Statement
+   50 SelectionStatement: IF '(' Expression ')' Statement . ELSE Statement
+   51                   | IF '(' Expression ')' Statement .
 
     ELSE  shift, and go to state 240
 
-    $default  reduce using rule 50 (SelectionStatement)
+    $default  reduce using rule 51 (SelectionStatement)
 
 
 state 232
@@ -3352,14 +3355,14 @@ state 233
 
 state 234
 
-   87 CastExpression: '(' TypeName ')' '(' ConditionalExpression ')' .
+   87 CastExpression: '(' TypeSpecifier ')' '(' ConditionalExpression ')' .
 
     $default  reduce using rule 87 (CastExpression)
 
 
 state 235
 
-   86 CastExpression: '(' TypeName ')' '(' AssignmentExpression ')' .
+   86 CastExpression: '(' TypeSpecifier ')' '(' AssignmentExpression ')' .
 
     $default  reduce using rule 86 (CastExpression)
 
@@ -3427,7 +3430,7 @@ state 239
 
 state 240
 
-   51 SelectionStatement: IF '(' Expression ')' Statement ELSE . Statement
+   50 SelectionStatement: IF '(' Expression ')' Statement ELSE . Statement
 
     BREAK     shift, and go to state 68
     CASE      shift, and go to state 69
@@ -3488,6 +3491,6 @@ state 243
 
 state 244
 
-   51 SelectionStatement: IF '(' Expression ')' Statement ELSE Statement .
+   50 SelectionStatement: IF '(' Expression ')' Statement ELSE Statement .
 
-    $default  reduce using rule 51 (SelectionStatement)
+    $default  reduce using rule 50 (SelectionStatement)

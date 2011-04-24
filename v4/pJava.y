@@ -218,7 +218,7 @@ Parameter
 Block
 	: '{' LocalVariableDeclarationsAndStatements '}'		{$$ = insert_Block($2);}
 	| '{' '}'							{$$ = insert_Block(NULL);}
-        ;
+    ;
 
 /* Declarations of variables and use of statements. */
 
@@ -240,10 +240,10 @@ LocalVariableDeclarationStatement
 Statement
 	: LabeledStatement			{$$ = insert_Statement_LabeledStatement($1);}
 	| Expression ';'			{$$ = insert_Statement_Expression($1);}
-        | SelectionStatement			{$$ = insert_Statement_SelectionStatement($1);}
-        | IterationStatement			{$$ = insert_Statement_IterationStatement($1);}
+	| SelectionStatement		{$$ = insert_Statement_SelectionStatement($1);}
+	| IterationStatement		{$$ = insert_Statement_IterationStatement($1);}
 	| JumpStatement				{$$ = insert_Statement_JumpStatement($1);}
-	| Block					{$$ = insert_Statement_Block($1);}
+	| Block						{$$ = insert_Statement_Block($1);}
 	/* TODO: Here, we might return NULL. Then, be careful to check it in the for and while's
          * statements (e.g. while(a < b); -> endless cycle.
 	 */
@@ -252,15 +252,15 @@ Statement
 
 LabeledStatement
 	: ID ':' LocalVariableDeclarationOrStatement				{$$ = insert_LabeledStatement_ID($1, $3);}
-        | CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement	{$$ = insert_LabeledStatement_CASE($4, $2);}
+	| CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement	{$$ = insert_LabeledStatement_CASE($4, $2);}
 	| DEFAULT ':' LocalVariableDeclarationOrStatement			{$$ = insert_LabeledStatement_DEFAULT($3);}
-        ;
+	;
 
 SelectionStatement
-	: IF '(' Expression ')' Statement					{$$ = insert_SelectionStatement_IF($3, $5);}
-        | IF '(' Expression ')' Statement ELSE Statement			{$$ = insert_SelectionStatement_IFELSE($3, $5, $7);}
-        | SWITCH '(' Expression ')' Block					{$$ = insert_SelectionStatement_SWITCH($3, $5);}
-        ;
+	: IF '(' Expression ')' Statement ELSE Statement			{$$ = insert_SelectionStatement_IFELSE($3, $7, $7);printf("ELSE IF!!\n");}
+	| IF '(' Expression ')' Statement					{$$ = insert_SelectionStatement_IF($3, $5);printf("IF!!\n");}
+	| SWITCH '(' Expression ')' Block					{$$ = insert_SelectionStatement_SWITCH($3, $5);}
+	;
 
 IterationStatement
 	: WHILE '(' Expression ')' Statement					{$$ = insert_IterationStatement_WHILE($3, $5);}
@@ -326,9 +326,9 @@ BasicElement
 
 CastExpression
 	: UnaryExpression					{$$ = insert_CastExpression_UnaryExpression(NULL, $1);}
-	| '(' TypeName ')' UnaryExpression			{$$ = insert_CastExpression_UnaryExpression($2, $4);}
-	| '(' TypeName ')' '(' AssignmentExpression ')'		{$$ = insert_CastExpression_AssignmentExpression($2, $5);}
-	| '(' TypeName ')' '(' ConditionalExpression ')'	{$$ = insert_CastExpression_ConditionalExpression($2, $5);}
+	| '(' TypeSpecifier ')' UnaryExpression			{$$ = insert_CastExpression_UnaryExpression($2, $4);}
+	| '(' TypeSpecifier ')' '(' AssignmentExpression ')'		{$$ = insert_CastExpression_AssignmentExpression($2, $5);}
+	| '(' TypeSpecifier ')' '(' ConditionalExpression ')'	{$$ = insert_CastExpression_ConditionalExpression($2, $5);}
 	;
 
 ArithmeticExpression
@@ -345,8 +345,8 @@ ArithmeticExpression
 
 RelationalExpression
 	: ArithmeticExpression						{$$ = insert_RelationalExpression(is_RE_NONE, $1, NULL);}
-        | ArithmeticExpression '<' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_GREATER, $1, $3);}
-        | ArithmeticExpression '>' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS, $1, $3);}
+        | ArithmeticExpression '<' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS, $1, $3);}
+        | ArithmeticExpression '>' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_GREATER, $1, $3);}
         | ArithmeticExpression OP_LESS_EQUAL    RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS_EQUAL, $1, $3);}
         | ArithmeticExpression OP_GREATER_EQUAL RelationalExpression	{$$ = insert_RelationalExpression(is_OP_GREATER_EQUAL, $1, $3);}
         | ArithmeticExpression OP_EQUAL	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_EQUAL, $1, $3);}
