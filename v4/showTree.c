@@ -100,6 +100,7 @@ void showMethodDeclarator(is_MethodDeclarator* mD)
 			printf(", ");
 	}
 	printf(")");
+
 	return;
 }
 
