@@ -1,0 +1,30 @@
+#include "structures.h"
+
+int checkProgramFile(is_ProgramFile* pF);
+int checkClassHeader(is_ClassHeader *cH);
+int checkFieldDeclaration(is_FieldDeclaration* fD);
+int checkAttrDeclaration(is_AttrDeclaration* aD);
+int checkMethodDeclaration(is_MethodDeclaration* mD);
+int checkMethodDeclarator(is_MethodDeclarator* mD);
+int checkParameter(is_Parameter* par);
+int checkVariablesDeclarator(is_VariablesDeclarator* vD);
+int checkTypeSpecifier(is_TypeSpecifier* tS);
+int checkTypename(is_Typename* tn);
+int checkBlock(is_Block* block);
+int checkLocalVariableDeclarationsOrStatements(is_LocalVariableDeclarationsOrStatements* lvdos);
+int checkLocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement* lvds);
+int checkStatement(is_Statement* s);
+int checkExpression(is_Expression* exp);
+int checkConditionalExpression(is_ConditionalExpression* cExp);
+int checkAssignmentExpression(is_AssignmentExpression* aExp);
+int checkLabeledStatement(is_LabeledStatement* lS);
+int checkSelectionStatement(is_SelectionStatement* sS);
+int checkIterationStatement(is_IterationStatement* iS);
+int checkJumpStatement(is_JumpStatement* jS);
+int checkRelationalExpression(is_RelationalExpression* rExp);
+int checkArithmeticExpression(is_ArithmeticExpression* aExp);
+int checkCastExpression(is_CastExpression* cExp);
+int checkUnaryExpression(is_UnaryExpression* uE);
+int checkBasicElement(is_BasicElement* bE);
+int checkMethodCall(is_MethodCall* mC);
+int checkForInit(is_ForInit* fI);
