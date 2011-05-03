@@ -1,6 +1,12 @@
 %{
 #include "structures.h"
 #include "y.tab.h"
+
+int line_no = 1,column=1;
+
+void count();
+void commentCounter();
+
 %}
 
 Separator	[\(\)\{\}\[\]\;\,\.]
@@ -113,10 +119,43 @@ Literal		({Numeric}|{Character}|{String})
 
 {Identifier}	{yylval.id = (char*)strdup(yytext); return ID;}
 
-{Numeric}		{yylval.id = (char*)strdup(yytext); return LITERAL;}
+{Numeric}	{yylval.id = (char*)strdup(yytext); return LITERAL;}
 
 {Literal}	{return LITERAL;}
 
+\n		{count(); line_no++;}
+
 {WhiteSpace}    {;}
 
-{Comment}	{;}
+{Comment}	{commentCounter();}
+
+
+%%
+
+/*Testar esta funcao qd o yacc estiver pronto para receber o line_no*/
+void count()
+{
+	int i;
+
+	for (i = 0; yytext[i] != '\0'; i++)
+		if (yytext[i] == '\n')
+			column = 0;
+		else if (yytext[i] == '\t')
+			column += 8 - (column % 8);
+		else
+			column++;
+
+	//ECHO;
+}
+
+void commentCounter()
+{
+	int i;
+
+	for (i = 0; yytext[i] != '\0'; i++)
+		if (yytext[i] == '\n')
+			line_no++;
+	
+	//ECHO;
+}
+

@@ -4,6 +4,8 @@
 #include "structures.h"
 #include "showTree.h"
 
+extern int line_no;
+
 /* The pointer that will hold the start of the AST. */
 is_ProgramFile* myProgram;
 
