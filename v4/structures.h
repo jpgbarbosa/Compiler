@@ -56,6 +56,7 @@ typedef enum {is_OP_INC_AFTER, is_OP_DCR_AFTER, is_OP_INC_BEFORE, is_OP_DCR_BEFO
 struct _a23{
 	is_UnaryOp op;
 	is_BasicElement *element;
+	int line;
 	
 } /*is_UnaryExpression*/;
 
@@ -71,7 +72,7 @@ struct _a22{
 struct _a21{
 	char id[MAX_SIZE];
 	is_Expressions_list *argumentsList; /* The list of arguments is a list of expressions. */
-	
+	int line;	
 } /*is_MethodCall */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -83,6 +84,7 @@ struct _a25{
 	is_ArithmeticExpression *secondAE;
 	is_CastExpression *cExpression;
 	is_ArithmeticOp op;
+	int line;
 	
 } /*is_ArithmeticExpression*/;
 
@@ -94,6 +96,7 @@ struct _a26{
 	is_ArithmeticExpression *aExpression;
 	is_RelationalExpression *next; /* It's null if it's the last element. */
 	is_RelationalOp op; /* If the above is NULL, this is useless. */
+	int line;
 	
 } /*is_RelationalExpression*/;
 
@@ -110,6 +113,8 @@ struct _a2{
 struct _a3{
 	is_Typename* typeName;
 
+	int line;
+
 } /*is_TypeSpecifier*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -123,6 +128,7 @@ struct _a24{
 		is_ConditionalExpression *conditionalExpression;
 	}data_CastExpression;
 	
+	int line;
 	is_TypeSpecifier* castType; /* It is used when we make a cast. Otherwise, it remains NULL. */
 	
 } /*is_CastExpression*/;
