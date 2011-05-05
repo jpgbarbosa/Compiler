@@ -136,7 +136,7 @@ struct _a24{
 
 struct _a5{
 	char id[MAX_SIZE];
-	
+	int line;
 } /*is_ClassHeader*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -144,7 +144,7 @@ struct _a5{
 struct _a14{
 	is_TypeSpecifier *typeSpecifier;
 	char id[MAX_SIZE];
-	
+	int line;
 }/*is_Parameter*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -168,7 +168,7 @@ struct _a12{
 struct _a10{
 	char id[MAX_SIZE];
 	is_Expression *expression;
-	
+	int line;
 } /*is_VariablesDeclarator*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -184,7 +184,7 @@ struct _a9{
 struct _a18{
 	is_TypeSpecifier *typeSpecifier;
 	is_VariablesDeclarator_list *variablesDeclarator_list;
-	
+	int line;
 }/*is_LocalVariableDeclarationStatement*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -202,7 +202,7 @@ struct _a29{
 	is_ForInit *forInit;
 	/* ForIncr. */
 	is_Expressions_list *forIncr;
-	
+	int line;
 } /*is_IterationStatement */;
 
 struct _a33{
@@ -223,7 +223,7 @@ struct _a30{
 		char id[MAX_SIZE];
 		is_ConditionalExpression *exp;
 	}data_LabeledStatement;
-	
+	int line;
 } /*is_LabeledStatement */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -237,7 +237,7 @@ struct _a31{
 		char id[MAX_SIZE];
 		is_Expression *exp;
 	}data_JumpStatement;
-	
+	int line;
 } /*is_JumpStatement. */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -251,7 +251,7 @@ struct _a32{
 	is_Statement *stat;
 	is_Statement *statSecond;
 	is_Block *block;
-	
+	int line;
 } /*is_SelectionStatement */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -279,6 +279,7 @@ struct _a17{
 		is_LocalVariableDeclarationStatement *u_lvds;
 		is_Statement *u_statement;
 	}data_LocalVariableDeclarationsOrStatements;
+	int line;
 } /*is_LocalVariableDeclarationsOrStatements */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -286,6 +287,7 @@ struct _a17{
 struct _a16{
 	is_LocalVariableDeclarationsOrStatements* lvdos;
 	is_LocalVariableDeclarationsOrStatements_list *next;
+	int line;
 } /*is_LocalVariableDeclarationsOrStatements_list*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -300,7 +302,7 @@ struct _a11{
 	is_TypeSpecifier *typeSpecifier;
 	is_MethodDeclarator *methodDeclarator;
 	is_Block *block;
-	
+	int line;
 } /*is_MethodDeclaration*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -308,6 +310,7 @@ struct _a11{
 struct _a8{
 	is_TypeSpecifier *typeSpecifier;
 	is_VariablesDeclarator_list * variablesDeclarators;
+	int line;
 } /*is_AttrDeclaration*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -319,7 +322,7 @@ struct _a7{
 		is_AttrDeclaration *u_attrDeclaration;
 		is_MethodDeclaration *u_methodDeclaration;
 	}data_FieldDeclaration;
-	
+	int line;
 } /*is_FieldDeclaration*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -348,7 +351,7 @@ struct _a27{
 		is_AssignmentExpression *aExpression;
 		is_Expression *expression;
 	}data_Expression;
-	
+	int line;
 } /*is_Expression*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */

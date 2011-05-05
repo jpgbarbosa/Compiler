@@ -511,21 +511,23 @@ is_JumpStatement* insert_JumpStatement_RETURN_EXP(is_Expression* exp)
 
 /* - - - - - - - - - - - - - - - - - - - - - - */
 
-is_MethodCall* insert_MethodCall(char *id, is_Expressions_list* list)
+is_MethodCall* insert_MethodCall(char *id, is_Expressions_list* list, int line)
 {
 	is_MethodCall* mC = malloc(sizeof(is_MethodCall));
 	mC->argumentsList = list;
+	mC->line = line;
 	strcpy(mC->id, id);
 	
 	return mC;
 }
 
-is_UnaryExpression* insert_UnaryExpression(is_UnaryOp op, is_BasicElement* element)
+is_UnaryExpression* insert_UnaryExpression(is_UnaryOp op, is_BasicElement* element, int line)
 {
 	is_UnaryExpression* uE = malloc(sizeof(is_UnaryExpression));
 	uE->op = op;
 	uE->element = element;
-	
+	uE->line = line;	
+
 	return uE;
 }
 
@@ -592,13 +594,14 @@ is_CastExpression* insert_CastExpression_ConditionalExpression(is_TypeSpecifier*
 
 /* - - - - - - - - - - - - - - - - - - - - - - */
 
-is_ArithmeticExpression* insert_ArithmeticExpression(is_ArithmeticOp op, is_ArithmeticExpression *firstAE, is_ArithmeticExpression *secondAE, is_CastExpression *cExpression)
+is_ArithmeticExpression* insert_ArithmeticExpression(is_ArithmeticOp op, is_ArithmeticExpression *firstAE, is_ArithmeticExpression *secondAE, is_CastExpression *cExpression, int line)
 {
 	is_ArithmeticExpression* aE = malloc(sizeof(is_ArithmeticExpression));
 	aE->op = op;
 	aE->firstAE = firstAE;
 	aE->secondAE = secondAE ;
 	aE->cExpression = cExpression;
+	aE->line = line;
 	
 	return aE;
 }
