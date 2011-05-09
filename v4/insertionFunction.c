@@ -5,10 +5,12 @@
 #include "structures.h"
 
 
-is_TypeSpecifier* insert_TypeSpecifier( is_Typename* typeName)
+is_TypeSpecifier* insert_TypeSpecifier( is_Typename* typeName, int line)
 {
 	is_TypeSpecifier* tS = malloc(sizeof(is_TypeSpecifier));
 	tS->typeName = typeName;
+	tS->line = line;
+
 	return tS;
 }
 
@@ -30,11 +32,14 @@ is_ProgramFile* insert_ProgramFile(is_ClassHeader *classHeader, is_FieldDeclarat
 		return pF;
 }
 
-is_ClassHeader* insert_ClassHeader(char *id)
+is_ClassHeader* insert_ClassHeader(char *id, int line)
 {
 	is_ClassHeader* cH = malloc(sizeof(is_ClassHeader));
 	
 	strcpy(cH->id, id);
+	
+	cH->line = line;
+
 	
 	return cH;
 }
@@ -62,32 +67,35 @@ is_FieldDeclaration_list* insert_FieldDeclaration_list(is_FieldDeclaration_list*
 
 /* - - - - - is_FieldDeclaration - - - - - - - */
 
-is_FieldDeclaration* insert_FieldDeclaration_AttrDeclaration(is_AttrDeclaration* declaration)
+is_FieldDeclaration* insert_FieldDeclaration_AttrDeclaration(is_AttrDeclaration* declaration, int line)
 {
 	is_FieldDeclaration* fD = malloc(sizeof(is_FieldDeclaration));
 	fD->disc_d = d_attrDeclaration;
 	fD->data_FieldDeclaration.u_attrDeclaration = declaration;
+	fD->line = line;
 
 	return fD;
 
 }
 
-is_FieldDeclaration* insert_FieldDeclaration_MethodDeclaration(is_MethodDeclaration* declaration)
+is_FieldDeclaration* insert_FieldDeclaration_MethodDeclaration(is_MethodDeclaration* declaration, int line)
 {
 	is_FieldDeclaration* fD = malloc(sizeof(is_FieldDeclaration));
 	fD->disc_d = d_methodDeclaration;
 	fD->data_FieldDeclaration.u_methodDeclaration = declaration;
+	fD->line = line;
 
 	return fD;
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - */
 
-is_AttrDeclaration* insert_AttrDeclaration( is_TypeSpecifier* typeS, is_VariablesDeclarator_list* vD_list)
+is_AttrDeclaration* insert_AttrDeclaration( is_TypeSpecifier* typeS, is_VariablesDeclarator_list* vD_list, int line)
 {
 	is_AttrDeclaration* aD = malloc(sizeof(is_AttrDeclaration));
 	aD->typeSpecifier = typeS;
 	aD->variablesDeclarators = vD_list;
+	aD->line = line;
 	
 	return aD;
 	
@@ -113,21 +121,23 @@ is_VariablesDeclarator_list* insert_VariablesDeclarator_list(is_VariablesDeclara
 	return list;
 }
 
-is_VariablesDeclarator* insert_VariablesDeclarator(char *id, is_Expression* exp)
+is_VariablesDeclarator* insert_VariablesDeclarator(char *id, is_Expression* exp, int line)
 {
 	is_VariablesDeclarator* vD = malloc(sizeof(is_VariablesDeclarator));
 	vD->expression = exp;
 	strcpy(vD->id, id);
+	vD->line = line;
 	
 	return vD;
 }
 
-is_MethodDeclaration* insert_MethodDeclaration(is_TypeSpecifier* typeS, is_MethodDeclarator* methodD, is_Block* block)
+is_MethodDeclaration* insert_MethodDeclaration(is_TypeSpecifier* typeS, is_MethodDeclarator* methodD, is_Block* block, int line)
 {
 	is_MethodDeclaration* mD = malloc(sizeof(is_MethodDeclaration));
 	mD->typeSpecifier = typeS;
 	mD->methodDeclarator = methodD;
 	mD->block = block;
+	mD->line = line;
 	
 	return mD;
 }
@@ -161,11 +171,12 @@ is_Parameters_list* insert_Parameters_list(is_Parameters_list* list, is_Paramete
 	return list;
 }
 
-is_Parameter* insert_Parameter(char *id, is_TypeSpecifier* typeS)
+is_Parameter* insert_Parameter(char *id, is_TypeSpecifier* typeS, int line)
 {
 	is_Parameter* p = malloc(sizeof(is_Parameter));
 	p->typeSpecifier = typeS;
 	strcpy(p->id, id);
+	p->line = line;
 	
 	return p;
 	
@@ -201,31 +212,34 @@ is_LocalVariableDeclarationsOrStatements_list* insert_LocalVariableDeclarationsO
 
 /* - - - - is_LocalVariableOrStatement - - - - */
 
-is_LocalVariableDeclarationsOrStatements* insert_LocalVariableDeclarationsOrStatements_LocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement* lvds)
+is_LocalVariableDeclarationsOrStatements* insert_LocalVariableDeclarationsOrStatements_LocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement* lvds, int line)
 {
 	is_LocalVariableDeclarationsOrStatements* lvdos = malloc(sizeof(is_LocalVariableDeclarationsOrStatements));
 	lvdos->disc_d = d_LocalVariableDeclarationStatement;
 	lvdos->data_LocalVariableDeclarationsOrStatements.u_lvds = lvds;
+	lvdos->line = line;
 	
 	return lvdos;
 }
 
-is_LocalVariableDeclarationsOrStatements* insert_LocalVariableDeclarationsOrStatements_Statement(is_Statement* statement)
+is_LocalVariableDeclarationsOrStatements* insert_LocalVariableDeclarationsOrStatements_Statement(is_Statement* statement, int line)
 {
 	is_LocalVariableDeclarationsOrStatements* lvdos = malloc(sizeof(is_LocalVariableDeclarationsOrStatements));
 	lvdos->disc_d = d_Statement;
 	lvdos->data_LocalVariableDeclarationsOrStatements.u_statement = statement;
+	lvdos->line = line;
 	
 	return lvdos;
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - */
 
-is_LocalVariableDeclarationStatement* insert_LocalVariableDeclarationStatement(is_TypeSpecifier* typeS, is_VariablesDeclarator_list* list)
+is_LocalVariableDeclarationStatement* insert_LocalVariableDeclarationStatement(is_TypeSpecifier* typeS, is_VariablesDeclarator_list* list, int line)
 {
 	is_LocalVariableDeclarationStatement* lvds = malloc(sizeof(is_LocalVariableDeclarationStatement));
 	lvds->typeSpecifier = typeS;
 	lvds->variablesDeclarator_list = list;
+	lvds->line = line;
 	
 	return lvds;
 }
@@ -288,30 +302,33 @@ is_Statement* insert_Statement_Block(is_Block* block)
 
 /* - - - - - - is_LabeledStatement - - - - - - */
 
-is_LabeledStatement* insert_LabeledStatement_ID(char *id, is_LocalVariableDeclarationsOrStatements *lvdos)
+is_LabeledStatement* insert_LabeledStatement_ID(char *id, is_LocalVariableDeclarationsOrStatements *lvdos, int line)
 {
 	is_LabeledStatement* lS = malloc(sizeof(is_LabeledStatement));
 	lS->disc_d = d_ID;
 	lS->lvdos = lvdos;
+	lS->line = line;
 	strcpy(lS->data_LabeledStatement.id, id);
 	
 	return lS;
 }
 
-is_LabeledStatement* insert_LabeledStatement_CASE(is_LocalVariableDeclarationsOrStatements *lvdos, is_ConditionalExpression* exp)
+is_LabeledStatement* insert_LabeledStatement_CASE(is_LocalVariableDeclarationsOrStatements *lvdos, is_ConditionalExpression* exp, int line)
 {
 	is_LabeledStatement* lS = malloc(sizeof(is_LabeledStatement));
 	lS->disc_d = d_CASE;
 	lS->lvdos = lvdos;
+	lS->line = line;
 	lS->data_LabeledStatement.exp = exp;
 	
 	return lS;
 }
 
-is_LabeledStatement* insert_LabeledStatement_DEFAULT(is_LocalVariableDeclarationsOrStatements *lvdos)
+is_LabeledStatement* insert_LabeledStatement_DEFAULT(is_LocalVariableDeclarationsOrStatements *lvdos, int line)
 {
 	is_LabeledStatement* lS = malloc(sizeof(is_LabeledStatement));
 	lS->disc_d = d_DEFAULT;
+	lS->line = line;
 	lS->lvdos = lvdos;
 	
 	return lS;
@@ -319,36 +336,39 @@ is_LabeledStatement* insert_LabeledStatement_DEFAULT(is_LocalVariableDeclaration
 
 /* - - - - - - is_SelectionStatement - - - - - */
 
-is_SelectionStatement* insert_SelectionStatement_IF(is_Expression* exp, is_Statement* stat)
+is_SelectionStatement* insert_SelectionStatement_IF(is_Expression* exp, is_Statement* stat, int line)
 {
 	is_SelectionStatement* sS = malloc(sizeof(is_SelectionStatement));
 	sS->disc_d = is_IF;
 	sS->exp = exp;
 	sS->stat = stat;
 	sS->statSecond = NULL;
+	sS->line = line;
 	
 	return sS;
 	
 }
 
-is_SelectionStatement* insert_SelectionStatement_IFELSE(is_Expression* exp, is_Statement* stat, is_Statement* statTwo)
+is_SelectionStatement* insert_SelectionStatement_IFELSE(is_Expression* exp, is_Statement* stat, is_Statement* statTwo, int line)
 {
 	is_SelectionStatement* sS = malloc(sizeof(is_SelectionStatement));
 	sS->disc_d = is_IFELSE;
 	sS->exp = exp;
 	sS->stat = stat;
 	sS->statSecond = statTwo;
+	sS->line = line;
 	
 	return sS;
 	
 }
 
-is_SelectionStatement* insert_SelectionStatement_SWITCH(is_Expression* exp, is_Block* block)
+is_SelectionStatement* insert_SelectionStatement_SWITCH(is_Expression* exp, is_Block* block, int line)
 {
 	is_SelectionStatement* sS = malloc(sizeof(is_SelectionStatement));
 	sS->disc_d = is_SWITCH;
 	sS->exp = exp;
 	sS->block = block;
+	sS->line = line;
 	
 	return sS;
 	
@@ -356,34 +376,37 @@ is_SelectionStatement* insert_SelectionStatement_SWITCH(is_Expression* exp, is_B
 
 /* - - - - - - is_IterationStatement - - - - - */
 
-is_IterationStatement* insert_IterationStatement_WHILE(is_Expression* exp, is_Statement* stat)
+is_IterationStatement* insert_IterationStatement_WHILE(is_Expression* exp, is_Statement* stat,int line)
 {
 	is_IterationStatement* iS = malloc(sizeof(is_IterationStatement));
 	iS->disc_d = is_WHILE;
 	iS->exp = exp;
 	iS->statement = stat;
+	iS->line = line;
 	
 	return iS;
 	
 }
 
-is_IterationStatement* insert_IterationStatement_DO(is_Expression* exp, is_Statement* stat)
+is_IterationStatement* insert_IterationStatement_DO(is_Expression* exp, is_Statement* stat,int line)
 {
 	is_IterationStatement* iS = malloc(sizeof(is_IterationStatement));
 	iS->disc_d = is_DO;
 	iS->exp = exp;
 	iS->statement = stat;
+	iS->line = line;
 	
 	return iS;
 	
 }
 
-is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Statement* stat,is_ForInit *forInit, is_Expressions_list *forIncr)
+is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Statement* stat,is_ForInit *forInit, is_Expressions_list *forIncr,int line)
 {
 	is_IterationStatement* iS = malloc(sizeof(is_IterationStatement));
 	iS->disc_d = is_FOR;
 	iS->exp = exp;
 	iS->statement = stat;
+	iS->line = line;
 	
 	iS->forInit = forInit;
 	iS->forIncr = forIncr;
@@ -426,31 +449,34 @@ is_Expressions_list* insert_Expressions_list(is_Expressions_list* list, is_Expre
 
 /* - - - - - - - is_Expression - - - - - - - - */
 
-is_Expression* insert_Expression_ConditionalExpression(is_ConditionalExpression *cExpression)
+is_Expression* insert_Expression_ConditionalExpression(is_ConditionalExpression *cExpression, int line)
 {
 	is_Expression* exp = malloc(sizeof(is_Expression));
 	exp->disc_d = d_ConditionalExp;
 	exp->data_Expression.cExpression = cExpression;
+	exp->line = line;
 	
 	return exp;
 	
 }
 
-is_Expression* insert_Expression_AssignmentExpression(is_AssignmentExpression *aExpression)
+is_Expression* insert_Expression_AssignmentExpression(is_AssignmentExpression *aExpression, int line)
 {
 	is_Expression* exp = malloc(sizeof(is_Expression));
 	exp->disc_d = d_AssignmentExpression;
 	exp->data_Expression.aExpression = aExpression;
+	exp->line = line;
 	
 	return exp;
 	
 }
 
-is_Expression* insert_Expression_Expression(is_Expression *expression)
+is_Expression* insert_Expression_Expression(is_Expression *expression, int line)
 {
 	is_Expression* exp = malloc(sizeof(is_Expression));
 	exp->disc_d = d_Exp;
 	exp->data_Expression.expression = expression;
+	exp->line = line;
 	
 	return exp;
 	
@@ -458,53 +484,59 @@ is_Expression* insert_Expression_Expression(is_Expression *expression)
 
 /* - - - - - - - is_JumpStatement - - - - - -  */
 
-is_JumpStatement* insert_JumpStatement_BREAK()
+is_JumpStatement* insert_JumpStatement_BREAK(int line)
 {
 	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
 	jS->disc_d = is_BREAK;
+	jS->line = line;
 	
 	return jS;
 }
 
-is_JumpStatement* insert_JumpStatement_BREAK_ID(char *id)
+is_JumpStatement* insert_JumpStatement_BREAK_ID(char *id, int line)
 {
 	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
 	jS->disc_d = is_BREAK_ID;
 	strcpy(jS->data_JumpStatement.id, id);
+	jS->line = line;
 	
 	return jS;
 }
 
-is_JumpStatement* insert_JumpStatement_CONTINUE()
+is_JumpStatement* insert_JumpStatement_CONTINUE(int line)
 {
 	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
 	jS->disc_d = is_CONTINUE;
+	jS->line = line;
 	
 	return jS;
 }
 
-is_JumpStatement* insert_JumpStatement_CONTINUE_ID(char *id)
+is_JumpStatement* insert_JumpStatement_CONTINUE_ID(char *id, int line)
 {
 	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
 	jS->disc_d = is_CONTINUE_ID;
 	strcpy(jS->data_JumpStatement.id,id);
+	jS->line = line;
 	
 	return jS;
 }
 
-is_JumpStatement* insert_JumpStatement_RETURN()
+is_JumpStatement* insert_JumpStatement_RETURN(int line)
 {
 	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
 	jS->disc_d = is_RETURN;
+	jS->line = line;
 	
 	return jS;
 }
 
-is_JumpStatement* insert_JumpStatement_RETURN_EXP(is_Expression* exp)
+is_JumpStatement* insert_JumpStatement_RETURN_EXP(is_Expression* exp, int line)
 {
 	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
 	jS->disc_d = is_RETURN_EXP;
 	jS->data_JumpStatement.exp = exp;
+	jS->line = line;
 	
 	return jS;
 }
@@ -526,7 +558,7 @@ is_UnaryExpression* insert_UnaryExpression(is_UnaryOp op, is_BasicElement* eleme
 	is_UnaryExpression* uE = malloc(sizeof(is_UnaryExpression));
 	uE->op = op;
 	uE->element = element;
-	uE->line = line;	
+	uE->line = line;
 
 	return uE;
 }
@@ -562,32 +594,35 @@ is_BasicElement* insert_BasicElement_METHOD_CALL(is_MethodCall* call)
 
 /* - - - - - - is_Cast_Expression - - - - - -  */
 
-is_CastExpression* insert_CastExpression_UnaryExpression(is_TypeSpecifier* castType, is_UnaryExpression *unaryExpression)
+is_CastExpression* insert_CastExpression_UnaryExpression(is_TypeSpecifier* castType, is_UnaryExpression *unaryExpression, int line)
 {
 	is_CastExpression* cE = malloc(sizeof(is_CastExpression));
 	cE->disc_d = d_UnaryExpression;
 	cE->data_CastExpression.unaryExpression = unaryExpression;
 	cE->castType = castType;
-	
+	cE->line = line;	
+
 	return cE;
 }
 
-is_CastExpression* insert_CastExpression_AssignmentExpression(is_TypeSpecifier* castType,is_AssignmentExpression *assignmentExpression)
+is_CastExpression* insert_CastExpression_AssignmentExpression(is_TypeSpecifier* castType,is_AssignmentExpression *assignmentExpression, int line)
 {
 	is_CastExpression* cE = malloc(sizeof(is_CastExpression));
 	cE->disc_d = d_AssignmentExpression;
 	cE->data_CastExpression.assignmentExpression = assignmentExpression;
 	cE->castType = castType;
+	cE->line = line;	
 	
 	return cE;
 }
 
-is_CastExpression* insert_CastExpression_ConditionalExpression(is_TypeSpecifier* castType, is_ConditionalExpression *conditionalExpression)
+is_CastExpression* insert_CastExpression_ConditionalExpression(is_TypeSpecifier* castType, is_ConditionalExpression *conditionalExpression, int line)
 {
 	is_CastExpression* cE = malloc(sizeof(is_CastExpression));
 	cE->disc_d = d_ConditionalExpression;
 	cE->data_CastExpression.conditionalExpression = conditionalExpression;
 	cE->castType = castType;
+	cE->line = line;	
 	
 	return cE;
 }
@@ -606,12 +641,13 @@ is_ArithmeticExpression* insert_ArithmeticExpression(is_ArithmeticOp op, is_Arit
 	return aE;
 }
 
-is_RelationalExpression* insert_RelationalExpression(is_RelationalOp op, is_ArithmeticExpression *aExpression, is_RelationalExpression *next)
+is_RelationalExpression* insert_RelationalExpression(is_RelationalOp op, is_ArithmeticExpression *aExpression, is_RelationalExpression *next, int line)
 {
 	is_RelationalExpression* rE = malloc(sizeof(is_RelationalExpression));
 	rE-> op = op;
 	rE->aExpression = aExpression;
 	rE->next = next;
+	rE->line = line;
 	
 	return rE;
 }

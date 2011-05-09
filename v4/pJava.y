@@ -136,7 +136,7 @@ is_ProgramFile* myProgram;
 
 /* It can be a single variable or an array. */
 TypeSpecifier
-	: TypeName 		{$$ = insert_TypeSpecifier($1);}
+	: TypeName 		{$$ = insert_TypeSpecifier($1, line_no);}
 	;
 
 /* TODO: We are keeping this in case we want to expand
@@ -166,8 +166,8 @@ ProgramFile
 	;
 
 ClassHeader
-	: PUBLIC CLASS ID 	{$$ = insert_ClassHeader($3);}
-	| CLASS ID 		{$$ = insert_ClassHeader($2);}
+	: PUBLIC CLASS ID 	{$$ = insert_ClassHeader($3, line_no);}
+	| CLASS ID 		{$$ = insert_ClassHeader($2, line_no);}
 	;
 /* In here, we will declare some attributes of methods. */
 FieldDeclarations
@@ -176,13 +176,13 @@ FieldDeclarations
 	;
 
 FieldDeclaration
-	: AttrDeclaration ';'	{$$ = insert_FieldDeclaration_AttrDeclaration($1);}
-	| MethodDeclaration	{$$ = insert_FieldDeclaration_MethodDeclaration($1);}
+	: AttrDeclaration ';'	{$$ = insert_FieldDeclaration_AttrDeclaration($1,line_no);}
+	| MethodDeclaration	{$$ = insert_FieldDeclaration_MethodDeclaration($1,line_no);}
 	;
 
 AttrDeclaration
-	: PUBLIC STATIC TypeSpecifier VariableDeclarators	{$$ = insert_AttrDeclaration($3, $4);}
-	|        STATIC TypeSpecifier VariableDeclarators	{$$ = insert_AttrDeclaration($2, $3);}
+	: PUBLIC STATIC TypeSpecifier VariableDeclarators	{$$ = insert_AttrDeclaration($3, $4,line_no);}
+	|        STATIC TypeSpecifier VariableDeclarators	{$$ = insert_AttrDeclaration($2, $3,line_no);}
 	;
 /* Declaration of variables. */
 VariableDeclarators
@@ -191,15 +191,15 @@ VariableDeclarators
 	;
 
 VariableDeclarator
-	: ID			{$$ = insert_VariablesDeclarator($1, NULL);}
-	| ID '=' Expression	{$$ = insert_VariablesDeclarator($1, $3);}
+	: ID			{$$ = insert_VariablesDeclarator($1, NULL,line_no);}
+	| ID '=' Expression	{$$ = insert_VariablesDeclarator($1, $3,line_no);}
 	;
 
 /* Declaration of methods. */
 
 MethodDeclaration
-	: PUBLIC STATIC TypeSpecifier MethodDeclarator        Block	{$$ = insert_MethodDeclaration($3, $4, $5);}
-	|        STATIC TypeSpecifier MethodDeclarator        Block	{$$ = insert_MethodDeclaration($2, $3, $4);}
+	: PUBLIC STATIC TypeSpecifier MethodDeclarator        Block	{$$ = insert_MethodDeclaration($3, $4, $5, line_no);}
+	|        STATIC TypeSpecifier MethodDeclarator        Block	{$$ = insert_MethodDeclaration($2, $3, $4, line_no);}
 	;
 
 MethodDeclarator
@@ -213,7 +213,7 @@ ParameterList
 	;
 
 Parameter
-	: TypeSpecifier ID		{$$ = insert_Parameter($2, $1);}
+	: TypeSpecifier ID		{$$ = insert_Parameter($2, $1, line_no);}
 	;
 
 Block
@@ -230,12 +230,12 @@ LocalVariableDeclarationsAndStatements
 	;
 
 LocalVariableDeclarationOrStatement
-	: LocalVariableDeclarationStatement		{$$ = insert_LocalVariableDeclarationsOrStatements_LocalVariableDeclarationStatement($1);}
-	| Statement					{$$ = insert_LocalVariableDeclarationsOrStatements_Statement($1);}
+	: LocalVariableDeclarationStatement		{$$ = insert_LocalVariableDeclarationsOrStatements_LocalVariableDeclarationStatement($1,line_no);}
+	| Statement					{$$ = insert_LocalVariableDeclarationsOrStatements_Statement($1,line_no);}
 	;
 
 LocalVariableDeclarationStatement
-	: TypeSpecifier VariableDeclarators ';'		{$$ = insert_LocalVariableDeclarationStatement($1, $2);}
+	: TypeSpecifier VariableDeclarators ';'		{$$ = insert_LocalVariableDeclarationStatement($1, $2, line_no);}
 	;
 
 Statement
@@ -252,23 +252,23 @@ Statement
 	;
 
 LabeledStatement
-	: ID ':' LocalVariableDeclarationOrStatement				{$$ = insert_LabeledStatement_ID($1, $3);}
-	| CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement	{$$ = insert_LabeledStatement_CASE($4, $2);}
-	| CASE '(' ConditionalExpression ')' ':' LocalVariableDeclarationOrStatement	{$$ = insert_LabeledStatement_CASE($6, $3);}
-	| DEFAULT ':' LocalVariableDeclarationOrStatement			{$$ = insert_LabeledStatement_DEFAULT($3);}
+	: ID ':' LocalVariableDeclarationOrStatement				{$$ = insert_LabeledStatement_ID($1, $3, line_no);}
+	| CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement	{$$ = insert_LabeledStatement_CASE($4, $2, line_no);}
+	| CASE '(' ConditionalExpression ')' ':' LocalVariableDeclarationOrStatement	{$$ = insert_LabeledStatement_CASE($6, $3, line_no);}
+	| DEFAULT ':' LocalVariableDeclarationOrStatement			{$$ = insert_LabeledStatement_DEFAULT($3, line_no);}
 	;
 
 SelectionStatement
-	: IF '(' Expression ')' Statement ELSE Statement			{$$ = insert_SelectionStatement_IFELSE($3, $5, $7);}
-	| IF '(' Expression ')' Statement					{$$ = insert_SelectionStatement_IF($3, $5);}
-	| SWITCH '(' Expression ')' Block					{$$ = insert_SelectionStatement_SWITCH($3, $5);}
+	: IF '(' Expression ')' Statement ELSE Statement			{$$ = insert_SelectionStatement_IFELSE($3, $5, $7,line_no);}
+	| IF '(' Expression ')' Statement					{$$ = insert_SelectionStatement_IF($3, $5,line_no);}
+	| SWITCH '(' Expression ')' Block					{$$ = insert_SelectionStatement_SWITCH($3, $5,line_no);}
 	;
 
 IterationStatement
-	: WHILE '(' Expression ')' Statement					{$$ = insert_IterationStatement_WHILE($3, $5);}
-	| DO Statement WHILE '(' Expression ')' ';'				{$$ = insert_IterationStatement_DO($5, $2);}
-	| FOR '(' ForInit ForExpr Expressions ')' Statement				{$$ = insert_IterationStatement_FOR($4, $7, $3, $5);}
-	| FOR '(' ForInit ForExpr         ')' Statement				{$$ = insert_IterationStatement_FOR($4, $6, $3, NULL);}
+	: WHILE '(' Expression ')' Statement					{$$ = insert_IterationStatement_WHILE($3, $5, line_no);}
+	| DO Statement WHILE '(' Expression ')' ';'				{$$ = insert_IterationStatement_DO($5, $2, line_no);}
+	| FOR '(' ForInit ForExpr Expressions ')' Statement				{$$ = insert_IterationStatement_FOR($4, $7, $3, $5, line_no);}
+	| FOR '(' ForInit ForExpr         ')' Statement				{$$ = insert_IterationStatement_FOR($4, $6, $3, NULL, line_no);}
 	;
 
 ForInit
@@ -278,9 +278,9 @@ ForInit
 	;
 
 ForExpr
-	: ConditionalExpression ';'	{$$ = insert_Expression_ConditionalExpression($1);}
-	| AssignmentExpression	';' 	{$$ = insert_Expression_AssignmentExpression($1);}
-	| '(' Expression ')'    ';'	{$$ = insert_Expression_Expression($2);}
+	: ConditionalExpression ';'	{$$ = insert_Expression_ConditionalExpression($1,line_no);}
+	| AssignmentExpression	';' 	{$$ = insert_Expression_AssignmentExpression($1,line_no);}
+	| '(' Expression ')'    ';'	{$$ = insert_Expression_Expression($2,line_no);}
 	| ';'				{$$ = NULL;}
 	;
 
@@ -290,30 +290,30 @@ Expressions
 	;
 
 JumpStatement
-	: BREAK    ID         ';'		{$$ = insert_JumpStatement_BREAK_ID($2);}
-	| BREAK               ';'		{$$ = insert_JumpStatement_BREAK();}
-	| CONTINUE ID 	      ';'		{$$ = insert_JumpStatement_CONTINUE_ID($2);}
-	| CONTINUE            ';'		{$$ = insert_JumpStatement_CONTINUE();}
-	| RETURN   Expression ';'		{$$ = insert_JumpStatement_RETURN_EXP($2);}
-	| RETURN              ';'		{$$ = insert_JumpStatement_RETURN();}
+	: BREAK    ID         ';'		{$$ = insert_JumpStatement_BREAK_ID($2,line_no);}
+	| BREAK               ';'		{$$ = insert_JumpStatement_BREAK(line_no);}
+	| CONTINUE ID 	      ';'		{$$ = insert_JumpStatement_CONTINUE_ID($2,line_no);}
+	| CONTINUE            ';'		{$$ = insert_JumpStatement_CONTINUE(line_no);}
+	| RETURN   Expression ';'		{$$ = insert_JumpStatement_RETURN_EXP($2,line_no);}
+	| RETURN              ';'		{$$ = insert_JumpStatement_RETURN(line_no);}
 	;
 
 MethodCall
 	/* List of arguments. */
-	: ID '(' Expressions ')'		{$$ = insert_MethodCall($1, $3);}
-	| ID '(' ')'				{$$ = insert_MethodCall($1, NULL);}
+	: ID '(' Expressions ')'		{$$ = insert_MethodCall($1, $3, line_no);}
+	| ID '(' ')'				{$$ = insert_MethodCall($1, NULL, line_no);}
 	;
 
 UnaryExpression
-	: OP_INC   BasicElement			{$$ = insert_UnaryExpression(is_OP_INC_BEFORE, $2);}
-	| OP_DEC   BasicElement			{$$ = insert_UnaryExpression(is_OP_DCR_BEFORE, $2);}
-	|          BasicElement OP_INC		{$$ = insert_UnaryExpression(is_OP_INC_AFTER, $1);}
-	|          BasicElement OP_DEC		{$$ = insert_UnaryExpression(is_OP_DCR_AFTER, $1);}
-	|          BasicElement			{$$ = insert_UnaryExpression(is_NONE, $1);}
+	: OP_INC   BasicElement			{$$ = insert_UnaryExpression(is_OP_INC_BEFORE, $2,line_no);}
+	| OP_DEC   BasicElement			{$$ = insert_UnaryExpression(is_OP_DCR_BEFORE, $2,line_no);}
+	|          BasicElement OP_INC		{$$ = insert_UnaryExpression(is_OP_INC_AFTER, $1,line_no);}
+	|          BasicElement OP_DEC		{$$ = insert_UnaryExpression(is_OP_DCR_AFTER, $1,line_no);}
+	|          BasicElement			{$$ = insert_UnaryExpression(is_NONE, $1,line_no);}
 	/* We can negate the MethodCall if it returns a boolean.
 	 * The same applies for the literal, if it's true or false.
          */
-	| '!' 	   BasicElement			{$$ = insert_UnaryExpression(is_OP_DIFFERENT_UNARY, $2);}
+	| '!' 	   BasicElement			{$$ = insert_UnaryExpression(is_OP_DIFFERENT_UNARY, $2,line_no);}
 	;
 /* The basic elements. */
 BasicElement
@@ -323,43 +323,43 @@ BasicElement
 	;
 
 CastExpression
-	: UnaryExpression					{$$ = insert_CastExpression_UnaryExpression(NULL, $1);}
-	| '(' TypeSpecifier ')' UnaryExpression			{$$ = insert_CastExpression_UnaryExpression($2, $4);}
-	| '(' TypeSpecifier ')' '(' AssignmentExpression ')'		{$$ = insert_CastExpression_AssignmentExpression($2, $5);}
-	| '(' TypeSpecifier ')' '(' ConditionalExpression ')'	{$$ = insert_CastExpression_ConditionalExpression($2, $5);}
+	: UnaryExpression					{$$ = insert_CastExpression_UnaryExpression(NULL, $1, line_no);}
+	| '(' TypeSpecifier ')' UnaryExpression			{$$ = insert_CastExpression_UnaryExpression($2, $4, line_no);}
+	| '(' TypeSpecifier ')' '(' AssignmentExpression ')'		{$$ = insert_CastExpression_AssignmentExpression($2, $5, line_no);}
+	| '(' TypeSpecifier ')' '(' ConditionalExpression ')'	{$$ = insert_CastExpression_ConditionalExpression($2, $5, line_no);}
 	;
 
 ArithmeticExpression
-	: CastExpression					{$$ = insert_ArithmeticExpression(is_AE_NONE, NULL, NULL, $1);}
-	| ArithmeticExpression  '+'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_PLUS, $1, $3, NULL);}
-	| ArithmeticExpression  '-'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_MINUS, $1, $3, NULL);}
-	| ArithmeticExpression  '/'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_SLASH, $1, $3, NULL);}
-	| ArithmeticExpression  '*'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_TIMES, $1, $3, NULL);}
-	| ArithmeticExpression  '%'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_MODULO, $1, $3, NULL);}
-	| ArithmeticExpression OP_SHL ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_OP_SHL, $1, $3, NULL);}
-	| ArithmeticExpression OP_SHR ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_OP_SHR, $1, $3, NULL);}
+	: CastExpression					{$$ = insert_ArithmeticExpression(is_AE_NONE, NULL, NULL, $1,line_no);}
+	| ArithmeticExpression  '+'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_PLUS, $1, $3, NULL,line_no);}
+	| ArithmeticExpression  '-'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_MINUS, $1, $3, NULL,line_no);}
+	| ArithmeticExpression  '/'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_SLASH, $1, $3, NULL,line_no);}
+	| ArithmeticExpression  '*'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_TIMES, $1, $3, NULL,line_no);}
+	| ArithmeticExpression  '%'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_MODULO, $1, $3, NULL,line_no);}
+	| ArithmeticExpression OP_SHL ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_OP_SHL, $1, $3, NULL,line_no);}
+	| ArithmeticExpression OP_SHR ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_OP_SHR, $1, $3, NULL,line_no);}
         ;
 
 
 RelationalExpression
-	: ArithmeticExpression						{$$ = insert_RelationalExpression(is_RE_NONE, $1, NULL);}
-	| ArithmeticExpression '<' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS, $1, $3);}
-	| ArithmeticExpression '>' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_GREATER, $1, $3);}
-	| ArithmeticExpression OP_LESS_EQUAL    RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS_EQUAL, $1, $3);}
-	| ArithmeticExpression OP_GREATER_EQUAL RelationalExpression	{$$ = insert_RelationalExpression(is_OP_GREATER_EQUAL, $1, $3);}
-	| ArithmeticExpression OP_EQUAL	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_EQUAL, $1, $3);}
-	| ArithmeticExpression OP_DIFFERENT	RelationalExpression	{$$ = insert_RelationalExpression(is_OP_DIFFERENT, $1, $3);}
-	| ArithmeticExpression '&'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SAND, $1, $3);}
-	| ArithmeticExpression '^'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SXOR, $1, $3);}
-	| ArithmeticExpression '|'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SOR, $1, $3);}
-	| ArithmeticExpression OP_AND		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_AND, $1, $3);}
-	| ArithmeticExpression OP_OR		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_OR, $1, $3);}
+	: ArithmeticExpression						{$$ = insert_RelationalExpression(is_RE_NONE, $1, NULL,line_no);}
+	| ArithmeticExpression '<' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS, $1, $3,line_no);}
+	| ArithmeticExpression '>' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_GREATER, $1, $3,line_no);}
+	| ArithmeticExpression OP_LESS_EQUAL    RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS_EQUAL, $1, $3,line_no);}
+	| ArithmeticExpression OP_GREATER_EQUAL RelationalExpression	{$$ = insert_RelationalExpression(is_OP_GREATER_EQUAL, $1, $3,line_no);}
+	| ArithmeticExpression OP_EQUAL	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_EQUAL, $1, $3,line_no);}
+	| ArithmeticExpression OP_DIFFERENT	RelationalExpression	{$$ = insert_RelationalExpression(is_OP_DIFFERENT, $1, $3,line_no);}
+	| ArithmeticExpression '&'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SAND, $1, $3,line_no);}
+	| ArithmeticExpression '^'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SXOR, $1, $3,line_no);}
+	| ArithmeticExpression '|'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SOR, $1, $3,line_no);}
+	| ArithmeticExpression OP_AND		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_AND, $1, $3,line_no);}
+	| ArithmeticExpression OP_OR		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_OR, $1, $3,line_no);}
 	;
 
 Expression
-	: ConditionalExpression		{$$ = insert_Expression_ConditionalExpression($1);}
-	| AssignmentExpression		{$$ = insert_Expression_AssignmentExpression($1);}
-	| '(' Expression ')'		{$$ = insert_Expression_Expression($2);}
+	: ConditionalExpression		{$$ = insert_Expression_ConditionalExpression($1,line_no);}
+	| AssignmentExpression		{$$ = insert_Expression_AssignmentExpression($1,line_no);}
+	| '(' Expression ')'		{$$ = insert_Expression_Expression($2,line_no);}
 	;
 
 

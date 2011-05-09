@@ -287,7 +287,6 @@ struct _a17{
 struct _a16{
 	is_LocalVariableDeclarationsOrStatements* lvdos;
 	is_LocalVariableDeclarationsOrStatements_list *next;
-	int line;
 } /*is_LocalVariableDeclarationsOrStatements_list*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
