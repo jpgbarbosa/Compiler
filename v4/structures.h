@@ -159,6 +159,7 @@ struct _a13{
 struct _a12{
 	char id[MAX_SIZE];
 	is_Parameters_list *parametersList;
+	int line;
 	
 } /*is_MethodDeclarator*/;
 

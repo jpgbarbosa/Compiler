@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "check.h"
 #include "structures.h"
+#include "symbolTable.h"
+#include "check.h"
 
 
 int checkProgramFile(is_ProgramFile* pF)
@@ -15,7 +16,7 @@ int checkProgramFile(is_ProgramFile* pF)
 	is_FieldDeclaration_list* aux;
 	
 	for(aux = pF->fieldDeclarations; aux != NULL; aux = aux->next)
-		errorCount += showFieldDeclaration(aux->fieldDeclaration);
+		errorCount += checkFieldDeclaration(aux->fieldDeclaration);
 	
 	return errorCount;
 }
@@ -23,6 +24,7 @@ int checkProgramFile(is_ProgramFile* pF)
 int checkClassHeader(is_ClassHeader *cH)
 {
 	//TODO: Is it correct?
+	//HERE
 	return 0;
 }
 
@@ -54,7 +56,7 @@ int checkAttrDeclaration(is_AttrDeclaration* aD)
 	is_VariablesDeclarator_list* aux;
 	
 	for(aux = aD->variablesDeclarators; aux != NULL; aux = aux->next)
-		errorCount += checkVariablesDeclarator(aux->variablesDeclarator);
+		errorCount += checkVariablesDeclarator(aux->variablesDeclarator,enumConverter(aD->typeSpecifier->typeName->type));
 	
 	return errorCount;
 }
@@ -65,7 +67,7 @@ int checkMethodDeclaration(is_MethodDeclaration* mD)
 	
 	errorCount += checkTypeSpecifier(mD->typeSpecifier);
 	errorCount += checkMethodDeclarator(mD->methodDeclarator);
-	errorCount += showBlock(mD->block);
+	errorCount += checkBlock(mD->block);
 	
 	return errorCount;
 }
@@ -74,8 +76,15 @@ int checkMethodDeclarator(is_MethodDeclarator* mD)
 {
 	int errorCount = 0;
 	
-	//TODO This one!
-	printf("%s ", mD->id);
+	//TODO: Can we have a method and a variable with the same name? Check.
+	//HERE
+	tableElement *new = insertSymbol(mD->id, s_METHOD);
+	
+	if (new == NULL)
+	{
+		printf("Line %d: There's already a symbol with that name (%s)!\n", mD->line, mD->id);
+		errorCount = 1;
+	}
 
 	/* And now the list of parameters. */
 	is_Parameters_list* aux;
@@ -94,15 +103,24 @@ int checkParameter(is_Parameter* par)
 	errorCount += checkTypeSpecifier(par->typeSpecifier);
 	
 	//TODO : This one!
-	printf("%s", par->id);
+	//HERE
+	//printf("%s", par->id);
+	
+	return errorCount;
 }
 
-int checkVariablesDeclarator(is_VariablesDeclarator* vD)
+int checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type)
 {
 	int errorCount = 0;
 	
-	//TODO: This one
-	printf("%s", vD->id);
+	//HERE
+	tableElement *new = insertSymbol(vD->id, type);
+	
+	if (new == NULL)
+	{
+		printf("Line %d: There's already a symbol with that name (%s)!\n", vD->line, vD->id);
+		errorCount = 1;
+	}
 	
 	/* It is initialiazed. */
 	if (vD->expression != NULL)
@@ -125,6 +143,7 @@ int checkTypename(is_Typename* tn)
 	int errorCount = 0;
 	
 	//TODO: This one!
+	//HERE
 	/* Show the type of the variable. */
 	switch(tn->type)
 	{
@@ -186,7 +205,7 @@ int checkLocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement*
 	is_VariablesDeclarator_list* aux;
 	
 	for(aux = lvds->variablesDeclarator_list; aux != NULL; aux = aux->next)
-		errorCount += checkVariablesDeclarator(aux->variablesDeclarator);
+		errorCount += checkVariablesDeclarator(aux->variablesDeclarator, enumConverter(lvds->typeSpecifier->typeName->type));
 
 	return errorCount;
 }
@@ -266,8 +285,8 @@ int checkAssignmentExpression(is_AssignmentExpression* aExp)
 {
 	int errorCount = 0;
 
-	//TODO This one!
-	printf("%s ", aExp->id);
+	//This is not a declaration.
+	//HERE
 	
 	errorCount += checkExpression(aExp->expression);
 	
@@ -281,8 +300,8 @@ int checkLabeledStatement(is_LabeledStatement* lS)
 	switch(lS->disc_d)
 	{
 		case (d_ID):
-			//TODO: This one!
-			printf("%s : ", lS->data_LabeledStatement.id);
+			//This it not a declaration.
+			//HERE
 			errorCount += checkLocalVariableDeclarationsOrStatements(lS->lvdos);
 			break;
 		case (d_CASE):
@@ -383,15 +402,17 @@ int checkJumpStatement(is_JumpStatement* jS)
 	switch(jS->disc_d)
 	{
 		case (is_BREAK_ID):
-			//TODO This one!
-			printf("break %s;\n", jS->data_JumpStatement.id);
+			//This is not a declaration
+			//HERE
 			break;
 		case (is_CONTINUE_ID):
-			//TODO This one!
-			printf("continue %s;\n", jS->data_JumpStatement.id);
+			//This is not a declaration
+			//HERE
 			break;
 		case (is_RETURN_EXP):
 			errorCount += checkExpression(jS->data_JumpStatement.exp);
+			break;
+		default:
 			break;
 	}
 
@@ -459,6 +480,8 @@ int checkCastExpression(is_CastExpression* cExp)
 			errorCount += checkConditionalExpression(cExp->data_CastExpression.conditionalExpression);
 			break;
 	}
+	
+	return errorCount;
 }
 
 int checkUnaryExpression(is_UnaryExpression* uE)
@@ -498,12 +521,12 @@ int checkBasicElement(is_BasicElement* bE)
 	switch(bE->disc_d)
 	{
 		case (is_ID):
-			//TODO This one
-			printf("%s", bE->data_BasicElement.id);
+			//This is not a declaration
+			//HERE
 			break;
 		case (is_LITERAL):
-			//TODO: This one
-			printf("%s", bE->data_BasicElement.literal);
+			//This is not a declaration
+			//HERE
 			break;
 		case (is_METHOD_CALL):
 			errorCount += checkMethodCall(bE->data_BasicElement.methodCall);
@@ -520,10 +543,35 @@ int checkMethodCall(is_MethodCall* mC)
 	is_Expressions_list* aux;
 	
 	/* Prints the identification of the method. */
-	//TODO This one!
-	printf("%s (", mC->id);
+	//This is not a declaration
+	//HERE
 	
 	for (aux = mC->argumentsList; aux != NULL; aux = aux->next)
-		errorCount += checkExpression(aux->exp);	
+		errorCount += checkExpression(aux->exp);
 		
+	return errorCount;	
+		
+}
+
+tableBasicTypes enumConverter(is_PrimitiveType type)
+{
+	switch(type)
+	{
+		case is_BOOLEAN: 		return s_BOOLEAN;
+		case is_CHAR:			return s_CHAR;
+		case is_BYTE:			return s_BYTE;
+		case is_SHORT:			return s_SHORT;
+		case is_INT:			return s_INT;
+		case is_LONG:			return s_LONG;
+		case is_FLOAT:			return s_FLOAT;
+		case is_DOUBLE:			return s_DOUBLE;
+		case is_VOID:			return s_VOID;
+		case is_STRING:			return s_STRING;
+		case is_STRING_ARRAY:	return s_STRING_ARRAY;
+		
+	}
+	
+	//TODO: WATCHOUT FOR THE DEFAULT!
+	return s_INT;
+	
 }

@@ -542,6 +542,8 @@ void showRelationalExpression(is_RelationalExpression* rExp, bool nextLine, bool
 		case (is_OP_OR):
 			printf(" || ");
 			break;
+		case (is_RE_NONE):
+			break;
 	}
 	
 	/* If there are more relational expressions on the chain, we have to
@@ -597,6 +599,8 @@ void showArithmeticExpression(is_ArithmeticExpression* aExp, bool nextLine, bool
 			break;
 		case (is_OP_SHR):
 			printf(" >> ");
+			break;
+		case (is_AE_NONE):
 			break;
 	}
 	

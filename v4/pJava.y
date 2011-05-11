@@ -3,8 +3,11 @@
 #include "insertionFunction.h"
 #include "structures.h"
 #include "showTree.h"
+#include "symbolTable.h"
 
 extern int line_no;
+
+tableElement *symtab = NULL;
 
 /* The pointer that will hold the start of the AST. */
 is_ProgramFile* myProgram;
@@ -388,5 +391,6 @@ int main()
 {
 	yyparse();
 	showProgramFile(myProgram);
+	printf("\nWe have found %d errors in the program.\n", checkProgramFile(myProgram));
 	return 0;
 }

@@ -2211,7 +2211,7 @@ void count()
 		else
 			column++;
 
-	//ECHO;
+	/* ECHO */;
 }
 
 void commentCounter()
@@ -2222,7 +2222,7 @@ void commentCounter()
 		if (yytext[i] == '\n')
 			line_no++;
 	
-	//ECHO;
+	/* ECHO */;
 }
 
 
