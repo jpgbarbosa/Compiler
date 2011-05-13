@@ -49,6 +49,7 @@ void showTable()
 		
 }
 
+//TODO: nao deviamos passar a tabela como argumento? penso que vamos ter diferentes tabelas dependendo do contexto
 /* Looks for a given identifier. Returns 0 if it already exists. */
 tableElement *searchSymbol(char *str)
 {
@@ -61,7 +62,27 @@ tableElement *searchSymbol(char *str)
 	return NULL;
 }
 
+environmentList* createEnvironment(is_MethodDeclaration *method){
 
+	environmentList *env = (environmentList*)malloc(sizeof(environmentList));
+	strcpy(env->name,method->methodDeclarator->id);
+	//env->returnType = method->typeSpecifier->typeName->type; TODO: we must build some translation unit from primitiveType to tableBasicTypes
+	env->type = Func; //TODO: CHECK THIS, declared in symbolTable.h
+	env->next = NULL;
+
+	return env;
+}
+
+environmentList* lookupEnvironment(environmentList* list, char *str){
+
+	environmentList *aux;
+
+	for(aux=list; aux; aux=aux->next)
+		if(strcmp(aux->name, str)==0)
+			return aux;
+
+	return NULL;
+}
 
 
 
