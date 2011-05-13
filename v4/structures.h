@@ -47,6 +47,7 @@ struct _a20{
 		char literal[MAX_SIZE];
 		is_MethodCall *methodCall; /* It can be NULL in case we are not using it. */
 	}data_BasicElement;
+	int line;
 
 } /*is_BasicElement*/;
 
@@ -373,6 +374,7 @@ struct _a1{
 	char id[MAX_SIZE];
 	is_AssignmentOp assOp;
 	is_Expression* expression;
+	int line;
 
 } /*is_AssignmnetExpression*/;
 

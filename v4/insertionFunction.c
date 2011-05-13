@@ -565,29 +565,32 @@ is_UnaryExpression* insert_UnaryExpression(is_UnaryOp op, is_BasicElement* eleme
 
 /* - - - - - - - is_BasicElement - - - - - - - */
 
-is_BasicElement* insert_BasicElement_ID(char *id)
+is_BasicElement* insert_BasicElement_ID(char *id, int line)
 {
 	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
 	bE->disc_d = is_ID;
 	strcpy(bE->data_BasicElement.id, id);
+	bE->line = line;
 	
 	return bE;
 }
 
-is_BasicElement* insert_BasicElement_LITERAL(char *literal)
+is_BasicElement* insert_BasicElement_LITERAL(char *literal, int line)
 {
 	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
 	bE->disc_d = is_LITERAL;
 	strcpy(bE->data_BasicElement.literal, literal);
+	bE->line = line;
 	
 	return bE;
 }
 
-is_BasicElement* insert_BasicElement_METHOD_CALL(is_MethodCall* call)
+is_BasicElement* insert_BasicElement_METHOD_CALL(is_MethodCall* call, int line)
 {
 	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
 	bE->disc_d = is_METHOD_CALL;
 	bE->data_BasicElement.methodCall = call;
+	bE->line = line;
 	
 	return bE;
 }
@@ -663,12 +666,13 @@ is_ConditionalExpression* insert_ConditionalExpression(is_ConditionalType type, 
 	return cE;
 }
 
-is_AssignmentExpression* insert_AssignmentExpression(char *id, is_AssignmentOp assOp, is_Expression* expression)
+is_AssignmentExpression* insert_AssignmentExpression(char *id, is_AssignmentOp assOp, is_Expression* expression, int line)
 {
 	is_AssignmentExpression* aE = malloc(sizeof(is_AssignmentExpression));
 	aE->assOp = assOp;
 	aE->expression = expression;
 	strcpy(aE-> id, id);
+	aE->line = line;
 	
 	return aE;
 }

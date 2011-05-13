@@ -320,9 +320,9 @@ UnaryExpression
 	;
 /* The basic elements. */
 BasicElement
-	: LITERAL				{$$ = insert_BasicElement_LITERAL($1);}
-	| MethodCall				{$$ = insert_BasicElement_METHOD_CALL($1);}
-	| ID					{$$ = insert_BasicElement_ID($1);}
+	: LITERAL				{$$ = insert_BasicElement_LITERAL($1, line_no);}
+	| MethodCall				{$$ = insert_BasicElement_METHOD_CALL($1, line_no);}
+	| ID					{$$ = insert_BasicElement_ID($1, line_no);}
 	;
 
 CastExpression
@@ -373,15 +373,15 @@ ConditionalExpression
 	;
 
 AssignmentExpression
-	: ID '='     Expression		{$$ = insert_AssignmentExpression($1, is_ASSIGN, $3);}
-	| ID ASS_MUL Expression		{$$ = insert_AssignmentExpression($1, is_ASS_MUL, $3);}
-	| ID ASS_DIV Expression		{$$ = insert_AssignmentExpression($1, is_ASS_DIV, $3);}
-	| ID ASS_ADD Expression		{$$ = insert_AssignmentExpression($1, is_ASS_ADD, $3);}
-	| ID ASS_SUB Expression		{$$ = insert_AssignmentExpression($1, is_ASS_SUB, $3);}
-	| ID ASS_XOR Expression		{$$ = insert_AssignmentExpression($1, is_ASS_XOR, $3);}
-	| ID ASS_MOD Expression		{$$ = insert_AssignmentExpression($1, is_ASS_MOD, $3);}
-	| ID ASS_SHL Expression		{$$ = insert_AssignmentExpression($1, is_ASS_SHL, $3);}
-	| ID ASS_SHR Expression		{$$ = insert_AssignmentExpression($1, is_ASS_SHR, $3);}
+	: ID '='     Expression		{$$ = insert_AssignmentExpression($1, is_ASSIGN, $3, line_no);}
+	| ID ASS_MUL Expression		{$$ = insert_AssignmentExpression($1, is_ASS_MUL, $3, line_no);}
+	| ID ASS_DIV Expression		{$$ = insert_AssignmentExpression($1, is_ASS_DIV, $3, line_no);}
+	| ID ASS_ADD Expression		{$$ = insert_AssignmentExpression($1, is_ASS_ADD, $3, line_no);}
+	| ID ASS_SUB Expression		{$$ = insert_AssignmentExpression($1, is_ASS_SUB, $3, line_no);}
+	| ID ASS_XOR Expression		{$$ = insert_AssignmentExpression($1, is_ASS_XOR, $3, line_no);}
+	| ID ASS_MOD Expression		{$$ = insert_AssignmentExpression($1, is_ASS_MOD, $3, line_no);}
+	| ID ASS_SHL Expression		{$$ = insert_AssignmentExpression($1, is_ASS_SHL, $3, line_no);}
+	| ID ASS_SHR Expression		{$$ = insert_AssignmentExpression($1, is_ASS_SHR, $3, line_no);}
 	;
 
 

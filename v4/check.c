@@ -285,8 +285,12 @@ int checkAssignmentExpression(is_AssignmentExpression* aExp)
 {
 	int errorCount = 0;
 
-	//This is not a declaration.
-	//HERE
+	tableElement *search = searchSymbol(aExp->id);
+	if (search == NULL)
+	{
+		printf("Line %d: %s hasn't been declared in this scope.\n", aExp->line, aExp->id);
+		errorCount = 1;
+	}
 	
 	errorCount += checkExpression(aExp->expression);
 	
@@ -517,12 +521,19 @@ int checkUnaryExpression(is_UnaryExpression* uE)
 int checkBasicElement(is_BasicElement* bE)
 {
 	int errorCount = 0;
+	tableElement *search;
 			
 	switch(bE->disc_d)
 	{
 		case (is_ID):
-			//This is not a declaration
 			//HERE
+			/* Looks for this symbol in the table. */
+			search = searchSymbol(bE->data_BasicElement.id);
+			if (search == NULL)
+			{
+				printf("Line %d: %s hasn't been declared in this scope.\n", bE->line, bE->data_BasicElement.id);
+				errorCount = 1;
+			}
 			break;
 		case (is_LITERAL):
 			//This is not a declaration

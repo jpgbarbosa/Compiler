@@ -2328,21 +2328,21 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 323 "pJava.y"
-    {(yyval._basicElement) = insert_BasicElement_LITERAL((yyvsp[(1) - (1)].id));}
+    {(yyval._basicElement) = insert_BasicElement_LITERAL((yyvsp[(1) - (1)].id), line_no);}
     break;
 
   case 83:
 
 /* Line 1455 of yacc.c  */
 #line 324 "pJava.y"
-    {(yyval._basicElement) = insert_BasicElement_METHOD_CALL((yyvsp[(1) - (1)]._methodCall));}
+    {(yyval._basicElement) = insert_BasicElement_METHOD_CALL((yyvsp[(1) - (1)]._methodCall), line_no);}
     break;
 
   case 84:
 
 /* Line 1455 of yacc.c  */
 #line 325 "pJava.y"
-    {(yyval._basicElement) = insert_BasicElement_ID((yyvsp[(1) - (1)].id));}
+    {(yyval._basicElement) = insert_BasicElement_ID((yyvsp[(1) - (1)].id), line_no);}
     break;
 
   case 85:
@@ -2559,63 +2559,63 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 376 "pJava.y"
-    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASSIGN, (yyvsp[(3) - (3)]._expression));}
+    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASSIGN, (yyvsp[(3) - (3)]._expression), line_no);}
     break;
 
   case 116:
 
 /* Line 1455 of yacc.c  */
 #line 377 "pJava.y"
-    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_MUL, (yyvsp[(3) - (3)]._expression));}
+    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_MUL, (yyvsp[(3) - (3)]._expression), line_no);}
     break;
 
   case 117:
 
 /* Line 1455 of yacc.c  */
 #line 378 "pJava.y"
-    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_DIV, (yyvsp[(3) - (3)]._expression));}
+    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_DIV, (yyvsp[(3) - (3)]._expression), line_no);}
     break;
 
   case 118:
 
 /* Line 1455 of yacc.c  */
 #line 379 "pJava.y"
-    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_ADD, (yyvsp[(3) - (3)]._expression));}
+    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_ADD, (yyvsp[(3) - (3)]._expression), line_no);}
     break;
 
   case 119:
 
 /* Line 1455 of yacc.c  */
 #line 380 "pJava.y"
-    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_SUB, (yyvsp[(3) - (3)]._expression));}
+    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_SUB, (yyvsp[(3) - (3)]._expression), line_no);}
     break;
 
   case 120:
 
 /* Line 1455 of yacc.c  */
 #line 381 "pJava.y"
-    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_XOR, (yyvsp[(3) - (3)]._expression));}
+    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_XOR, (yyvsp[(3) - (3)]._expression), line_no);}
     break;
 
   case 121:
 
 /* Line 1455 of yacc.c  */
 #line 382 "pJava.y"
-    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_MOD, (yyvsp[(3) - (3)]._expression));}
+    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_MOD, (yyvsp[(3) - (3)]._expression), line_no);}
     break;
 
   case 122:
 
 /* Line 1455 of yacc.c  */
 #line 383 "pJava.y"
-    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_SHL, (yyvsp[(3) - (3)]._expression));}
+    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_SHL, (yyvsp[(3) - (3)]._expression), line_no);}
     break;
 
   case 123:
 
 /* Line 1455 of yacc.c  */
 #line 384 "pJava.y"
-    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_SHR, (yyvsp[(3) - (3)]._expression));}
+    {(yyval._assignmentExpression) = insert_AssignmentExpression((yyvsp[(1) - (3)].id), is_ASS_SHR, (yyvsp[(3) - (3)]._expression), line_no);}
     break;
 
 

@@ -20,20 +20,21 @@ struct _t1
 
 
 typedef enum {Func, WhileCycle, forCycle,  doCyle, ifElse, Global} environmentType;
-typedef struct _t4{
-	char* name;
+
+struct _t4{
+	char *name;
 	tableElement *locals;
 	environmentType type;
 
-	struct _t4* father;
-	struct _t4* localEnvironment;
+	environmentList *father;
+	environmentList *localEnvironment;
 
 	tableBasicTypes returnType;
-	struct _t4 *next;
+	environmentList *next;
 } /* environmentList */;
 
 
-typedef struct _t5{
+struct _t5{
 	tableElement* globalTable;
 	environmentList* procs;
 } /* progEnv */;
