@@ -4,6 +4,7 @@
 #include "insertionFunction.h"
 #include "structures.h"
 #include "symbolTable.h"
+#include "semantics.h"
 
 extern progEnv* pEnv;
 
@@ -152,11 +153,18 @@ is_MethodDeclarator* insert_MethodDeclarator(char *id, is_Parameters_list* list)
 	
 	/* Inserts the method in the list of global symbols. */
 	tableElement *sym = insertSymbol(mD->id, s_METHOD, pEnv->globalTable);
-	if (sym == NULL)
-		printf("Line %d: There's already a symbol with that name (%s)!\n", mD->line, mD->id);
-		
-	//TODO: Don't forget about the parameters! Their number and types must be defined.
 	
+	if (sym == NULL)
+		printf("Line %d: There's already a symbol with that name ('%s')!\n", mD->line, mD->id);
+	else
+	{
+		sym->noParameters = 0;
+		/* Now, we insert the number of types of the parameters. */
+		is_Parameters_list *aux;
+		for (aux = list; aux; aux = aux-> next)
+			sym->parameters[sym->noParameters++] = enumConverter(aux->parameter->typeSpecifier->typeName->type);
+	}
+
 	return mD;
 }
 

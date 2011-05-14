@@ -82,7 +82,7 @@ tableElement *searchSymbolLocal(char *str, environmentList *environment)
 	return searchSymbolGlobal(str);
 }
 
-/* Looks for a symbol in the global list. */
+/* Looks for a variable in the global list. */
 tableElement *searchSymbolGlobal(char *str)
 {
 	tableElement *aux;
@@ -90,6 +90,30 @@ tableElement *searchSymbolGlobal(char *str)
 	for(aux = pEnv->globalTable->locals; aux; aux = aux->next)
 		if(strcmp(aux->name, str) == 0)
 			return aux;
+
+	return NULL;
+}
+
+/* Looks for a method in the global list. */
+tableElement *searchMethod(is_MethodCall *mD)
+{
+	tableElement *aux;
+	int currPar; 
+	
+	for(aux = pEnv->globalTable->locals; aux; aux = aux->next)
+		/* We have found the name of the method. */
+		if(strcmp(aux->name, mD->id) == 0)
+		{
+			currPar = 0;
+			//TODO: Make this.
+			/* Now, we have to see if it has enough parameters. */
+			/*currPar = 0;
+			is_Parameters_list *aux;
+			for (aux = mD; aux; aux = aux-> next)
+				sym->parameters[sym->noParameters++] = enumConverter(aux->parameter->typeSpecifier->typeName->type);*/
+				
+			return aux;
+		}
 
 	return NULL;
 }

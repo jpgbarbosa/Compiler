@@ -483,7 +483,7 @@ void checkMethodCall(is_MethodCall* mC, environmentList *environment)
 {
 	is_Expressions_list* aux;
 
-	if (!searchSymbolGlobal(mC->id))
+	if (!searchMethod(mC))
 	{
 		printf("Line %d: Method '%s' has not been declared.\n", mC->line, mC->id);
 		errorCount++;
