@@ -3,7 +3,6 @@ public class gcdRrec{
 
 	public static void main(String[] args) {
 		int a, b, c = 5;
-
 		
 		a = (2 + 2);
 		
@@ -52,6 +51,8 @@ public class gcdRrec{
 		}
 			
 		a = (a++);
+		
+		gmds();
 	}
 	
 	public static int gcd(int a, int b) {

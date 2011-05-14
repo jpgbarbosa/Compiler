@@ -87,7 +87,7 @@ void checkParameter(is_Parameter* par, environmentList *environment)
 	
 	if (sym == NULL)
 	{
-		printf("Line %d: There's another parameter with that name (%s)!\n", par->line, par->id);
+		printf("Line %d: There's another parameter with that name ('%s')!\n", par->line, par->id);
 		errorCount++;
 	}
 }
@@ -99,7 +99,7 @@ void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, 
 	
 	if (new == NULL)
 	{
-		printf("Line %d: There's already a symbol with that name (%s)!\n", vD->line, vD->id);
+		printf("Line %d: There's already a symbol with that name ('%s')!\n", vD->line, vD->id);
 		errorCount++;
 	}
 	
@@ -219,7 +219,7 @@ void checkAssignmentExpression(is_AssignmentExpression* aExp, environmentList *e
 	tableElement *search = searchSymbolLocal(aExp->id, environment);
 	if (search == NULL)
 	{
-		printf("Line %d: %s hasn't been declared in this scope.\n", aExp->line, aExp->id);
+		printf("Line %d: '%s' hasn't been declared in this scope.\n", aExp->line, aExp->id);
 		errorCount++;
 	}
 	
@@ -463,7 +463,7 @@ void checkBasicElement(is_BasicElement* bE, environmentList *environment)
 			search = searchSymbolLocal(bE->data_BasicElement.id, environment);
 			if (search == NULL)
 			{
-				printf("Line %d: %s hasn't been declared in this scope.\n", bE->line, bE->data_BasicElement.id);
+				printf("Line %d: '%s' hasn't been declared in this scope.\n", bE->line, bE->data_BasicElement.id);
 				errorCount++;
 			}
 			break;
@@ -481,19 +481,17 @@ void checkBasicElement(is_BasicElement* bE, environmentList *environment)
 
 void checkMethodCall(is_MethodCall* mC, environmentList *environment)
 {
-	
-	
 	is_Expressions_list* aux;
-	
-	/* Prints the identification of the method. */
-	//This is not a declaration
-	//HERE
+
+	if (!searchSymbolGlobal(mC->id))
+	{
+		printf("Line %d: Method '%s' has not been declared.\n", mC->line, mC->id);
+		errorCount++;
+	}
 	
 	for (aux = mC->argumentsList; aux != NULL; aux = aux->next)
 		checkExpression(aux->exp, environment);
-		
-		
-		
+				
 }
 
 tableBasicTypes enumConverter(is_PrimitiveType type)
