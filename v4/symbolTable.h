@@ -15,35 +15,32 @@ struct _t1
 	char name[256];
 	tableBasicTypes type;
 	tableElement* next;
+	int offset;
 
 } /* tableElement */;
 
 
-typedef enum {Func, WhileCycle, forCycle,  doCyle, ifElse, Global} environmentType;
-
 struct _t4{
-	char *name;
 	tableElement *locals;
-	environmentType type;
-
-	environmentList *father;
-	environmentList *localEnvironment;
-
+	environmentList *parent;
+	/* Only for methods. */
+	char name[256];
 	tableBasicTypes returnType;
 	environmentList *next;
 } /* environmentList */;
 
-
 struct _t5{
-	tableElement* globalTable;
-	environmentList* procs;
+	environmentList* globalTable;
+	environmentList* methods;
 } /* progEnv */;
 
-tableElement *insertSymbol(char *str, tableBasicTypes t);
+tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *environment);
 void showTable();
-tableElement *searchSymbol(char *str);
-environmentList* createEnvironment(is_MethodDeclaration *method);
-environmentList* lookupEnvironment(environmentList* list, char *str);
+tableElement *searchSymbolLocal(char *str, environmentList *environment);
+tableElement *searchSymbolGlobal(char *str);
+environmentList *searchEnvironment(char *str);
+environmentList *createNewEnvironment(environmentList *parent);
+
 
 
 #endif

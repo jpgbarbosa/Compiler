@@ -7,7 +7,8 @@
 
 extern int line_no;
 
-tableElement *symtab = NULL;
+progEnv *pEnv = NULL;
+
 
 /* The pointer that will hold the start of the AST. */
 is_ProgramFile* myProgram;

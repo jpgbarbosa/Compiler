@@ -1,0 +1,31 @@
+#include "structures.h"
+
+void checkProgramFile(is_ProgramFile* pF);
+void checkClassHeader(is_ClassHeader *cH);
+void checkFieldDeclaration(is_FieldDeclaration* fD);
+void checkAttrDeclaration(is_AttrDeclaration* aD);
+void checkMethodDeclaration(is_MethodDeclaration* mD);
+void checkMethodDeclarator(is_MethodDeclarator* mD, environmentList *environment);
+void checkParameter(is_Parameter* par, environmentList *environment);
+void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, environmentList *environment);
+void checkTypeSpecifier(is_TypeSpecifier* tS, environmentList *environment);
+void checkTypename(is_Typename* tn, environmentList *environment);
+void checkBlock(is_Block* block, environmentList *environment);
+void checkLocalVariableDeclarationsOrStatements(is_LocalVariableDeclarationsOrStatements* lvdos, environmentList *environment);
+void checkLocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement* lvds, environmentList *environment);
+void checkStatement(is_Statement* s, environmentList *environment);
+void checkExpression(is_Expression* exp, environmentList *environment);
+void checkConditionalExpression(is_ConditionalExpression* cExp, environmentList *environment);
+void checkAssignmentExpression(is_AssignmentExpression* aExp, environmentList *environment);
+void checkLabeledStatement(is_LabeledStatement* lS, environmentList *environment);
+void checkSelectionStatement(is_SelectionStatement* sS, environmentList *environment);
+void checkIterationStatement(is_IterationStatement* iS, environmentList *environment);
+void checkJumpStatement(is_JumpStatement* jS, environmentList *environment);
+void checkRelationalExpression(is_RelationalExpression* rExp, environmentList *environment);
+void checkArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment);
+void checkCastExpression(is_CastExpression* cExp, environmentList *environment);
+void checkUnaryExpression(is_UnaryExpression* uE, environmentList *environment);
+void checkBasicElement(is_BasicElement* bE, environmentList *environment);
+void checkMethodCall(is_MethodCall* mC, environmentList *environment);
+void checkForInit(is_ForInit* fI, environmentList *environment);
+tableBasicTypes enumConverter(is_PrimitiveType type);
