@@ -33,7 +33,8 @@ tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *enviro
 	}
 	/* It's the first symbol. */
 	else
-		environment->locals = newSymbol;		
+		environment->locals = newSymbol;	
+			
 	/* If we are inserting a method, we have to create its corresponding
 	 * environment.
 	 */
@@ -65,12 +66,20 @@ tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *enviro
 /* Looks for a given identifier. Returns 0 if it already exists. */
 tableElement *searchSymbolLocal(char *str, environmentList *environment)
 {
-	tableElement *aux;
-
-	/* Finds the last element of the list. */
-	for(aux = environment->locals; aux; aux = aux->next);
-
-	return NULL;
+	tableElement *aux = environment->locals;
+	environmentList *currentEnv;
+	
+	for (currentEnv = environment; currentEnv; currentEnv = currentEnv->parent)
+	{
+		for(; aux; aux = aux->next)
+			if(strcmp(aux->name, str) == 0)
+				return aux;
+	}
+	
+	/* If we didn't find it at the scope of the method, we will look at the
+	 * global scope.
+	 */
+	return searchSymbolGlobal(str);
 }
 
 /* Looks for a symbol in the global list. */

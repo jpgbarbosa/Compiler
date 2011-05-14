@@ -17,7 +17,7 @@ public class gcdRrec{
 		
 		//System.out.println(gcd(a,b));
 
-		for (i = 0; i < 5; i++)
+		for (int i = 0; i < 5; i++)
 			i = 2;
 			
 		switch (a == 2)

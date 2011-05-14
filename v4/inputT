@@ -1,11 +1,7 @@
 public class gcdRrec{
 	
 	public static int gcd(int a, int b) {
-		a = b;
-		c = d;
-		
-		for (i = 0; i < 5; i++)
-			a = 2;
+		int a;
 	}
 	
 

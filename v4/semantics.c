@@ -12,7 +12,7 @@ int local_offset = 0;
 
 extern progEnv *pEnv;
 
-void checkProgramFile(is_ProgramFile* pF)
+int checkProgramFile(is_ProgramFile* pF)
 {
 	checkClassHeader(pF->classHeader);
 	
@@ -21,6 +21,8 @@ void checkProgramFile(is_ProgramFile* pF)
 	
 	for(aux = pF->fieldDeclarations; aux != NULL; aux = aux->next)
 		checkFieldDeclaration(aux->fieldDeclaration);
+		
+	return errorCount;
 		
 }
 
@@ -331,7 +333,7 @@ void checkForInit(is_ForInit* fI, environmentList *environment)
 
 void checkJumpStatement(is_JumpStatement* jS, environmentList *environment)
 {
-	
+	environmentList *newEnv = createNewEnvironment(environment);
 
 	switch(jS->disc_d)
 	{
@@ -344,7 +346,7 @@ void checkJumpStatement(is_JumpStatement* jS, environmentList *environment)
 			//HERE
 			break;
 		case (is_RETURN_EXP):
-			checkExpression(jS->data_JumpStatement.exp, environment);
+			checkExpression(jS->data_JumpStatement.exp, newEnv);
 			break;
 		default:
 			break;

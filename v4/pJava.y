@@ -1,9 +1,11 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
 #include "insertionFunction.h"
 #include "structures.h"
 #include "showTree.h"
 #include "symbolTable.h"
+#include "semantics.h"
 
 extern int line_no;
 
@@ -390,6 +392,10 @@ AssignmentExpression
 
 int main()
 {
+	pEnv = malloc(sizeof(progEnv));
+	pEnv->globalTable = malloc(sizeof(environmentList));
+	
+	printf("Parsing the file...\n");
 	yyparse();
 	showProgramFile(myProgram);
 	printf("\nWe have found %d errors in the program.\n", checkProgramFile(myProgram));
