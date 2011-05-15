@@ -595,7 +595,7 @@ is_BasicElement* insert_BasicElement_ID(char *id, int line)
 {
 	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
 	bE->disc_d = is_ID;
-	strcpy(bE->data_BasicElement.id, id);
+	strcpy(bE->data_BasicElement.name, id);
 	bE->line = line;
 	
 	return bE;
@@ -605,7 +605,7 @@ is_BasicElement* insert_BasicElement_LITERAL(char *literal, int line)
 {
 	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
 	bE->disc_d = is_LITERAL;
-	strcpy(bE->data_BasicElement.literal, literal);
+	strcpy(bE->data_BasicElement.name, literal);
 	bE->line = line;
 	
 	return bE;
@@ -616,6 +616,46 @@ is_BasicElement* insert_BasicElement_METHOD_CALL(is_MethodCall* call, int line)
 	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
 	bE->disc_d = is_METHOD_CALL;
 	bE->data_BasicElement.methodCall = call;
+	bE->line = line;
+	
+	return bE;
+}
+
+is_BasicElement* insert_BasicElement_TRUE(char* literal, int line)
+{
+	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
+	bE->disc_d = is_TRUE;
+	strcpy(bE->data_BasicElement.name, literal);
+	bE->line = line;
+	
+	return bE;
+}
+
+is_BasicElement* insert_BasicElement_FALSE(char* literal, int line)
+{
+	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
+	bE->disc_d = is_METHOD_CALL;
+	strcpy(bE->data_BasicElement.name, literal);
+	bE->line = line;
+	
+	return bE;
+}
+
+is_BasicElement* insert_BasicElement_INTEGER(int i, int line)
+{
+	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
+	bE->disc_d = is_INTEGER;
+	bE->data_BasicElement.i = i;
+	bE->line = line;
+	
+	return bE;
+}
+
+is_BasicElement* insert_BasicElement_FLOATPOINT(double d, int line)
+{
+	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
+	bE->disc_d = is_FLOATPOINT;
+	bE->data_BasicElement.d = d;
 	bE->line = line;
 	
 	return bE;

@@ -62,8 +62,8 @@ Literal		({Numeric}|{Character}|{String})
 
 %%
 
-"true"		{return LITERAL;}
-"false"		{return LITERAL;}
+"true"		{return TRUE;}
+"false"		{return FALSE;}
 
 {Separator}	{return yytext[0];}
 {Delimiter1}	{return yytext[0];}
@@ -119,9 +119,11 @@ Literal		({Numeric}|{Character}|{String})
 
 {Identifier}	{yylval.id = (char*)strdup(yytext); return ID;}
 
-{Numeric}	{yylval.id = (char*)strdup(yytext); return LITERAL;}
+{IntegerLiteral}	{yylval.i = atoi(yytext); return INTEGER;}
 
-{Literal}	{return LITERAL;}
+{FloatingPoint}	{yylval.d = atof(yytext); return FLOATPOINT;}
+
+{Literal}	{yylval.id = (char*)strdup(yytext); return LITERAL;}
 
 \n		{count(); line_no++;}
 

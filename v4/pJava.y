@@ -42,6 +42,10 @@ is_ProgramFile* myProgram;
 %token ASS_AND ASS_OR
 %token <id> ID
 %token <id> LITERAL
+%token <id> TRUE
+%token <id> FALSE
+%token <i> INTEGER
+%token <d> FLOATPOINT
 
 %type <_typeSpecifier> TypeSpecifier;
 %type <_typename> TypeName;
@@ -324,8 +328,12 @@ UnaryExpression
 /* The basic elements. */
 BasicElement
 	: LITERAL				{$$ = insert_BasicElement_LITERAL($1, line_no);}
-	| MethodCall				{$$ = insert_BasicElement_METHOD_CALL($1, line_no);}
+	| MethodCall			{$$ = insert_BasicElement_METHOD_CALL($1, line_no);}
 	| ID					{$$ = insert_BasicElement_ID($1, line_no);}
+	| TRUE					{$$ = insert_BasicElement_TRUE($1, line_no);}
+	| FALSE					{$$ = insert_BasicElement_FALSE($1, line_no);}
+	| INTEGER				{$$ = insert_BasicElement_INTEGER(yyval.i, line_no);}
+	| FLOATPOINT			{$$ = insert_BasicElement_FLOATPOINT(yyval.d, line_no);}
 	;
 
 CastExpression

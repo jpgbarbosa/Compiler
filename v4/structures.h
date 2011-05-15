@@ -37,15 +37,15 @@ typedef struct _a32 is_SelectionStatement;
 typedef struct _a33 is_ForInit;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-typedef enum {is_ID, is_LITERAL, is_METHOD_CALL} disc_BasicElement;
+typedef enum {is_ID, is_LITERAL, is_METHOD_CALL, is_TRUE, is_FALSE, is_INTEGER, is_FLOATPOINT} disc_BasicElement;
 
 struct _a20{
 	disc_BasicElement disc_d;
 	union{
-		char id[MAX_SIZE];
-		/* TODO: We may have to change the LITERAL to something else. */
-		char literal[MAX_SIZE];
-		is_MethodCall *methodCall; /* It can be NULL in case we are not using it. */
+		char name[MAX_SIZE];
+		is_MethodCall *methodCall;
+		int i;
+		double d;
 	}data_BasicElement;
 	int line;
 

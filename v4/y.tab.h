@@ -89,7 +89,11 @@
      ASS_AND = 305,
      ASS_OR = 306,
      ID = 307,
-     LITERAL = 308
+     LITERAL = 308,
+     TRUE = 309,
+     FALSE = 310,
+     INTEGER = 311,
+     FLOATPOINT = 312
    };
 #endif
 /* Tokens.  */
@@ -144,6 +148,10 @@
 #define ASS_OR 306
 #define ID 307
 #define LITERAL 308
+#define TRUE 309
+#define FALSE 310
+#define INTEGER 311
+#define FLOATPOINT 312
 
 
 
@@ -153,7 +161,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 99 "pJava.y"
+#line 103 "pJava.y"
 
 	int i;
 	double d;
@@ -195,7 +203,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 199 "y.tab.h"
+#line 207 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

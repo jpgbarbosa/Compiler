@@ -496,24 +496,35 @@ tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environm
 		case (is_ID):
 			//HERE
 			/* Looks for this symbol in the table. */
-			search = searchSymbolLocal(bE->data_BasicElement.id, environment);
+			search = searchSymbolLocal(bE->data_BasicElement.name, environment);
 			if (search == NULL)
 			{
-				printf("Line %d: '%s' hasn't been declared in this scope.\n", bE->line, bE->data_BasicElement.id);
+				printf("Line %d: '%s' hasn't been declared in this scope.\n", bE->line, bE->data_BasicElement.name);
 				errorCount++;
+				
+				return s_VOID;
 			}
-			break;
+
+			/* We return the type of the ID. */
+			return search->type;
 		case (is_LITERAL):
-			//This is not a declaration
-			//HERE
-			break;
+			return s_STRING;
+		/* In C, both true and false can be considered integers. */
+		case (is_TRUE):
+			return s_INT;
+		case (is_FALSE):
+			return s_INT;
+		case (is_INTEGER):
+			return s_INT;
+		case (is_FLOATPOINT):
+			return s_DOUBLE;
 		case (is_METHOD_CALL):
 			checkMethodCall(bE->data_BasicElement.methodCall, environment);
 			break;
 	}
 	
-	//TODO: Change this.
-	return s_INT;
+	/* We shouldn't get here. */
+	return s_VOID;
 }
 
 tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
@@ -588,6 +599,6 @@ tableBasicTypes enumConverter(is_PrimitiveType type)
 	}
 	
 	//TODO: WATCHOUT FOR THE DEFAULT!
-	return s_INT;
+	return s_VOID;
 	
 }

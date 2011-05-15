@@ -51,6 +51,10 @@ is_UnaryExpression* insert_UnaryExpression(is_UnaryOp op, is_BasicElement* eleme
 is_BasicElement* insert_BasicElement_ID(char *id, int line);
 is_BasicElement* insert_BasicElement_LITERAL(char *literal, int line);
 is_BasicElement* insert_BasicElement_METHOD_CALL(is_MethodCall* call, int line);
+is_BasicElement* insert_BasicElement_TRUE(char *literal, int line);
+is_BasicElement* insert_BasicElement_FALSE(char *literal, int line);
+is_BasicElement* insert_BasicElement_INTEGER(int i, int line);
+is_BasicElement* insert_BasicElement_FLOATPOINT(double d, int line);
 is_CastExpression* insert_CastExpression_UnaryExpression(is_TypeSpecifier* castType, is_UnaryExpression *unaryExpression, int line);
 is_CastExpression* insert_CastExpression_AssignmentExpression(is_TypeSpecifier* castType,is_AssignmentExpression *assignmentExpression, int line);
 is_CastExpression* insert_CastExpression_ConditionalExpression(is_TypeSpecifier* castType, is_ConditionalExpression *conditionalExpression, int line);

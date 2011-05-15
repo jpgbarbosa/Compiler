@@ -677,10 +677,22 @@ void showBasicElement(is_BasicElement* bE, bool nextLine, bool isTabs)
 	switch(bE->disc_d)
 	{
 		case (is_ID):
-			printf("%s", bE->data_BasicElement.id);
+			printf("%s", bE->data_BasicElement.name);
 			break;
 		case (is_LITERAL):
-			printf("%s", bE->data_BasicElement.literal);
+			printf("%s", bE->data_BasicElement.name);
+			break;
+		case (is_TRUE):
+			printf("1");
+			break;
+		case (is_FALSE):
+			printf("0");
+			break;
+		case (is_INTEGER):
+			printf("%d", bE->data_BasicElement.i);
+			break;
+		case (is_FLOATPOINT):
+			printf("%lf", bE->data_BasicElement.d);
 			break;
 		case (is_METHOD_CALL):
 			showMethodCall(bE->data_BasicElement.methodCall, nextLine, isTabs);

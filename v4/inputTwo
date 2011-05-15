@@ -3,7 +3,7 @@ public class gcdRrec{
 
 	public static void main(String[] args) {
 		int a, b, c = 5;
-		double s = 1;
+		double s = 1.0;
 		
 		s = 1;
 		
@@ -54,6 +54,9 @@ public class gcdRrec{
 		}
 			
 		a = (a++);
+		
+		double temp = gcd(1, 2);
+		gcd(1, 2, 3);
 		
 		gmds();
 	}
