@@ -1960,14 +1960,14 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 212 "pJava.y"
-    {(yyval._methodDeclarator) = insert_MethodDeclarator((yyvsp[(1) - (4)].id), (yyvsp[(3) - (4)]._parameters_list));}
+    {(yyval._methodDeclarator) = insert_MethodDeclarator((yyvsp[(1) - (4)].id), (yyvsp[(3) - (4)]._parameters_list), line_no);}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
 #line 213 "pJava.y"
-    {(yyval._methodDeclarator) = insert_MethodDeclarator((yyvsp[(1) - (3)].id), NULL);}
+    {(yyval._methodDeclarator) = insert_MethodDeclarator((yyvsp[(1) - (3)].id), NULL, line_no);}
     break;
 
   case 31:

@@ -12,7 +12,7 @@ is_AttrDeclaration* insert_AttrDeclaration( is_TypeSpecifier* typeS, is_Variable
 is_VariablesDeclarator_list* insert_VariablesDeclarator_list(is_VariablesDeclarator_list* list, is_VariablesDeclarator* vD);
 is_VariablesDeclarator* insert_VariablesDeclarator(char *id, is_Expression* exp, int line);
 is_MethodDeclaration* insert_MethodDeclaration(is_TypeSpecifier* typeS, is_MethodDeclarator* methodD, is_Block* block, int line);
-is_MethodDeclarator* insert_MethodDeclarator(char *id, is_Parameters_list* list);
+is_MethodDeclarator* insert_MethodDeclarator(char *id, is_Parameters_list* list, int line);
 is_Parameters_list* insert_Parameters_list(is_Parameters_list* list, is_Parameter* par);
 is_Parameter* insert_Parameter(char *id, is_TypeSpecifier* typeS, int line);
 is_Block* insert_Block(is_LocalVariableDeclarationsOrStatements_list* list);

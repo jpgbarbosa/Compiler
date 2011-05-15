@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "insertionFunction.h"
 #include "structures.h"
 #include "symbolTable.h"
@@ -142,17 +143,25 @@ is_MethodDeclaration* insert_MethodDeclaration(is_TypeSpecifier* typeS, is_Metho
 	mD->block = block;
 	mD->line = line;
 	
+	/* We need to this second search to insert the type of the method. */
+	tableElement* element = searchSymbolGlobal(methodD->id);
+	if (element != NULL)
+	{
+		element->type = enumConverter(typeS->typeName->type);
+	}
+	
 	return mD;
 }
 
-is_MethodDeclarator* insert_MethodDeclarator(char *id, is_Parameters_list* list)
+is_MethodDeclarator* insert_MethodDeclarator(char *id, is_Parameters_list* list, int line)
 {
 	is_MethodDeclarator* mD = malloc(sizeof(is_MethodDeclarator));
 	strcpy(mD->id, id);
 	mD->parametersList = list;
+	mD->line = line;
 	
 	/* Inserts the method in the list of global symbols. */
-	tableElement *sym = insertSymbol(mD->id, s_METHOD, pEnv->globalTable);
+	tableElement *sym = insertSymbol(mD->id, s_METHOD, pEnv->globalTable, true);
 	
 	if (sym == NULL)
 		printf("Line %d: There's already a symbol with that name ('%s')!\n", mD->line, mD->id);

@@ -1,6 +1,7 @@
 #ifndef SYMBOL_TABLE_H
 #define SYMBOL_TABLE_H
 
+#include <stdbool.h>
 #include "structures.h"
 
 typedef enum {s_BOOLEAN, s_CHAR, s_BYTE, s_SHORT, s_INT, s_LONG, s_FLOAT, s_DOUBLE, s_VOID,
@@ -37,7 +38,7 @@ struct _t5{
 	environmentList* methods;
 } /* progEnv */;
 
-tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *environment);
+tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *environment, bool isMethod);
 void showTable();
 tableElement *searchSymbolLocal(char *str, environmentList *environment);
 tableElement *searchSymbolGlobal(char *str);

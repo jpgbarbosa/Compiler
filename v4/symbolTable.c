@@ -1,12 +1,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "symbolTable.h"
 
 extern progEnv *pEnv;
 
 /* Insert a new identifier at the tail of symbols linked list. */
-tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *environment)
+tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *environment, bool isMethod)
 {
 	tableElement *newSymbol = (tableElement*) malloc (sizeof(tableElement));
 	tableElement *aux;
@@ -38,7 +39,7 @@ tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *enviro
 	/* If we are inserting a method, we have to create its corresponding
 	 * environment.
 	 */
-	if (t == s_METHOD)
+	if (isMethod)
 	{
 		environmentList *env = malloc(sizeof(environmentList));
 		
@@ -98,22 +99,11 @@ tableElement *searchSymbolGlobal(char *str)
 tableElement *searchMethod(is_MethodCall *mD)
 {
 	tableElement *aux;
-	int currPar; 
 	
 	for(aux = pEnv->globalTable->locals; aux; aux = aux->next)
 		/* We have found the name of the method. */
 		if(strcmp(aux->name, mD->id) == 0)
-		{
-			currPar = 0;
-			//TODO: Make this.
-			/* Now, we have to see if it has enough parameters. */
-			/*currPar = 0;
-			is_Parameters_list *aux;
-			for (aux = mD; aux; aux = aux-> next)
-				sym->parameters[sym->noParameters++] = enumConverter(aux->parameter->typeSpecifier->typeName->type);*/
-				
 			return aux;
-		}
 
 	return NULL;
 }

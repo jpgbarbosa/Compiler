@@ -209,8 +209,8 @@ MethodDeclaration
 	;
 
 MethodDeclarator
-	: ID '(' ParameterList ')'	{$$ = insert_MethodDeclarator($1, $3);}
-	| ID '(' ')'			{$$ = insert_MethodDeclarator($1, NULL);}
+	: ID '(' ParameterList ')'	{$$ = insert_MethodDeclarator($1, $3, line_no);}
+	| ID '(' ')'			{$$ = insert_MethodDeclarator($1, NULL, line_no);}
 	;
 
 ParameterList

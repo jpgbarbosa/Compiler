@@ -12,7 +12,7 @@ public class gcdRrec{
 		/* We have an error for:
 		 * a = (gcd() + 2) + 2;
 		 */
-		a = (gcd() + 2);
+		a = (gcd(1, 2) + 2);
 		
 		a = 315;
 		b = 1932;

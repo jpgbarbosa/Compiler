@@ -83,7 +83,7 @@ void checkMethodDeclarator(is_MethodDeclarator* mD, environmentList *environment
 void checkParameter(is_Parameter* par, environmentList *environment)
 {
 	/* Insert the parameter at the local scope of the method. */
-	tableElement *sym = insertSymbol(par->id, enumConverter(par->typeSpecifier->typeName->type), environment);
+	tableElement *sym = insertSymbol(par->id, enumConverter(par->typeSpecifier->typeName->type), environment, false);
 	
 	if (sym == NULL)
 	{
@@ -95,7 +95,7 @@ void checkParameter(is_Parameter* par, environmentList *environment)
 void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, environmentList *environment)
 {
 	//HERE
-	tableElement *new = insertSymbol(vD->id, type, environment);
+	tableElement *new = insertSymbol(vD->id, type, environment, false);
 	
 	if (new == NULL)
 	{
@@ -178,9 +178,7 @@ void checkStatement(is_Statement* s, environmentList *environment)
 }
 
 tableBasicTypes checkExpression(is_Expression* exp, environmentList *environment)
-{
-	
-	
+{	
 	switch(exp->disc_d)
 	{
 		case (d_ConditionalExp):
@@ -219,14 +217,16 @@ tableBasicTypes checkConditionalExpression(is_ConditionalExpression* cExp, envir
 	if (typeOne != typeTwo)
 	{
 		//TODO: Maybe print the types.
-		printf("Line %d: The returning values of the trinary operator.\n", cExp->line, vD->id);
-		errorCount++;	
+		printf("Line %d: The returning values of the trinary operator are inconsistent.\n", cExp->line);
+		errorCount++;
+		/* It will go as an error. */	
+		return s_VOID;
 	}
-	
-	//TODO: Change.
-	return s_INT;
-	
-	
+
+	/* We have previously verified that both operands have the same type, so
+	 * it's different which type to return.
+	 */
+	return typeOne;	
 }
 
 tableBasicTypes checkAssignmentExpression(is_AssignmentExpression* aExp, environmentList *environment)
@@ -251,6 +251,7 @@ tableBasicTypes checkAssignmentExpression(is_AssignmentExpression* aExp, environ
 		}
 	}
 	
+	/* We return void no matter the outcome of the assignment. */
 	return s_VOID;
 	
 }
@@ -385,17 +386,29 @@ void checkJumpStatement(is_JumpStatement* jS, environmentList *environment)
 tableBasicTypes checkRelationalExpression(is_RelationalExpression* rExp, environmentList *environment)
 {
 	
+	tableBasicTypes type = checkArithmeticExpression(rExp->aExpression, environment);
 	
-	checkArithmeticExpression(rExp->aExpression, environment);
-	
-	/* If there are more relational expressions on the chain, we have to
-	 * print them.
+	/* What really counts is the first relational expression. If we have
+	 * more expressions in the chain, it's an expression with some operands
+	 * between arithmetic expressions, what means in Java we would return
+	 * a TRUE or FALSE value.
+	 * Consequently, in C, we will be returning an INT.
 	 */
 	if (rExp->next != NULL)
+	{
 		checkRelationalExpression(rExp->next, environment);
+		return s_INT;
+	}
 	
-	//TODO: Change
-	return s_INT;
+	/* In the other case, only having one arithmetic expression, we have to return
+	 * whatever that functions returns.
+	 * We could switch the position and in here return directly the outcome,
+	 * but we prefered to use an extra variable to save the outcome and only
+	 * return now because that is the way that the expressions are displayed,
+	 * and therefore, we are preserving clarity.
+	 */
+
+	return type;
 }
 
 tableBasicTypes checkArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment)
@@ -426,27 +439,26 @@ tableBasicTypes checkArithmeticExpression(is_ArithmeticExpression* aExp, environ
 
 tableBasicTypes checkCastExpression(is_CastExpression* cExp, environmentList *environment)
 {
-	
-	//TODO Check the cast type!!
-	/* Prints the cast type if applicable. */
-	//if (cExp->castType != NULL)
-	//	checkTypeSpecifier(cExp->castType);
+
+	tableBasicTypes type = s_VOID;
 	
 	switch(cExp->disc_d)
 	{
 		case (d_UnaryExpression):
-			checkUnaryExpression(cExp->data_CastExpression.unaryExpression, environment);
+			type = checkUnaryExpression(cExp->data_CastExpression.unaryExpression, environment);
 			break;
 		case (d_AssignmentExpression):
-			checkAssignmentExpression(cExp->data_CastExpression.assignmentExpression, environment);
-			break;
+			return checkAssignmentExpression(cExp->data_CastExpression.assignmentExpression, environment);
 		case (d_ConditionalExpression):
-			checkConditionalExpression(cExp->data_CastExpression.conditionalExpression, environment);
-			break;
+			return checkConditionalExpression(cExp->data_CastExpression.conditionalExpression, environment);
 	}
 	
-	//TODO: Change this
-	return s_INT;
+	/* If we are using a cast, we have to return the cast type. */
+	if (cExp->castType != NULL)
+		return enumConverter(cExp->castType->typeName->type);
+		
+	/* Else, we return the outcome of the unary expression. */	
+	return type;
 }
 
 tableBasicTypes checkUnaryExpression(is_UnaryExpression* uE, environmentList *environment)
@@ -456,27 +468,21 @@ tableBasicTypes checkUnaryExpression(is_UnaryExpression* uE, environmentList *en
 	switch(uE->op)
 	{
 		case (is_OP_INC_AFTER):
-			checkBasicElement(uE->element, environment);
-			break;
+			return checkBasicElement(uE->element, environment);
 		case (is_OP_DCR_AFTER):
-			checkBasicElement(uE->element, environment);
-			break;
+			return checkBasicElement(uE->element, environment);
 		case (is_OP_INC_BEFORE):
-			checkBasicElement(uE->element, environment);
-			break;
+			return checkBasicElement(uE->element, environment);
 		case (is_OP_DCR_BEFORE):
-			checkBasicElement(uE->element, environment);
-			break;
+			return checkBasicElement(uE->element, environment);
 		case (is_OP_DIFFERENT_UNARY):
-			checkBasicElement(uE->element, environment);
-			break;
+			return checkBasicElement(uE->element, environment);
 		case (is_NONE):
-			checkBasicElement(uE->element, environment);
-			break;
+			return checkBasicElement(uE->element, environment);
 	}
 	
-	//TODO: Change this.
-	return s_INT;
+	/* Should never get here. */
+	return s_VOID;
 }
 
 
@@ -510,18 +516,56 @@ tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environm
 	return s_INT;
 }
 
-void checkMethodCall(is_MethodCall* mC, environmentList *environment)
+tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 {
 	is_Expressions_list* aux;
-
-	if (!searchMethod(mC))
+	tableElement* element = searchMethod(mC);
+	int parCounter = 0;
+	
+	if (!element)
 	{
 		printf("Line %d: Method '%s' has not been declared.\n", mC->line, mC->id);
 		errorCount++;
+		
+		/* We can't conclude anything about this method. */
+		return s_VOID;
 	}
 	
-	for (aux = mC->argumentsList; aux != NULL; aux = aux->next)
-		checkExpression(aux->exp, environment);
+	/* Now, we have to check the parameters. */
+	for (aux = mC->argumentsList; aux != NULL && parCounter < element->noParameters; aux = aux->next)
+	{
+		/* If one of the parameters of the function mismatches the type given,
+		 * we immediately return with an error.
+		 */
+		if (element->parameters[parCounter] != checkExpression(aux->exp, environment))
+		{
+			printf("Line %d: Parameter %d of method '%s' has an incorrect type.\n", mC->line, (parCounter + 1), mC->id);
+			errorCount++;
+			
+			return s_VOID;
+		}
+		parCounter++;
+	}
+	
+	/* The method call has too many arguments. */
+	if (aux != NULL)
+	{
+		printf("Line %d: Too many arguments for method '%s'.\n", mC->line, mC->id);
+		errorCount++;
+			
+		return s_VOID;
+	}
+	/* The method call has too few arguments. */
+	if (parCounter < element->noParameters)
+	{
+		printf("Line %d: Too few arguments for method '%s'.\n", mC->line, mC->id);
+		errorCount++;
+			
+		return s_VOID;
+	}
+	
+	/* If everything's ok, we return the type of the method. */
+	return element->type;
 				
 }
 
