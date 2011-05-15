@@ -370,9 +370,9 @@ Expression
 
 
 ConditionalExpression
-	: RelationalExpression					{$$ = insert_ConditionalExpression(is_UNARY, $1, NULL, NULL);}
-	| '!' '(' RelationalExpression ')'			{$$ = insert_ConditionalExpression(is_UNARY_NOT, $3, NULL, NULL);}
-	| RelationalExpression '?' Expression ':' Expression	{$$ = insert_ConditionalExpression(is_TRINARY, $1, $3, $5);}
+	: RelationalExpression					{$$ = insert_ConditionalExpression(is_UNARY, $1, NULL, NULL, line_no);}
+	| '!' '(' RelationalExpression ')'			{$$ = insert_ConditionalExpression(is_UNARY_NOT, $3, NULL, NULL, line_no);}
+	| RelationalExpression '?' Expression ':' Expression	{$$ = insert_ConditionalExpression(is_TRINARY, $1, $3, $5, line_no);}
 	;
 
 AssignmentExpression

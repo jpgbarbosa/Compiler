@@ -672,13 +672,14 @@ is_RelationalExpression* insert_RelationalExpression(is_RelationalOp op, is_Arit
 	return rE;
 }
 
-is_ConditionalExpression* insert_ConditionalExpression(is_ConditionalType type, is_RelationalExpression *rExpression, is_Expression *firstExp, is_Expression *secondExp)
+is_ConditionalExpression* insert_ConditionalExpression(is_ConditionalType type, is_RelationalExpression *rExpression, is_Expression *firstExp, is_Expression *secondExp, int line)
 {
 	is_ConditionalExpression* cE = malloc(sizeof(is_ConditionalExpression));
 	cE->type = type;
 	cE->rExpression = rExpression;
 	cE->firstExp = firstExp;
 	cE->secondExp = secondExp;
+	cE->line = line;
 	
 	return cE;
 }

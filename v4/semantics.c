@@ -105,7 +105,15 @@ void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, 
 	
 	/* It is initialiazed. */
 	if (vD->expression != NULL)
-		checkExpression(vD->expression, environment);
+	{
+		tableBasicTypes typeExp = checkExpression(vD->expression, environment);
+		if (type != typeExp)
+		{
+			//TODO: Maybe print the types.
+			printf("Line %d: Incompatible types in initialization of '%s'.\n", vD->line, vD->id);
+			errorCount++;
+		}
+	}
 
 }
 
@@ -162,7 +170,6 @@ void checkStatement(is_Statement* s, environmentList *environment)
 			checkJumpStatement(s->data_Statement.jumpStatement, environment);
 			break;
 		case (d_StatementBlock):
-			//TODO: Block here
 			checkBlock(s->data_Statement.block, environment);
 			break;
 	}
@@ -170,51 +177,60 @@ void checkStatement(is_Statement* s, environmentList *environment)
 	
 }
 
-void checkExpression(is_Expression* exp, environmentList *environment)
+tableBasicTypes checkExpression(is_Expression* exp, environmentList *environment)
 {
 	
 	
 	switch(exp->disc_d)
 	{
 		case (d_ConditionalExp):
-			checkConditionalExpression(exp->data_Expression.cExpression, environment);
-			break;
+			return checkConditionalExpression(exp->data_Expression.cExpression, environment);
 		case (d_AssignmentExp):
-			checkAssignmentExpression(exp->data_Expression.aExpression, environment);
-			break;
+			return checkAssignmentExpression(exp->data_Expression.aExpression, environment);
 		case (d_Exp):
-			checkExpression(exp->data_Expression.expression, environment);
-			break;
+			return checkExpression(exp->data_Expression.expression, environment);
 	}
 	
+	/* Should never get here. */
+	return s_VOID;
 	
 }
 
-void checkConditionalExpression(is_ConditionalExpression* cExp, environmentList *environment)
+tableBasicTypes checkConditionalExpression(is_ConditionalExpression* cExp, environmentList *environment)
 {
-	
+	tableBasicTypes typeOne, typeTwo;
 	
 	switch(cExp->type)
 	{
 		case (is_UNARY):
-			checkRelationalExpression(cExp->rExpression, environment);
-			break;
+			return checkRelationalExpression(cExp->rExpression, environment);
 		case (is_UNARY_NOT):
-			checkRelationalExpression(cExp->rExpression, environment);
-			break;
+			return checkRelationalExpression(cExp->rExpression, environment);
 		case (is_TRINARY):
 			checkRelationalExpression(cExp->rExpression, environment);
-			checkExpression(cExp->firstExp, environment);
-			checkExpression(cExp->secondExp, environment);
+			typeOne = checkExpression(cExp->firstExp, environment);
+			typeTwo = checkExpression(cExp->secondExp, environment);
 			break;
 	}
+	
+	/* If we get here, it must have been a is_TRINARY. */
+	
+	/* In the trinary operator, the returning types are different. */
+	if (typeOne != typeTwo)
+	{
+		//TODO: Maybe print the types.
+		printf("Line %d: The returning values of the trinary operator.\n", cExp->line, vD->id);
+		errorCount++;	
+	}
+	
+	//TODO: Change.
+	return s_INT;
 	
 	
 }
 
-void checkAssignmentExpression(is_AssignmentExpression* aExp, environmentList *environment)
+tableBasicTypes checkAssignmentExpression(is_AssignmentExpression* aExp, environmentList *environment)
 {
-	
 
 	tableElement *search = searchSymbolLocal(aExp->id, environment);
 	if (search == NULL)
@@ -222,9 +238,20 @@ void checkAssignmentExpression(is_AssignmentExpression* aExp, environmentList *e
 		printf("Line %d: '%s' hasn't been declared in this scope.\n", aExp->line, aExp->id);
 		errorCount++;
 	}
+	else
+	{
+		tableBasicTypes type = checkExpression(aExp->expression, environment);
+		
+		/* The type of the variable and the type of the expression are different. */
+		if (type != search->type)
+		{
+			//TODO: Maybe print the types.
+			printf("Line %d: Incompatible types in assignment.\n", aExp->line);
+			errorCount++;
+		}
+	}
 	
-	checkExpression(aExp->expression, environment);
-	
+	return s_VOID;
 	
 }
 
@@ -355,7 +382,7 @@ void checkJumpStatement(is_JumpStatement* jS, environmentList *environment)
 	
 }
 
-void checkRelationalExpression(is_RelationalExpression* rExp, environmentList *environment)
+tableBasicTypes checkRelationalExpression(is_RelationalExpression* rExp, environmentList *environment)
 {
 	
 	
@@ -367,10 +394,11 @@ void checkRelationalExpression(is_RelationalExpression* rExp, environmentList *e
 	if (rExp->next != NULL)
 		checkRelationalExpression(rExp->next, environment);
 	
-	
+	//TODO: Change
+	return s_INT;
 }
 
-void checkArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment)
+tableBasicTypes checkArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment)
 {
 	
 	
@@ -379,8 +407,7 @@ void checkArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *e
 	 */
 	if (aExp->cExpression != NULL)
 	{
-		checkCastExpression(aExp->cExpression, environment);
-		return;
+		return checkCastExpression(aExp->cExpression, environment);
 	} 
 	 
 	/* If there are more arithmetic expressions on the chain, we have to
@@ -393,10 +420,11 @@ void checkArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *e
 	if (aExp->secondAE != NULL)
 		checkArithmeticExpression(aExp->secondAE, environment);
 	
-	
+	//TODO: Change
+	return s_INT;
 }
 
-void checkCastExpression(is_CastExpression* cExp, environmentList *environment)
+tableBasicTypes checkCastExpression(is_CastExpression* cExp, environmentList *environment)
 {
 	
 	//TODO Check the cast type!!
@@ -417,10 +445,11 @@ void checkCastExpression(is_CastExpression* cExp, environmentList *environment)
 			break;
 	}
 	
-	
+	//TODO: Change this
+	return s_INT;
 }
 
-void checkUnaryExpression(is_UnaryExpression* uE, environmentList *environment)
+tableBasicTypes checkUnaryExpression(is_UnaryExpression* uE, environmentList *environment)
 {
 	
 	
@@ -446,11 +475,12 @@ void checkUnaryExpression(is_UnaryExpression* uE, environmentList *environment)
 			break;
 	}
 	
-	
+	//TODO: Change this.
+	return s_INT;
 }
 
 
-void checkBasicElement(is_BasicElement* bE, environmentList *environment)
+tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environment)
 {
 	
 	tableElement *search;
@@ -476,7 +506,8 @@ void checkBasicElement(is_BasicElement* bE, environmentList *environment)
 			break;
 	}
 	
-	
+	//TODO: Change this.
+	return s_INT;
 }
 
 void checkMethodCall(is_MethodCall* mC, environmentList *environment)

@@ -365,6 +365,7 @@ struct _a28{
 	/* Both can be NULL if we aren't using a trinary operator. */
 	is_Expression *firstExp;
 	is_Expression *secondExp;
+	int line;
 	
 } /*is_ConditionalExpression*/;
 

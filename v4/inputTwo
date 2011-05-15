@@ -3,6 +3,9 @@ public class gcdRrec{
 
 	public static void main(String[] args) {
 		int a, b, c = 5;
+		double s = 1;
+		
+		s = 1;
 		
 		a = (2 + 2);
 		
