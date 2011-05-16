@@ -107,7 +107,7 @@ void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, 
 	if (vD->expression != NULL)
 	{
 		tableBasicTypes typeExp = checkExpression(vD->expression, environment);
-		if (type != typeExp)
+		if (!compatibilityChecker(type, typeExp))
 		{
 			//TODO: Maybe print the types.
 			printf("Line %d: Incompatible types in initialization of '%s'.\n", vD->line, vD->id);
@@ -243,9 +243,10 @@ tableBasicTypes checkAssignmentExpression(is_AssignmentExpression* aExp, environ
 		tableBasicTypes type = checkExpression(aExp->expression, environment);
 		
 		/* The type of the variable and the type of the expression are different. */
-		if (type != search->type)
+		if (!compatibilityChecker(search->type, type))
 		{
 			//TODO: Maybe print the types.
+			printf("%d and %d (s_INT %d and s_DOUBLE %d and s_VOID %d)\n", search->type, type, s_INT, s_DOUBLE, s_VOID);
 			printf("Line %d: Incompatible types in assignment.\n", aExp->line);
 			errorCount++;
 		}
@@ -413,7 +414,10 @@ tableBasicTypes checkRelationalExpression(is_RelationalExpression* rExp, environ
 
 tableBasicTypes checkArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment)
 {
-	
+	/* These expressions are of the type:
+	 *    	CastExpression
+	 * 		ArithmeticExpression OPERAND ArithmeticExpression
+	 */
 	
 	/* This is a cast expression and consequently, we have to stop the 
 	 * recursive calls.
@@ -422,19 +426,38 @@ tableBasicTypes checkArithmeticExpression(is_ArithmeticExpression* aExp, environ
 	{
 		return checkCastExpression(aExp->cExpression, environment);
 	} 
-	 
-	/* If there are more arithmetic expressions on the chain, we have to
-	 * print them.
+	
+	tableBasicTypes typeOne, typeTwo;
+	
+	/* If the arithmetic expressions aren't NULL, we find their returning
+	 * value. Else, we assign it as void.
 	 */
-	if (aExp->firstAE != NULL)
-		checkArithmeticExpression(aExp->firstAE, environment);
+	if (aExp->firstAE != NULL) /* First Expression. */
+		typeOne = checkArithmeticExpression(aExp->firstAE, environment);
+	else
+		typeOne = s_VOID;
 	
 	/* Same as above. */
-	if (aExp->secondAE != NULL)
-		checkArithmeticExpression(aExp->secondAE, environment);
+	if (aExp->secondAE != NULL) /* Second Expression. */
+		typeTwo = checkArithmeticExpression(aExp->secondAE, environment);
+	else
+		typeTwo = s_VOID;
 	
-	//TODO: Change
-	return s_INT;
+	/* If we are using shifts, both expressions must be integers. */ 
+	if ((aExp->op == is_OP_SHL || aExp->op == is_OP_SHR)
+		&& (typeOne != s_INT || typeTwo != s_INT))
+	{
+		printf("Line %d: Incompatible types in shift operation (both operands must be integers).\n", aExp->line);
+		errorCount++;
+				
+		return s_VOID;
+	}
+	
+	/* The second expression is NULL, so we will return the type of the first one. */
+	if (typeTwo == s_VOID)
+		return typeOne;
+		
+	return convertTypes(typeOne, typeTwo);
 }
 
 tableBasicTypes checkCastExpression(is_CastExpression* cExp, environmentList *environment)
@@ -462,9 +485,7 @@ tableBasicTypes checkCastExpression(is_CastExpression* cExp, environmentList *en
 }
 
 tableBasicTypes checkUnaryExpression(is_UnaryExpression* uE, environmentList *environment)
-{
-	
-	
+{	
 	switch(uE->op)
 	{
 		case (is_OP_INC_AFTER):
@@ -601,4 +622,73 @@ tableBasicTypes enumConverter(is_PrimitiveType type)
 	//TODO: WATCHOUT FOR THE DEFAULT!
 	return s_VOID;
 	
+}
+
+tableBasicTypes convertTypes(tableBasicTypes typeOne, tableBasicTypes typeTwo)
+{
+	/* TODO WARNING: We aren't considering is_STRING_ARRAYs. */
+	
+	/* Automatically converts a type. */
+	/* From floats to double. */
+	if (typeOne == s_FLOAT)
+		typeOne = s_DOUBLE;
+	/* And a lot of types to integers... */
+	else if (typeOne == s_BOOLEAN || typeOne == s_BYTE || typeOne == s_CHAR || typeOne == s_SHORT || typeOne == s_LONG)
+		typeOne = s_INT;
+
+	if (typeTwo == s_FLOAT)
+		typeTwo = s_DOUBLE;
+	else if(typeTwo == s_BOOLEAN || typeTwo == s_BYTE || typeTwo == s_CHAR || typeTwo == s_SHORT || typeTwo == s_LONG)
+		typeTwo = s_INT;
+
+	
+	/* The types are equal. */
+	if (typeOne == typeTwo)
+		return typeOne;
+	
+
+	/* First, we convert floats into doubles. */
+	if (typeOne == s_FLOAT)
+		typeOne = s_DOUBLE;
+	if (typeTwo == s_FLOAT)
+		typeTwo = s_DOUBLE;
+	
+	/* At the left, we have a double and the right isn't a string or string array. */	
+	if (typeOne == s_DOUBLE && typeTwo != s_STRING)
+		return s_DOUBLE;
+	/* Now, we do the same for the right. */
+	if (typeTwo == s_DOUBLE && typeOne != s_STRING)
+		return s_DOUBLE;
+
+	/* The types are incompatible, because at this point, we can
+	 * only have integers or strings.
+	 */
+	return s_VOID;
+}
+
+/* Checks if we can assign the assigningExp to the assigned. */
+bool compatibilityChecker(tableBasicTypes assigned, tableBasicTypes assigningExp)
+{
+	/* TODO WARNING: We aren't considering is_STRING_ARRAYs. */
+	
+	/* Automatically converts a type. */
+	/* From floats to double. */
+	if (assigned == s_FLOAT)
+		assigned = s_DOUBLE;
+	/* And a lot of types to integers... */
+	else if (assigned == s_BOOLEAN || assigned == s_BYTE || assigned == s_CHAR || assigned == s_SHORT || assigned == s_LONG)
+		assigned = s_INT;
+	
+	/* The types are equal. */
+	if (assigned == assigningExp)
+		return assigned;
+	
+	/* We are trying to assign a double to an integer. */
+	if (assigned == s_INT && assigningExp == s_DOUBLE)
+		return false;
+	if (assigned == s_DOUBLE && assigningExp == s_INT)
+		return true;
+		
+	/* If we get here, we are trying to match strings with double/arrays. */
+	return false;
 }

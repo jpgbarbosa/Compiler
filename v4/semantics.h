@@ -29,3 +29,5 @@ tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environm
 tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment);
 void checkForInit(is_ForInit* fI, environmentList *environment);
 tableBasicTypes enumConverter(is_PrimitiveType type);
+tableBasicTypes convertTypes(tableBasicTypes typeOne, tableBasicTypes typeTwo);
+bool compatibilityChecker(tableBasicTypes assigned, tableBasicTypes assigningExp);

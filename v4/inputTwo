@@ -59,6 +59,8 @@ public class gcdRrec{
 		double temp = gcd(1, 2);
 		gcd(1, 2, 3);
 		
+		a = gcd(1,2);
+		
 		gmds();
 	}
 	
