@@ -237,23 +237,25 @@ tableBasicTypes checkAssignmentExpression(is_AssignmentExpression* aExp, environ
 	{
 		printf("Line %d: '%s' hasn't been declared in this scope.\n", aExp->line, aExp->id);
 		errorCount++;
-	}
-	else
-	{
-		tableBasicTypes type = checkExpression(aExp->expression, environment);
 		
-		/* The type of the variable and the type of the expression are different. */
-		if (!compatibilityChecker(search->type, type))
-		{
-			//TODO: Maybe print the types.
-			printf("%d and %d (s_INT %d and s_DOUBLE %d and s_VOID %d)\n", search->type, type, s_INT, s_DOUBLE, s_VOIDn);
-			printf("Line %d: Incompatible types in assignment.\n", aExp->line);
-			errorCount++;
-		}
+		return s_VOID;
+	}
+
+	tableBasicTypes type = checkExpression(aExp->expression, environment);
+	
+	/* The type of the variable and the type of the expression are different. */
+	if (!compatibilityChecker(search->type, type))
+	{
+		//TODO: Maybe print the types.
+		printf("%d and %d (s_INT %d and s_DOUBLE %d and s_VOID %d)\n", search->type, type, s_INT, s_DOUBLE, s_VOID);
+		printf("Line %d: Incompatible types in assignment.\n", aExp->line);
+		errorCount++;
+		
+		return s_VOID;
 	}
 	
-	/* We return void no matter the outcome of the assignment. */
-	return s_VOID;
+	/* We return the type of the ID. */
+	return search->type;
 	
 }
 
@@ -540,8 +542,7 @@ tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environm
 		case (is_FLOATPOINT):
 			return s_DOUBLE;
 		case (is_METHOD_CALL):
-			checkMethodCall(bE->data_BasicElement.methodCall, environment);
-			break;
+			return checkMethodCall(bE->data_BasicElement.methodCall, environment);
 	}
 	
 	/* We shouldn't get here. */
