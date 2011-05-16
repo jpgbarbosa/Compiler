@@ -2376,7 +2376,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 330 "pJava.y"
-    {(yyval._basicElement) = insert_BasicElement_LITERAL((yyvsp[(1) - (1)].id), line_no);}
+    {printf("Here\n");(yyval._basicElement) = insert_BasicElement_LITERAL((yyvsp[(1) - (1)].id), line_no);}
     break;
 
   case 83:
@@ -2918,9 +2918,20 @@ int main()
 	pEnv->globalTable = malloc(sizeof(environmentList));
 	
 	printf("Parsing the file...\n");
-	yyparse();
-	showProgramFile(myProgram);
-	printf("\nWe have found %d errors in the program.\n", checkProgramFile(myProgram));
+	/* Only makes the semantic analysis if the parsing went well. */
+	if (yyparse() == 0)
+	{
+		showProgramFile(myProgram);
+		printf("\nWe have found %d errors in the program.\n", checkProgramFile(myProgram));
+	}
 	return 0;
+}
+
+
+int yyerror(char *msg)
+{
+	/* Message to print in case the parsing found an error. */
+	printf("Line %d: %s\n", line_no, msg);
+	return 1;
 }
 

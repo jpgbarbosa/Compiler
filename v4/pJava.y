@@ -327,7 +327,7 @@ UnaryExpression
 	;
 /* The basic elements. */
 BasicElement
-	: LITERAL				{$$ = insert_BasicElement_LITERAL($1, line_no);}
+	: LITERAL				{printf("Here\n");$$ = insert_BasicElement_LITERAL($1, line_no);}
 	| MethodCall			{$$ = insert_BasicElement_METHOD_CALL($1, line_no);}
 	| ID					{$$ = insert_BasicElement_ID($1, line_no);}
 	| TRUE					{$$ = insert_BasicElement_TRUE($1, line_no);}
@@ -404,8 +404,19 @@ int main()
 	pEnv->globalTable = malloc(sizeof(environmentList));
 	
 	printf("Parsing the file...\n");
-	yyparse();
-	showProgramFile(myProgram);
-	printf("\nWe have found %d errors in the program.\n", checkProgramFile(myProgram));
+	/* Only makes the semantic analysis if the parsing went well. */
+	if (yyparse() == 0)
+	{
+		showProgramFile(myProgram);
+		printf("\nWe have found %d errors in the program.\n", checkProgramFile(myProgram));
+	}
 	return 0;
+}
+
+
+int yyerror(char *msg)
+{
+	/* Message to print in case the parsing found an error. */
+	printf("Line %d: %s\n", line_no, msg);
+	return 1;
 }
