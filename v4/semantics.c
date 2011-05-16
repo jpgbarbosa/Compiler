@@ -247,7 +247,7 @@ tableBasicTypes checkAssignmentExpression(is_AssignmentExpression* aExp, environ
 	if (!compatibilityChecker(search->type, type))
 	{
 		//TODO: Maybe print the types.
-		printf("%d and %d (s_INT %d and s_DOUBLE %d and s_VOID %d)\n", search->type, type, s_INT, s_DOUBLE, s_VOID);
+		//printf("%d and %d (s_INT %d and s_DOUBLE %d and s_VOID %d)\n", search->type, type, s_INT, s_DOUBLE, s_VOID);
 		printf("Line %d: Incompatible types in assignment.\n", aExp->line);
 		errorCount++;
 		
