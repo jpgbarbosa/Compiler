@@ -15,18 +15,25 @@ tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *enviro
 
 	strcpy(newSymbol->name, str);
 	newSymbol->type = t;
-	newSymbol->next = NULL;	
+	newSymbol->next = NULL;
+	newSymbol->isMethod = isMethod;	
 
 	/* If the table has already some elements. */
 	if(environment->locals)
 	{	
-		/* Look for an element and verifies if it already exists (NOTE: it's assumed a global symbol table!) */
+		/* Look for an element and verifies if it already exists. */
 		for(aux = environment->locals; aux; previous = aux, aux = aux->next)
 			if(strcmp(aux->name, str) == 0)
 			{
-				/* We have to deallocate the previously reserved space. */
-				free(newSymbol);
-				return NULL;
+				/* We may have a method and a variable with the same name,
+				 * so we ought to distinguish this case.
+				 */
+				if (isMethod == aux->isMethod)
+				{
+					/* We have to deallocate the previously reserved space. */
+					free(newSymbol);
+					return NULL;
+				}
 			}
 		
 		/* Adds the element to the end of the list. */
@@ -73,7 +80,8 @@ tableElement *searchSymbolLocal(char *str, environmentList *environment)
 	for (currentEnv = environment; currentEnv; currentEnv = currentEnv->parent)
 	{
 		for(; aux; aux = aux->next)
-			if(strcmp(aux->name, str) == 0)
+			/* We are only looking for variables with this name, not methods. */
+			if(strcmp(aux->name, str) == 0 && !aux->isMethod)
 				return aux;
 	}
 	
@@ -89,22 +97,39 @@ tableElement *searchSymbolGlobal(char *str)
 	tableElement *aux;
 
 	for(aux = pEnv->globalTable->locals; aux; aux = aux->next)
-		if(strcmp(aux->name, str) == 0)
+		if(strcmp(aux->name, str) == 0 && !aux->isMethod)
 			return aux;
 
 	return NULL;
 }
 
 /* Looks for a method in the global list. */
-tableElement *searchMethod(is_MethodCall *mD)
+tableElement *searchMethod(is_MethodCall *mD, tableElement * tb)
 {
 	tableElement *aux;
 	
-	for(aux = pEnv->globalTable->locals; aux; aux = aux->next)
+	/* We may have found previously a method with this name, but with
+	 * a different number or types of parameters. Therefore, we need
+	 * to keep on with the search, as we allow methods to have the same
+	 * name as long as they have different parameters.
+	 */
+	if (tb == NULL)
+		aux = pEnv->globalTable->locals;
+	else
+		aux = tb->next;
+		
+	for(; aux; aux = aux->next)
+	{
 		/* We have found the name of the method. */
-		if(strcmp(aux->name, mD->id) == 0)
+		if(aux->isMethod && strcmp(aux->name, mD->id) == 0)
+		{
+			/* Methods can have the same name, but different parameters. */
+			
 			return aux;
-
+		}
+	}
+	
+	printf("Returning\n");
 	return NULL;
 }
 

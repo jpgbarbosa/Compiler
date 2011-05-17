@@ -4,6 +4,7 @@ public class gcdRrec{
 	public static void main(String[] args) {
 		int a, b, c = 5;
 		double s = 1.0;
+		int gcd = 5;
 		
 		s = 1;
 		

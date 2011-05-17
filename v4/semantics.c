@@ -552,7 +552,7 @@ tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environm
 tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 {
 	is_Expressions_list* aux;
-	tableElement* element = searchMethod(mC);
+	tableElement* element = searchMethod(mC, NULL);
 	int parCounter = 0;
 	
 	if (!element)
@@ -563,37 +563,40 @@ tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 		/* We can't conclude anything about this method. */
 		return s_VOID;
 	}
-	
-	/* Now, we have to check the parameters. */
-	for (aux = mC->argumentsList; aux != NULL && parCounter < element->noParameters; aux = aux->next)
+
+	while(!element)
 	{
-		/* If one of the parameters of the function mismatches the type given,
-		 * we immediately return with an error.
-		 */
-		if (element->parameters[parCounter] != checkExpression(aux->exp, environment))
+		parCounter = 0;
+		
+		/* Now, we have to check the parameters. */
+		for (aux = mC->argumentsList; aux != NULL && parCounter < element->noParameters; aux = aux->next)
 		{
-			printf("Line %d: Parameter %d of method '%s' has an incorrect type.\n", mC->line, (parCounter + 1), mC->id);
-			errorCount++;
-			
-			return s_VOID;
+			/* If one of the parameters of the function mismatches the type given,
+			 * we immediately pass to the next iteration.
+			 */
+			if (element->parameters[parCounter] != checkExpression(aux->exp, environment))
+			{
+				printf("HERE!\n");
+				element = searchMethod(mC, element);
+				continue;
+			}
+				
+			parCounter++;
 		}
-		parCounter++;
-	}
+		
+		/* The method call has too many or few arguments. */
+		if (aux != NULL || parCounter < element->noParameters)
+		{
+			printf("THERE!\n");
+			element = searchMethod(mC, element);
+		}
+
+	};
 	
-	/* The method call has too many arguments. */
-	if (aux != NULL)
+	if (element == NULL)
 	{
-		printf("Line %d: Too many arguments for method '%s'.\n", mC->line, mC->id);
+		printf("Line %d: Method '%s' exists, but there's an incompatibility with the parameters.\n", mC->line, mC->id);
 		errorCount++;
-			
-		return s_VOID;
-	}
-	/* The method call has too few arguments. */
-	if (parCounter < element->noParameters)
-	{
-		printf("Line %d: Too few arguments for method '%s'.\n", mC->line, mC->id);
-		errorCount++;
-			
 		return s_VOID;
 	}
 	
@@ -628,25 +631,33 @@ tableBasicTypes enumConverter(is_PrimitiveType type)
 tableBasicTypes convertTypes(tableBasicTypes typeOne, tableBasicTypes typeTwo)
 {
 	/* TODO WARNING: We aren't considering is_STRING_ARRAYs. */
-	
+	/* A string with anything else will return a string. */
+	if (typeOne == s_STRING || typeTwo == s_STRING)
+		return s_STRING;
+		
+	/* We can't operate over booleans, they can only be used at relational
+	 * expressions.
+	 */	
+	if (typeOne == s_BOOLEAN || typeTwo == s_BOOLEAN)
+		return s_VOID;
+		
 	/* Automatically converts a type. */
 	/* From floats to double. */
 	if (typeOne == s_FLOAT)
 		typeOne = s_DOUBLE;
 	/* And a lot of types to integers... */
-	else if (typeOne == s_BOOLEAN || typeOne == s_BYTE || typeOne == s_CHAR || typeOne == s_SHORT || typeOne == s_LONG)
+	else if (typeOne == s_BYTE || typeOne == s_CHAR || typeOne == s_SHORT || typeOne == s_LONG)
 		typeOne = s_INT;
 
 	if (typeTwo == s_FLOAT)
 		typeTwo = s_DOUBLE;
-	else if(typeTwo == s_BOOLEAN || typeTwo == s_BYTE || typeTwo == s_CHAR || typeTwo == s_SHORT || typeTwo == s_LONG)
+	else if(typeTwo == s_BYTE || typeTwo == s_CHAR || typeTwo == s_SHORT || typeTwo == s_LONG)
 		typeTwo = s_INT;
 
 	
 	/* The types are equal. */
 	if (typeOne == typeTwo)
-		return typeOne;
-	
+		return typeOne;	
 
 	/* First, we convert floats into doubles. */
 	if (typeOne == s_FLOAT)
@@ -654,13 +665,11 @@ tableBasicTypes convertTypes(tableBasicTypes typeOne, tableBasicTypes typeTwo)
 	if (typeTwo == s_FLOAT)
 		typeTwo = s_DOUBLE;
 	
-	/* At the left, we have a double and the right isn't a string or string array. */	
-	if (typeOne == s_DOUBLE && typeTwo != s_STRING)
+	/* If we have a double at either operands, we return a double,
+	 * because at this point we won't have any strings. */	
+	if ((typeOne == s_DOUBLE && typeTwo != s_BOOLEAN) || (typeTwo == s_DOUBLE  && typeOne != s_BOOLEAN))
 		return s_DOUBLE;
-	/* Now, we do the same for the right. */
-	if (typeTwo == s_DOUBLE && typeOne != s_STRING)
-		return s_DOUBLE;
-
+		
 	/* The types are incompatible, because at this point, we can
 	 * only have integers or strings.
 	 */

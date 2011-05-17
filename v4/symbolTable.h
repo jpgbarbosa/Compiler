@@ -16,6 +16,7 @@ struct _t1
 	char name[256];
 	tableBasicTypes type;
 	tableElement* next;
+	bool isMethod;
 	int offset;
 	/* Only for methods. We limit the number of parameters to 32. */
 	tableBasicTypes parameters[32];
@@ -42,7 +43,7 @@ tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *enviro
 void showTable();
 tableElement *searchSymbolLocal(char *str, environmentList *environment);
 tableElement *searchSymbolGlobal(char *str);
-tableElement *searchMethod(is_MethodCall *mD);
+tableElement *searchMethod(is_MethodCall *mD, tableElement * tb);
 environmentList *searchEnvironment(char *str);
 environmentList *createNewEnvironment(environmentList *parent);
 

@@ -1,0 +1,13 @@
+public class gcdRrec{
+	static int a, b;
+
+	public static void main(String[] args) {
+		gcd(1,2, 3);
+	}
+	
+	public static int gcd(int a, int b) {
+
+	}
+
+}
+

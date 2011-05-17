@@ -74,7 +74,7 @@ struct _a21{
 	char id[MAX_SIZE];
 	is_Expressions_list *argumentsList; /* The list of arguments is a list of expressions. */
 	int line;	
-} /*is_MethodCall */;
+} /* is_MethodCall */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
