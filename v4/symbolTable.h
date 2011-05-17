@@ -46,7 +46,7 @@ tableElement *searchSymbolGlobal(char *str);
 tableElement *searchMethod(is_MethodCall *mD, tableElement * tb);
 environmentList *searchEnvironment(char *str);
 environmentList *createNewEnvironment(environmentList *parent);
-
+bool searchInMethodScope(char *str, environmentList *environment);
 
 
 #endif

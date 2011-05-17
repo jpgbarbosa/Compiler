@@ -9,6 +9,10 @@ extern progEnv *pEnv;
 /* Insert a new identifier at the tail of symbols linked list. */
 tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *environment, bool isMethod)
 {
+	/* Make sure we don't have conflicting scopes for this variable. */
+	if (searchInMethodScope(str, environment))
+		return NULL;
+	
 	tableElement *newSymbol = (tableElement*) malloc (sizeof(tableElement));
 	tableElement *aux;
 	tableElement* previous;
@@ -79,7 +83,7 @@ tableElement *searchSymbolLocal(char *str, environmentList *environment)
 	
 	for (currentEnv = environment; currentEnv; currentEnv = currentEnv->parent)
 	{
-		for(; aux; aux = aux->next)
+		for(aux= currentEnv->locals; aux; aux = aux->next)
 			/* We are only looking for variables with this name, not methods. */
 			if(strcmp(aux->name, str) == 0 && !aux->isMethod)
 				return aux;
@@ -129,7 +133,6 @@ tableElement *searchMethod(is_MethodCall *mD, tableElement * tb)
 		}
 	}
 	
-	printf("Returning\n");
 	return NULL;
 }
 
@@ -154,5 +157,25 @@ environmentList *createNewEnvironment(environmentList *parent)
 	return env;
 }
 
+/* This method goes through all the individual scopes inside the methods
+ * and assures that we don't have conflicting variables.
+ */
+bool searchInMethodScope(char *str, environmentList *environment)
+{
+	tableElement *aux = environment->locals;
+	environmentList *currentEnv;
+	int counter = 0;
+	
+	for (currentEnv = environment; currentEnv; currentEnv = currentEnv->parent)
+	{
+		for(aux = currentEnv->locals; aux; aux = aux->next)
+			/* We have found a conflict. */
+			if(strcmp(aux->name, str) == 0 && !aux->isMethod)
+				return true;
+	}
+	
+	/* We didn't find any conflits inside the method scope. */
+	return false;
+}
 
 
