@@ -74,7 +74,6 @@ tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *enviro
 	return newSymbol; 
 }
 
-//TODO: nao deviamos passar a tabela como argumento? penso que vamos ter diferentes tabelas dependendo do contexto
 /* Looks for a given identifier. Returns 0 if it already exists. */
 tableElement *searchSymbolLocal(char *str, environmentList *environment)
 {
@@ -83,7 +82,7 @@ tableElement *searchSymbolLocal(char *str, environmentList *environment)
 	
 	for (currentEnv = environment; currentEnv; currentEnv = currentEnv->parent)
 	{
-		for(aux= currentEnv->locals; aux; aux = aux->next)
+		for(aux = currentEnv->locals; aux; aux = aux->next)
 			/* We are only looking for variables with this name, not methods. */
 			if(strcmp(aux->name, str) == 0 && !aux->isMethod)
 				return aux;
@@ -148,6 +147,7 @@ environmentList *searchEnvironment(char *str)
 	return NULL;
 }
 
+/* Creates a new environment for a scope. */
 environmentList *createNewEnvironment(environmentList *parent)
 {
 	environmentList *env = malloc(sizeof(environmentList));
@@ -164,7 +164,6 @@ bool searchInMethodScope(char *str, environmentList *environment)
 {
 	tableElement *aux = environment->locals;
 	environmentList *currentEnv;
-	int counter = 0;
 	
 	for (currentEnv = environment; currentEnv; currentEnv = currentEnv->parent)
 	{

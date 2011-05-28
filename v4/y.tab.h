@@ -60,40 +60,41 @@
      NEW = 276,
      OPERATOR = 277,
      PUBLIC = 278,
-     RETURN = 279,
-     SHORT = 280,
-     STATIC = 281,
-     STRING = 282,
-     SWITCH = 283,
-     VOID = 284,
-     WHILE = 285,
-     OP_INC = 286,
-     OP_DEC = 287,
-     OP_SHL = 288,
-     OP_SHR = 289,
-     OP_GREATER_EQUAL = 290,
-     OP_LESS_EQUAL = 291,
-     OP_EQUAL = 292,
-     OP_DIFFERENT = 293,
-     OP_AND = 294,
-     OP_OR = 295,
-     OP_DIM = 296,
-     ASS_MUL = 297,
-     ASS_DIV = 298,
-     ASS_ADD = 299,
-     ASS_SUB = 300,
-     ASS_XOR = 301,
-     ASS_MOD = 302,
-     ASS_SHL = 303,
-     ASS_SHR = 304,
-     ASS_AND = 305,
-     ASS_OR = 306,
-     ID = 307,
-     LITERAL = 308,
-     TRUE = 309,
-     FALSE = 310,
-     INTEGER = 311,
-     FLOATPOINT = 312
+     PRINTLN = 279,
+     RETURN = 280,
+     SHORT = 281,
+     STATIC = 282,
+     STRING = 283,
+     SWITCH = 284,
+     VOID = 285,
+     WHILE = 286,
+     OP_INC = 287,
+     OP_DEC = 288,
+     OP_SHL = 289,
+     OP_SHR = 290,
+     OP_GREATER_EQUAL = 291,
+     OP_LESS_EQUAL = 292,
+     OP_EQUAL = 293,
+     OP_DIFFERENT = 294,
+     OP_AND = 295,
+     OP_OR = 296,
+     OP_DIM = 297,
+     ASS_MUL = 298,
+     ASS_DIV = 299,
+     ASS_ADD = 300,
+     ASS_SUB = 301,
+     ASS_XOR = 302,
+     ASS_MOD = 303,
+     ASS_SHL = 304,
+     ASS_SHR = 305,
+     ASS_AND = 306,
+     ASS_OR = 307,
+     ID = 308,
+     LITERAL = 309,
+     TRUE = 310,
+     FALSE = 311,
+     INTEGER = 312,
+     FLOATPOINT = 313
    };
 #endif
 /* Tokens.  */
@@ -118,40 +119,41 @@
 #define NEW 276
 #define OPERATOR 277
 #define PUBLIC 278
-#define RETURN 279
-#define SHORT 280
-#define STATIC 281
-#define STRING 282
-#define SWITCH 283
-#define VOID 284
-#define WHILE 285
-#define OP_INC 286
-#define OP_DEC 287
-#define OP_SHL 288
-#define OP_SHR 289
-#define OP_GREATER_EQUAL 290
-#define OP_LESS_EQUAL 291
-#define OP_EQUAL 292
-#define OP_DIFFERENT 293
-#define OP_AND 294
-#define OP_OR 295
-#define OP_DIM 296
-#define ASS_MUL 297
-#define ASS_DIV 298
-#define ASS_ADD 299
-#define ASS_SUB 300
-#define ASS_XOR 301
-#define ASS_MOD 302
-#define ASS_SHL 303
-#define ASS_SHR 304
-#define ASS_AND 305
-#define ASS_OR 306
-#define ID 307
-#define LITERAL 308
-#define TRUE 309
-#define FALSE 310
-#define INTEGER 311
-#define FLOATPOINT 312
+#define PRINTLN 279
+#define RETURN 280
+#define SHORT 281
+#define STATIC 282
+#define STRING 283
+#define SWITCH 284
+#define VOID 285
+#define WHILE 286
+#define OP_INC 287
+#define OP_DEC 288
+#define OP_SHL 289
+#define OP_SHR 290
+#define OP_GREATER_EQUAL 291
+#define OP_LESS_EQUAL 292
+#define OP_EQUAL 293
+#define OP_DIFFERENT 294
+#define OP_AND 295
+#define OP_OR 296
+#define OP_DIM 297
+#define ASS_MUL 298
+#define ASS_DIV 299
+#define ASS_ADD 300
+#define ASS_SUB 301
+#define ASS_XOR 302
+#define ASS_MOD 303
+#define ASS_SHL 304
+#define ASS_SHR 305
+#define ASS_AND 306
+#define ASS_OR 307
+#define ID 308
+#define LITERAL 309
+#define TRUE 310
+#define FALSE 311
+#define INTEGER 312
+#define FLOATPOINT 313
 
 
 
@@ -161,7 +163,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 103 "pJava.y"
+#line 108 "pJava.y"
 
 	int i;
 	double d;
@@ -192,6 +194,7 @@ typedef union YYSTYPE
 	is_Expression* _expression;
 	is_JumpStatement* _jumpStatement;
 	is_MethodCall* _methodCall;
+	is_SystemOutPrintln* _systemOutPrintln;
 	is_UnaryExpression* _unaryExpression;
 	is_BasicElement* _basicElement;
 	is_CastExpression* _castExpression;
@@ -203,7 +206,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 207 "y.tab.h"
+#line 210 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

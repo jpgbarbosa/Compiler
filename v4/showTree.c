@@ -697,6 +697,9 @@ void showBasicElement(is_BasicElement* bE, bool nextLine, bool isTabs)
 		case (is_METHOD_CALL):
 			showMethodCall(bE->data_BasicElement.methodCall, nextLine, isTabs);
 			break;
+		case (is_PRINTLN):
+			showSystemOutPrintln(bE->data_BasicElement.print, nextLine, isTabs);
+			break;
 	}
 	
 	if (nextLine && bE->disc_d != is_METHOD_CALL)
@@ -721,6 +724,27 @@ void showMethodCall(is_MethodCall* mC, bool nextLine, bool isTabs)
 				printf(", ");
 		}
 		printf(")");	
+			
+		if (nextLine)
+			printf("\n");
+}
+
+void showSystemOutPrintln(is_SystemOutPrintln* p, bool nextLine, bool isTabs)
+{
+		if (isTabs)
+			printTabs();
+		
+		is_Expressions_list* aux;
+		
+		/* Prints the literal of the print. */
+		printf("System.out.println(%s, ", p->literal);
+		for (aux = p->argumentsList; aux != NULL; aux = aux->next)
+		{
+			showExpression(aux->exp, false, false);
+			if (aux->next != NULL)
+				printf(", ");
+		}
+		printf(");");	
 			
 		if (nextLine)
 			printf("\n");

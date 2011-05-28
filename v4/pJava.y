@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "insertionFunction.h"
 #include "structures.h"
 #include "showTree.h"
@@ -10,6 +11,9 @@
 extern int line_no;
 
 progEnv *pEnv = NULL;
+
+/* Used to know if a method has a return in it or not. */
+bool hasReturn = false;
 
 
 /* The pointer that will hold the start of the AST. */
@@ -27,7 +31,7 @@ is_ProgramFile* myProgram;
 %token LONG
 %token NEW
 %token OPERATOR
-%token PUBLIC
+%token PUBLIC PRINTLN
 %token RETURN
 %token SHORT STATIC STRING SWITCH
 %token VOID
@@ -73,6 +77,7 @@ is_ProgramFile* myProgram;
 %type <_expressions_list> Expressions;
 %type <_jumpStatement> JumpStatement;
 %type <_methodCall> MethodCall;
+%type <_systemOutPrintln> SystemOutPrintln;
 %type <_unaryExpression> UnaryExpression;
 %type <_basicElement> BasicElement;
 %type <_castExpression> CastExpression;
@@ -130,6 +135,7 @@ is_ProgramFile* myProgram;
 	is_Expression* _expression;
 	is_JumpStatement* _jumpStatement;
 	is_MethodCall* _methodCall;
+	is_SystemOutPrintln* _systemOutPrintln;
 	is_UnaryExpression* _unaryExpression;
 	is_BasicElement* _basicElement;
 	is_CastExpression* _castExpression;
@@ -208,8 +214,8 @@ VariableDeclarator
 /* Declaration of methods. */
 
 MethodDeclaration
-	: PUBLIC STATIC TypeSpecifier MethodDeclarator        Block	{$$ = insert_MethodDeclaration($3, $4, $5, line_no);}
-	|        STATIC TypeSpecifier MethodDeclarator        Block	{$$ = insert_MethodDeclaration($2, $3, $4, line_no);}
+	: PUBLIC STATIC TypeSpecifier MethodDeclarator        Block	{$$ = insert_MethodDeclaration($3, $4, $5, line_no); $4->isReturnOk = hasReturn; hasReturn = false;}
+	|        STATIC TypeSpecifier MethodDeclarator        Block	{$$ = insert_MethodDeclaration($2, $3, $4, line_no); $3->isReturnOk = hasReturn; hasReturn = false;}
 	;
 
 MethodDeclarator
@@ -304,14 +310,20 @@ JumpStatement
 	| BREAK               ';'		{$$ = insert_JumpStatement_BREAK(line_no);}
 	| CONTINUE ID 	      ';'		{$$ = insert_JumpStatement_CONTINUE_ID($2,line_no);}
 	| CONTINUE            ';'		{$$ = insert_JumpStatement_CONTINUE(line_no);}
-	| RETURN   Expression ';'		{$$ = insert_JumpStatement_RETURN_EXP($2,line_no);}
-	| RETURN              ';'		{$$ = insert_JumpStatement_RETURN(line_no);}
+	| RETURN   Expression ';'		{printf("here\n"); hasReturn = true; $$ = insert_JumpStatement_RETURN_EXP($2,line_no);}
+	| RETURN              ';'		{printf("here\n"); hasReturn = true; $$ = insert_JumpStatement_RETURN(line_no);}
 	;
 
 MethodCall
 	/* List of arguments. */
 	: ID '(' Expressions ')'		{$$ = insert_MethodCall($1, $3, line_no);}
 	| ID '(' ')'				{$$ = insert_MethodCall($1, NULL, line_no);}
+	;
+
+SystemOutPrintln
+	/* List of arguments. */
+	: PRINTLN '(' LITERAL ',' Expressions ')'		{$$ = insert_SystemOutPrintln($3, $5, line_no);}
+	| PRINTLN '(' LITERAL ')'				{$$ = insert_SystemOutPrintln($3, NULL, line_no);}
 	;
 
 UnaryExpression
@@ -327,13 +339,14 @@ UnaryExpression
 	;
 /* The basic elements. */
 BasicElement
-	: LITERAL				{printf("Here\n");$$ = insert_BasicElement_LITERAL($1, line_no);}
+	: LITERAL				{$$ = insert_BasicElement_LITERAL($1, line_no);}
 	| MethodCall			{$$ = insert_BasicElement_METHOD_CALL($1, line_no);}
 	| ID					{$$ = insert_BasicElement_ID($1, line_no);}
 	| TRUE					{$$ = insert_BasicElement_TRUE($1, line_no);}
 	| FALSE					{$$ = insert_BasicElement_FALSE($1, line_no);}
 	| INTEGER				{$$ = insert_BasicElement_INTEGER(yyval.i, line_no);}
 	| FLOATPOINT			{$$ = insert_BasicElement_FLOATPOINT(yyval.d, line_no);}
+	| SystemOutPrintln		{$$ = insert_BasicElement_PRINTLN($1, line_no);}
 	;
 
 CastExpression

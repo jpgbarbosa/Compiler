@@ -27,6 +27,7 @@ tableBasicTypes checkCastExpression(is_CastExpression* cExp, environmentList *en
 tableBasicTypes checkUnaryExpression(is_UnaryExpression* uE, environmentList *environment);
 tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environment);
 tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment);
+tableBasicTypes checkSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environment);
 void checkForInit(is_ForInit* fI, environmentList *environment);
 tableBasicTypes enumConverter(is_PrimitiveType type);
 tableBasicTypes convertTypes(tableBasicTypes typeOne, tableBasicTypes typeTwo);

@@ -18,8 +18,7 @@ public class gcdRrec{
 		a = 315;
 		b = 1932;
 		
-		//TODO: We have a syntax error for this one. 
-		//System.out.println(gcd(a,b));
+		System.out.println("Hello", 1);
 
 		for (int i = 0; i < 5; i++)
 			i = 2;

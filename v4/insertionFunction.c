@@ -579,6 +579,16 @@ is_MethodCall* insert_MethodCall(char *id, is_Expressions_list* list, int line)
 	return mC;
 }
 
+is_SystemOutPrintln* insert_SystemOutPrintln(char *literal, is_Expressions_list* list, int line)
+{
+	is_SystemOutPrintln* p = malloc(sizeof(is_SystemOutPrintln));
+	p->argumentsList = list;
+	p->line = line;
+	strcpy(p->literal, literal);
+	
+	return p;
+}
+
 is_UnaryExpression* insert_UnaryExpression(is_UnaryOp op, is_BasicElement* element, int line)
 {
 	is_UnaryExpression* uE = malloc(sizeof(is_UnaryExpression));
@@ -616,6 +626,16 @@ is_BasicElement* insert_BasicElement_METHOD_CALL(is_MethodCall* call, int line)
 	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
 	bE->disc_d = is_METHOD_CALL;
 	bE->data_BasicElement.methodCall = call;
+	bE->line = line;
+	
+	return bE;
+}
+
+is_BasicElement* insert_BasicElement_PRINTLN(is_SystemOutPrintln* print, int line)
+{
+	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
+	bE->disc_d = is_PRINTLN;
+	bE->data_BasicElement.print = print;
 	bE->line = line;
 	
 	return bE;

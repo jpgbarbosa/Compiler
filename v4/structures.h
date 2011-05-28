@@ -1,6 +1,8 @@
 #ifndef _STRUCTURES_
 #define _STRUCTURES_
 
+#include <stdbool.h>
+
 #define MAX_SIZE 256
 typedef struct _a1 is_AssignmentExpression;
 typedef struct _a2 is_Typename;
@@ -35,15 +37,17 @@ typedef struct _a30 is_LabeledStatement;
 typedef struct _a31 is_JumpStatement;
 typedef struct _a32 is_SelectionStatement;
 typedef struct _a33 is_ForInit;
+typedef struct _a34 is_SystemOutPrintln;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-typedef enum {is_ID, is_LITERAL, is_METHOD_CALL, is_TRUE, is_FALSE, is_INTEGER, is_FLOATPOINT} disc_BasicElement;
+typedef enum {is_ID, is_LITERAL, is_METHOD_CALL, is_TRUE, is_FALSE, is_INTEGER, is_FLOATPOINT, is_PRINTLN} disc_BasicElement;
 
 struct _a20{
 	disc_BasicElement disc_d;
 	union{
 		char name[MAX_SIZE];
 		is_MethodCall *methodCall;
+		is_SystemOutPrintln *print;
 		int i;
 		double d;
 	}data_BasicElement;
@@ -75,6 +79,13 @@ struct _a21{
 	is_Expressions_list *argumentsList; /* The list of arguments is a list of expressions. */
 	int line;	
 } /* is_MethodCall */;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+struct _a34{
+	char literal[MAX_SIZE];
+	is_Expressions_list *argumentsList; /* The list of arguments is a list of expressions. */
+	int line;	
+} /* is_SystemOutPrintln */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
@@ -160,6 +171,11 @@ struct _a13{
 struct _a12{
 	char id[MAX_SIZE];
 	is_Parameters_list *parametersList;
+	/* If the method has a returning type other than void and it has
+	 * no return, we have to print an error. This variables aids in that
+	 * task.
+	 */
+	bool isReturnOk;
 	int line;
 	
 } /*is_MethodDeclarator*/;

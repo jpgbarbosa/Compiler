@@ -12,6 +12,11 @@ int local_offset = 0;
 
 extern progEnv *pEnv;
 
+/* We use this variable to know if a return statement returns a value
+ * according to the return type of the method.
+ */
+is_PrimitiveType methodReturnType;
+
 int checkProgramFile(is_ProgramFile* pF)
 {
 	checkClassHeader(pF->classHeader);
@@ -61,6 +66,17 @@ void checkMethodDeclaration(is_MethodDeclaration* mD)
 	
 	/* Defines the return type. */
 	environment->returnType = enumConverter(mD->typeSpecifier->typeName->type);
+	
+	/* If we have a return type and this method has no return, we print an error message. */
+	if (mD->typeSpecifier->typeName->type != is_VOID && !mD->methodDeclarator->isReturnOk)
+	{
+		printf("Line %d: Method '%s' has a return type, but no return statement could be found.\n", mD->line, mD->methodDeclarator->id);
+		errorCount++;
+	
+	}
+	
+	methodReturnType = mD->typeSpecifier->typeName->type;
+	
 	
 	checkMethodDeclarator(mD->methodDeclarator, environment);
 	
@@ -365,6 +381,7 @@ void checkForInit(is_ForInit* fI, environmentList *environment)
 void checkJumpStatement(is_JumpStatement* jS, environmentList *environment)
 {
 	environmentList *newEnv = createNewEnvironment(environment);
+	tableBasicTypes bType;
 
 	switch(jS->disc_d)
 	{
@@ -377,7 +394,19 @@ void checkJumpStatement(is_JumpStatement* jS, environmentList *environment)
 			//HERE
 			break;
 		case (is_RETURN_EXP):
-			checkExpression(jS->data_JumpStatement.exp, newEnv);
+			bType = checkExpression(jS->data_JumpStatement.exp, newEnv);
+			if (bType != enumConverter(methodReturnType))
+			{
+				printf("Line %d: Return expression isn't according to the return type of the method.\n", jS->line);
+				errorCount++;
+			}
+			break;
+		case (is_RETURN):
+			if (methodReturnType != is_VOID)
+			{
+				printf("Line %d: Return expression isn't according to the return type of the method.\n", jS->line);
+				errorCount++;
+			}
 			break;
 		default:
 			break;
@@ -543,6 +572,8 @@ tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environm
 			return s_DOUBLE;
 		case (is_METHOD_CALL):
 			return checkMethodCall(bE->data_BasicElement.methodCall, environment);
+		case (is_PRINTLN):
+			return checkSystemOutPrintln(bE->data_BasicElement.print, environment);
 	}
 	
 	/* We shouldn't get here. */
@@ -563,45 +594,54 @@ tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 		/* We can't conclude anything about this method. */
 		return s_VOID;
 	}
-
-	while(!element)
-	{
-		parCounter = 0;
-		
-		/* Now, we have to check the parameters. */
-		for (aux = mC->argumentsList; aux != NULL && parCounter < element->noParameters; aux = aux->next)
-		{
-			/* If one of the parameters of the function mismatches the type given,
-			 * we immediately pass to the next iteration.
-			 */
-			if (element->parameters[parCounter] != checkExpression(aux->exp, environment))
-			{
-				printf("HERE!\n");
-				element = searchMethod(mC, element);
-				continue;
-			}
-				
-			parCounter++;
-		}
-		
-		/* The method call has too many or few arguments. */
-		if (aux != NULL || parCounter < element->noParameters)
-		{
-			printf("THERE!\n");
-			element = searchMethod(mC, element);
-		}
-
-	};
 	
-	if (element == NULL)
+	/* Now, we have to check the parameters. */
+	for (aux = mC->argumentsList; aux != NULL && parCounter < element->noParameters; aux = aux->next)
 	{
-		printf("Line %d: Method '%s' exists, but there's an incompatibility with the parameters.\n", mC->line, mC->id);
+		/* If one of the parameters of the function mismatches the type given,
+		 * we immediately return with an error.
+		 */
+		if (element->parameters[parCounter] != checkExpression(aux->exp, environment))
+		{
+			printf("Line %d: Parameter %d of method '%s' has an incorrect type.\n", mC->line, (parCounter + 1), mC->id);
+			errorCount++;
+			
+			return s_VOID;
+		}
+		parCounter++;
+	}
+	
+	/* The method call has too many arguments. */
+	if (aux != NULL)
+	{
+		printf("Line %d: Too many arguments for method '%s'.\n", mC->line, mC->id);
 		errorCount++;
+			
+		return s_VOID;
+	}
+	/* The method call has too few arguments. */
+	if (parCounter < element->noParameters)
+	{
+		printf("Line %d: Too few arguments for method '%s'.\n", mC->line, mC->id);
+		errorCount++;
+			
 		return s_VOID;
 	}
 	
 	/* If everything's ok, we return the type of the method. */
 	return element->type;
+				
+}
+
+tableBasicTypes checkSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environment)
+{
+	is_Expressions_list* aux;
+	
+	//TODO: Correct this!
+
+	
+	/* If everything's ok, we have to return s_VOID, because it's a print call. */
+	return s_VOID;
 				
 }
 

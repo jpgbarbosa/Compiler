@@ -116,6 +116,7 @@ Literal		({Numeric}|{Character}|{String})
 "default"	{return DEFAULT;}
 "if"		{return IF;}
 "String"	{return STRING;}
+"System.out.println"	{return PRINTLN;}
 
 {Identifier}	{yylval.id = (char*)strdup(yytext); return ID;}
 

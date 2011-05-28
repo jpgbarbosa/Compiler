@@ -1,3 +1,4 @@
+
 tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 {
 	is_Expressions_list* aux;
@@ -12,37 +13,40 @@ tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 		/* We can't conclude anything about this method. */
 		return s_VOID;
 	}
-	
-	/* Now, we have to check the parameters. */
-	for (aux = mC->argumentsList; aux != NULL && parCounter < element->noParameters; aux = aux->next)
+
+	while(!element)
 	{
-		/* If one of the parameters of the function mismatches the type given,
-		 * we immediately return with an error.
-		 */
-		if (element->parameters[parCounter] != checkExpression(aux->exp, environment))
+		parCounter = 0;
+		
+		/* Now, we have to check the parameters. */
+		for (aux = mC->argumentsList; aux != NULL && parCounter < element->noParameters; aux = aux->next)
 		{
-			printf("Line %d: Parameter %d of method '%s' has an incorrect type.\n", mC->line, (parCounter + 1), mC->id);
-			errorCount++;
-			
-			return s_VOID;
+			/* If one of the parameters of the function mismatches the type given,
+			 * we immediately pass to the next iteration.
+			 */
+			if (element->parameters[parCounter] != checkExpression(aux->exp, environment))
+			{
+				printf("HERE!\n");
+				element = searchMethod(mC, element);
+				continue;
+			}
+				
+			parCounter++;
 		}
-		parCounter++;
-	}
+		
+		/* The method call has too many or few arguments. */
+		if (aux != NULL || parCounter < element->noParameters)
+		{
+			printf("THERE!\n");
+			element = searchMethod(mC, element);
+		}
+
+	};
 	
-	/* The method call has too many arguments. */
-	if (aux != NULL)
+	if (element == NULL)
 	{
-		printf("Line %d: Too many arguments for method '%s'.\n", mC->line, mC->id);
+		printf("Line %d: Method '%s' exists, but there's an incompatibility with the parameters.\n", mC->line, mC->id);
 		errorCount++;
-			
-		return s_VOID;
-	}
-	/* The method call has too few arguments. */
-	if (parCounter < element->noParameters)
-	{
-		printf("Line %d: Too few arguments for method '%s'.\n", mC->line, mC->id);
-		errorCount++;
-			
 		return s_VOID;
 	}
 	
