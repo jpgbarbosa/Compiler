@@ -6,6 +6,7 @@ int main()
 {
 frame* sp=NULL;
 int g0;
+int g0;
 
 }
 

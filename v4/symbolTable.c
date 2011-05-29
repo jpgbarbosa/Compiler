@@ -96,42 +96,33 @@ tableElement *searchSymbolLocal(char *str, environmentList *environment)
 	/* If we didn't find it at the scope of the method, we will look at the
 	 * global scope.
 	 */
-	return searchSymbolGlobal(str);
+	return searchSymbolGlobal(str, false);
 }
 
 /* Looks for a variable in the global list. */
-tableElement *searchSymbolGlobal(char *str)
+/* We may be looking for a method or for a common variable. */
+tableElement *searchSymbolGlobal(char *str, bool isMethod)
 {
 	tableElement *aux;
 
 	for(aux = pEnv->globalTable->locals; aux; aux = aux->next)
-		if(strcmp(aux->name, str) == 0 && !aux->isMethod)
+		if(strcmp(aux->name, str) == 0 && aux->isMethod == isMethod)
 			return aux;
 
 	return NULL;
 }
 
 /* Looks for a method in the global list. */
-tableElement *searchMethod(is_MethodCall *mD, tableElement * tb)
+tableElement *searchMethodCall(is_MethodCall *mD)
 {
 	tableElement *aux;
 	
-	/* We may have found previously a method with this name, but with
-	 * a different number or types of parameters. Therefore, we need
-	 * to keep on with the search, as we allow methods to have the same
-	 * name as long as they have different parameters.
-	 */
-	if (tb == NULL)
-		aux = pEnv->globalTable->locals;
-	else
-		aux = tb->next;
-		
-	for(; aux; aux = aux->next)
+	for(aux = pEnv->globalTable->locals; aux; aux = aux->next)
 	{
 		/* We have found the name of the method. */
 		if(aux->isMethod && strcmp(aux->name, mD->id) == 0)
 		{
-			/* Methods can have the same name, but different parameters. */
+			/* TODO: Methods can have the same name, but different parameters. */
 			
 			return aux;
 		}

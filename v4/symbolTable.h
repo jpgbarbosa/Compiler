@@ -44,8 +44,8 @@ struct _t5{
 tableElement *insertSymbol(char *str, int offset, tableBasicTypes t, environmentList *environment, is_Expression* exp, bool isMethod);
 void showTable();
 tableElement *searchSymbolLocal(char *str, environmentList *environment);
-tableElement *searchSymbolGlobal(char *str);
-tableElement *searchMethod(is_MethodCall *mD, tableElement * tb);
+tableElement *searchSymbolGlobal(char *str, bool isMethod);
+tableElement *searchMethodCall(is_MethodCall *mD);
 environmentList *searchEnvironment(char *str);
 environmentList *createNewEnvironment(environmentList *parent);
 bool searchInMethodScope(char *str, environmentList *environment);

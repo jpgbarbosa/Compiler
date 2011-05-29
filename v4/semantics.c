@@ -599,7 +599,7 @@ tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environm
 tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 {
 	is_Expressions_list* aux;
-	tableElement* element = searchMethod(mC, NULL);
+	tableElement* element = searchMethodCall(mC);
 	int parCounter = 0;
 	
 	if (!element)

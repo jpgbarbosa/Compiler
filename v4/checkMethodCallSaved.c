@@ -54,3 +54,32 @@ tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 	return element->type;
 				
 }
+
+/* Looks for a method in the global list. */
+tableElement *searchMethod(is_MethodCall *mD, tableElement * tb)
+{
+	tableElement *aux;
+	
+	/* We may have found previously a method with this name, but with
+	 * a different number or types of parameters. Therefore, we need
+	 * to keep on with the search, as we allow methods to have the same
+	 * name as long as they have different parameters.
+	 */
+	if (tb == NULL)
+		aux = pEnv->globalTable->locals;
+	else
+		aux = tb->next;
+		
+	for(; aux; aux = aux->next)
+	{
+		/* We have found the name of the method. */
+		if(aux->isMethod && strcmp(aux->name, mD->id) == 0)
+		{
+			/* TODO: Methods can have the same name, but different parameters. */
+			
+			return aux;
+		}
+	}
+	
+	return NULL;
+}

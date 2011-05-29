@@ -144,11 +144,10 @@ is_MethodDeclaration* insert_MethodDeclaration(is_TypeSpecifier* typeS, is_Metho
 	mD->line = line;
 	
 	/* We need to this second search to insert the type of the method. */
-	tableElement* element = searchSymbolGlobal(methodD->id);
+	tableElement* element = searchSymbolGlobal(methodD->id, true);
+
 	if (element != NULL)
-	{
 		element->type = enumConverter(typeS->typeName->type);
-	}
 	
 	return mD;
 }
