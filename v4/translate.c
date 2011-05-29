@@ -78,7 +78,9 @@ void translateHeader(FILE* dest)
 	fprintf(dest, "#include <stdlib.h>\n");
 	fprintf(dest, "#include <stdio.h>\n\n");
 	fprintf(dest, "int main()\n{\n");
-	fprintf(dest, "frame* sp=NULL;\n");
+	fprintf(dest, "int _ra;\n");
+	fprintf(dest, "frame* fp = NULL;\n");
+	fprintf(dest, "frame* sp = NULL;\n");
 	
 	return;
 }
@@ -86,6 +88,7 @@ void translateHeader(FILE* dest)
 void translateFooter(FILE* dest)
 {
 	/* Finishes the output file. */
+	translateRedirector(dest);
 	fprintf(dest, "\n}\n\n");
 	
 	return;
@@ -100,7 +103,7 @@ void translateGlobalVariables(FILE* dest)
 	/* Prints, one by one, all the global variables. */
 	for(; gTable; gTable = gTable->next)
 		if (!gTable->isMethod)
-			translateVariablesDeclarator(dest, gTable, true);
+			translateGlobalVariablesDeclarator(dest, gTable, true);
 
 }
 
@@ -117,6 +120,8 @@ void translateMain(FILE* dest,is_MethodDeclaration* mainDecl)
 	fprintf(dest, "sp = (frame*)malloc(sizeof(frame));\n");
 
 	/* Now, goes for the rest of the main... */
+	fprintf(dest, "/*Main's body.*/\n");
+	translateBlock(dest, mainDecl->block, eL);
 	 
 	return;
 }
@@ -144,12 +149,11 @@ void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD)
 	fprintf(dest, "sp->return_address = _ra;\n");
 	
 	/* Method's body. */
-	fprintf(dest, "/*Method's body.*/\n");
-	/*translate_vardecs(dest, ip->vlist, localenv, pe);			
-	translate_statements(dest, ip->slist, localenv, pe);*/		
+	fprintf(dest, "\n/*Method's body.*/\n");
+	translateBlock(dest, mD->block, eL);	
 
 	/* Epilogue. */
-	fprintf(dest, "/*Epilogue*/\n");
+	fprintf(dest, "\n/*Epilogue*/\n");
 	/* Restores the returning value, to be used at the flux redirection. */
 	fprintf(dest, "_ra = sp->return_address;\n");
 	/* Pop operation from the frame stack. */
@@ -165,7 +169,7 @@ void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD)
 	
 }
 
-void translateVariablesDeclarator(FILE* dest, tableElement* element, bool isGlobal)
+void translateGlobalVariablesDeclarator(FILE* dest, tableElement* element, bool isGlobal)
 {
 	/* This is used to distinguish local from global variables. */
 	char varScope[2];
@@ -197,16 +201,54 @@ void translateVariablesDeclarator(FILE* dest, tableElement* element, bool isGlob
 
 void translateBlock(FILE* dest, is_Block* block, environmentList *environment)
 {
+	/* Shows the list of variables declarations or statements. */
+	is_LocalVariableDeclarationsOrStatements_list* aux;
+	
+	for (aux = block->lvdos_list; aux != NULL; aux = aux->next)
+		translateLocalVariableDeclarationsOrStatements(dest, aux->lvdos, environment);
 
 }
 
 void translateLocalVariableDeclarationsOrStatements(FILE* dest, is_LocalVariableDeclarationsOrStatements* lvdos, environmentList *environment)
 {
-
+	switch(lvdos->disc_d)
+	{
+		case (d_LocalVariableDeclarationStatement):
+			translateLocalVariableDeclarationStatement(dest, lvdos->data_LocalVariableDeclarationsOrStatements.u_lvds, environment);
+			break;
+		case (d_Statement):
+			translateStatement(dest, lvdos->data_LocalVariableDeclarationsOrStatements.u_statement, environment);
+			break;
+	}
 }
 
 void translateLocalVariableDeclarationStatement(FILE* dest, is_LocalVariableDeclarationStatement* lvds, environmentList *environment)
 {	
+	/* And now the names and initializations. */
+	is_VariablesDeclarator_list* aux;
+	
+	for(aux = lvds->variablesDeclarator_list; aux != NULL; aux = aux->next)
+		translateVariablesDeclarator(dest, aux->variablesDeclarator, lvds->typeSpecifier, environment);
+
+	return;
+}
+
+void translateVariablesDeclarator(FILE* dest, is_VariablesDeclarator* vD, is_TypeSpecifier *tS, environmentList *environment)
+{
+	/* First, print the type of the variable. */
+	printPrimitiveType(dest, tS);
+	/* Then, the name. */
+	fprintf(dest, "%s", vD->id);
+	
+	/* It is initialiazed. */
+	if (vD->expression != NULL)
+	{
+		fprintf(dest, " = ");
+		translateExpression(dest, vD->expression, environment);
+	}
+		
+	fprintf(dest, ";\n");
+
 
 }
 
@@ -317,4 +359,24 @@ void translateSystemOutPrintln(FILE* dest, is_SystemOutPrintln* p, environmentLi
 	//TODO: this xD
 	/* Ends the print. */
 	fprintf(dest, ");");
+}
+
+void printPrimitiveType(FILE *dest, is_TypeSpecifier* tS)
+{
+	switch(tS->typeName->type)
+	{
+		case(is_BOOLEAN): fprintf(dest, "int "); break;
+		case(is_CHAR): fprintf(dest, "char "); break;
+		case(is_BYTE): fprintf(dest, "byte "); break;
+		case(is_SHORT): fprintf(dest, "short "); break;
+		case(is_INT): fprintf(dest, "int "); break;
+		case(is_LONG): fprintf(dest, "long "); break;
+		case(is_FLOAT): fprintf(dest, "float "); break;
+		case(is_DOUBLE): fprintf(dest, "double "); break;
+		case(is_VOID): fprintf(dest, "void "); break;
+		case(is_STRING): fprintf(dest, "char[] "); break;
+		case(is_STRING_ARRAY): fprintf(dest, "char[][] "); break;
+	}
+	
+	return;
 }

@@ -6,7 +6,8 @@ void translateFooter(FILE* dest);
 void translateGlobalVariables(FILE* dest);
 void translateMain(FILE* dest,is_MethodDeclaration* mainDecl);
 void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD);
-void translateVariablesDeclarator(FILE* dest, tableElement* element, bool isGlobal);
+void translateGlobalVariablesDeclarator(FILE* dest, tableElement* element, bool isGlobal);
+void translateVariablesDeclarator(FILE* dest, is_VariablesDeclarator* vD, is_TypeSpecifier *tS, environmentList *environment);
 void translateTypeSpecifier(FILE* dest, is_TypeSpecifier* tS, environmentList *environment);
 void translateTypename(FILE* dest, is_Typename* tn, environmentList *environment);
 void translateBlock(FILE* dest, is_Block* block, environmentList *environment);
@@ -28,3 +29,4 @@ void translateBasicElement(FILE* dest, is_BasicElement* bE, environmentList *env
 void translateMethodCall(FILE* dest, is_MethodCall* mC, environmentList *environment);
 void translateSystemOutPrintln(FILE* dest, is_SystemOutPrintln* p, environmentList *environment);
 void translateForInit(FILE* dest, is_ForInit* fI, environmentList *environment);
+void printPrimitiveType(FILE *dest, is_TypeSpecifier* tS);

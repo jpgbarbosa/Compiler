@@ -4,11 +4,13 @@
 
 int main()
 {
-frame* sp=NULL;
+frame* sp = NULL;
 int g0;
 
 /*Main Block */
 sp = (frame*)malloc(sizeof(frame));
+/*Main's body.*/
+int a;
 
 /*METHOD: gcd */
 /*Prologue*/
@@ -18,7 +20,10 @@ fp = sp;
 sp = (frame*)malloc(sizeof(frame));
 sp->parent = fp;
 sp->return_address = _ra;
+
 /*Method's body.*/
+int c;
+
 /*Epilogue*/
 _ra = sp->return_address;
 sp = sp->parent;
