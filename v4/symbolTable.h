@@ -16,6 +16,8 @@ struct _t1
 	char name[256];
 	tableBasicTypes type;
 	tableElement* next;
+	/* Only for variables. */
+	is_Expression* exp;
 	bool isMethod;
 	int offset;
 	/* Only for methods. We limit the number of parameters to 32. */
@@ -39,7 +41,7 @@ struct _t5{
 	environmentList* methods;
 } /* progEnv */;
 
-tableElement *insertSymbol(char *str, int offset, tableBasicTypes t, environmentList *environment, bool isMethod);
+tableElement *insertSymbol(char *str, int offset, tableBasicTypes t, environmentList *environment, is_Expression* exp, bool isMethod);
 void showTable();
 tableElement *searchSymbolLocal(char *str, environmentList *environment);
 tableElement *searchSymbolGlobal(char *str);

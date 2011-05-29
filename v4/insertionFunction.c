@@ -161,7 +161,7 @@ is_MethodDeclarator* insert_MethodDeclarator(char *id, is_Parameters_list* list,
 	mD->line = line;
 	
 	/* Inserts the method in the list of global symbols. */
-	tableElement *sym = insertSymbol(mD->id, -1, s_METHOD, pEnv->globalTable, true);
+	tableElement *sym = insertSymbol(mD->id, -1, s_METHOD, pEnv->globalTable, NULL, true);
 	
 	if (sym == NULL)
 		printf("Line %d: There's already a symbol with that name ('%s')!\n", mD->line, mD->id);

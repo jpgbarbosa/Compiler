@@ -3,13 +3,12 @@
 void translateProgramFile(is_ProgramFile* pF);
 void translateHeader(FILE* dest);
 void translateFooter(FILE* dest);
-void translateClassHeader(FILE* dest, is_ClassHeader *cH);
-void translateFieldDeclaration(FILE* dest, is_FieldDeclaration* fD);
-void translateAttrDeclaration(FILE* dest, is_AttrDeclaration* aD);
+void translateGlobalVariables(FILE* dest);
+void translateMethods(FILE* dest);
 void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD);
 void translateMethodDeclarator(FILE* dest, is_MethodDeclarator* mD, environmentList *environment);
 void translateParameter(FILE* dest, is_Parameter* par, environmentList *environment);
-void translateVariablesDeclarator(FILE* dest, is_VariablesDeclarator* vD, tableBasicTypes type, environmentList *environment);
+void translateVariablesDeclarator(FILE* dest, tableElement* element, bool isGlobal);
 void translateTypeSpecifier(FILE* dest, is_TypeSpecifier* tS, environmentList *environment);
 void translateTypename(FILE* dest, is_Typename* tn, environmentList *environment);
 void translateBlock(FILE* dest, is_Block* block, environmentList *environment);

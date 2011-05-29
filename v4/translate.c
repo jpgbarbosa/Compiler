@@ -27,7 +27,8 @@ void translateProgramFile(is_ProgramFile* pF)
 	
 	/* Now, we have to call some functions to start writing the final code. */
 	translateHeader(dest);
-	
+	translateGlobalVariables(dest);
+	translateMethods(dest);
 	translateFooter(dest);
 	
 	
@@ -61,20 +62,23 @@ void translateFooter(FILE* dest)
 	return;
 }
 
-void translateClassHeader(FILE* dest, is_ClassHeader *cH)
+void translateGlobalVariables(FILE* dest)
+{
+		
+	tableElement* gTable = pEnv->globalTable->locals;
+
+	/* Prints, one by one, all the global variables. */
+	for(; gTable; gTable = gTable->next)
+		if (gTable->type != s_METHOD)
+			translateVariablesDeclarator(dest, gTable, true);
+
+}
+
+void translateMethods(FILE* dest)
 {
 	return;
 }
 
-void translateFieldDeclaration(FILE* dest, is_FieldDeclaration* fD)
-{
-	return;
-}
-
-void translateAttrDeclaration(FILE* dest, is_AttrDeclaration* aD)
-{	
-	
-}
 
 void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD)
 {
@@ -92,9 +96,33 @@ void translateParameter(FILE* dest, is_Parameter* par, environmentList *environm
 
 }
 
-void translateVariablesDeclarator(FILE* dest, is_VariablesDeclarator* vD, tableBasicTypes type, environmentList *environment)
+void translateVariablesDeclarator(FILE* dest, tableElement* element, bool isGlobal)
 {
-
+	/* This is used to distinguish local from global variables. */
+	char varScope[2];
+	int offset = element->offset;
+	
+	if (isGlobal)
+		varScope[0] = 'g';
+	else
+		varScope[0] = 'l';
+	varScope[1] = '\0';
+		
+	/* Declaration of variables according to their type. */
+	switch(element->type)
+	{
+		case s_BOOLEAN:	fprintf(dest, "int %s%d;\n", varScope, offset); break;
+		case s_CHAR:	fprintf(dest, "char %s%d;\n", varScope, offset); break;
+		case s_SHORT:	fprintf(dest, "short %s%d;\n", varScope, offset); break;
+		case s_INT:		fprintf(dest, "int %s%d;\n", varScope, offset); break;
+		case s_LONG:	fprintf(dest, "long %s%d;\n", varScope, offset); break;
+		case s_FLOAT:	fprintf(dest, "float %s%d;\n", varScope, offset); break;
+		case s_DOUBLE:	fprintf(dest, "double %s%d;\n", varScope, offset); break;
+		case s_VOID:	fprintf(dest, "void %s%d;\n", varScope, offset); break;
+		
+		//TODO: There are still Strings and string arrays!
+		default:break;
+	}
 
 }
 

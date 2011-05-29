@@ -106,7 +106,7 @@ void checkParameter(is_Parameter* par, environmentList *environment)
 	 * increment even if there's another symbol with it because in case of
 	 * errors at the semantics, we won't be generating any code.
 	 */
-	tableElement *sym = insertSymbol(par->id, localOffset++, enumConverter(par->typeSpecifier->typeName->type), environment, false);
+	tableElement *sym = insertSymbol(par->id, localOffset++, enumConverter(par->typeSpecifier->typeName->type), environment, NULL, false);
 	
 	if (sym == NULL)
 	{
@@ -125,9 +125,9 @@ void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, 
 	 * at the point of generating code, we will only have correct offsets.
 	 */
 	if (isGlobal)
-		new = insertSymbol(vD->id, globalOffset++, type, environment, false);
+		new = insertSymbol(vD->id, globalOffset++, type, environment, vD->expression, false);
 	else
-		new = insertSymbol(vD->id, localOffset++, type, environment, false);
+		new = insertSymbol(vD->id, localOffset++, type, environment, vD->expression, false);
 	
 	if (new == NULL)
 	{

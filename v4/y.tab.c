@@ -2330,14 +2330,14 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 314 "pJava.y"
-    {printf("here\n"); hasReturn = true; (yyval._jumpStatement) = insert_JumpStatement_RETURN_EXP((yyvsp[(2) - (3)]._expression),line_no);}
+    {hasReturn = true; (yyval._jumpStatement) = insert_JumpStatement_RETURN_EXP((yyvsp[(2) - (3)]._expression),line_no);}
     break;
 
   case 73:
 
 /* Line 1455 of yacc.c  */
 #line 315 "pJava.y"
-    {printf("here\n"); hasReturn = true; (yyval._jumpStatement) = insert_JumpStatement_RETURN(line_no);}
+    {hasReturn = true; (yyval._jumpStatement) = insert_JumpStatement_RETURN(line_no);}
     break;
 
   case 74:

@@ -311,8 +311,8 @@ JumpStatement
 	| BREAK               ';'		{$$ = insert_JumpStatement_BREAK(line_no);}
 	| CONTINUE ID 	      ';'		{$$ = insert_JumpStatement_CONTINUE_ID($2,line_no);}
 	| CONTINUE            ';'		{$$ = insert_JumpStatement_CONTINUE(line_no);}
-	| RETURN   Expression ';'		{printf("here\n"); hasReturn = true; $$ = insert_JumpStatement_RETURN_EXP($2,line_no);}
-	| RETURN              ';'		{printf("here\n"); hasReturn = true; $$ = insert_JumpStatement_RETURN(line_no);}
+	| RETURN   Expression ';'		{hasReturn = true; $$ = insert_JumpStatement_RETURN_EXP($2,line_no);}
+	| RETURN              ';'		{hasReturn = true; $$ = insert_JumpStatement_RETURN(line_no);}
 	;
 
 MethodCall

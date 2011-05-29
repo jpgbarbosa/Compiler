@@ -7,7 +7,7 @@
 extern progEnv *pEnv;
 
 /* Insert a new identifier at the tail of symbols linked list. */
-tableElement *insertSymbol(char *str, int offset, tableBasicTypes t, environmentList *environment, bool isMethod)
+tableElement *insertSymbol(char *str, int offset, tableBasicTypes t, environmentList *environment, is_Expression* exp, bool isMethod)
 {
 	/* Make sure we don't have conflicting scopes for this variable. */
 	if (searchInMethodScope(str, environment))
@@ -69,6 +69,11 @@ tableElement *insertSymbol(char *str, int offset, tableBasicTypes t, environment
 			for (aux = pEnv->methods; aux->next != NULL; aux = aux->next);
 			aux->next = env;
 		}
+	}
+	/* It's a variable. Therefore, we need to save it's associated expression. */
+	else
+	{
+		newSymbol->exp = exp;
 	}
 	
 	return newSymbol; 
