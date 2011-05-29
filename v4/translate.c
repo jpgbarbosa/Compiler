@@ -77,6 +77,7 @@ void translateHeader(FILE* dest)
 	fprintf(dest, "#include \"frame.h\"\n");
 	fprintf(dest, "#include <stdlib.h>\n");
 	fprintf(dest, "#include <stdio.h>\n\n");
+	fprintf(dest, "#include <string.h>\n\n");
 	fprintf(dest, "int main()\n{\n");
 	fprintf(dest, "int _ra;\n");
 	fprintf(dest, "frame* fp = NULL;\n");
@@ -92,6 +93,21 @@ void translateFooter(FILE* dest)
 	fprintf(dest, "\n}\n\n");
 	
 	return;
+}
+
+/* Function to redirect the code's flux according to the returning addresses (necessary for C). */
+void translateRedirector(FILE* dest)
+{
+	int i;
+	fprintf(dest, "\n/*Redirector*/\n");
+	fprintf(dest, "goto exit;\n");
+	fprintf(dest, "redirector:\n");
+	
+	/* For each returning address, its associated label. */
+	for(i = 0; i < returnCounter; i++)
+		fprintf(dest, "if( _ra == %d ) goto return%d;\n", i, i);
+
+	fprintf(dest, "exit:\n;\n");
 }
 
 /* Translates all the global variables. */
@@ -235,33 +251,90 @@ void translateLocalVariableDeclarationStatement(FILE* dest, is_LocalVariableDecl
 
 void translateVariablesDeclarator(FILE* dest, is_VariablesDeclarator* vD, is_TypeSpecifier *tS, environmentList *environment)
 {
-	/* First, print the type of the variable. */
-	printPrimitiveType(dest, tS);
-	/* Then, the name. */
-	fprintf(dest, "%s", vD->id);
+	int offset;
+	char typeInString[15];
+	/* Looks for the tableElement corresponding to this variable. */
+	tableElement* t = searchSymbolLocal(vD->id, environment);
 	
-	/* It is initialiazed. */
+	offset = t->offset;
+	
+	/* First, print the type of the variable. */
+	switch(tS->typeName->type)
+	{
+		case(is_BOOLEAN): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
+		case(is_CHAR): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char));\n", offset); strcpy(typeInString, "(char*)"); break;
+		case(is_BYTE): fprintf(dest, "sp->locals[%d] = (byte*) malloc(sizeof(byte));\n", offset); strcpy(typeInString, "(byte*)"); break;
+		case(is_SHORT): fprintf(dest, "sp->locals[%d] = (short*) malloc(sizeof(short));\n", offset); strcpy(typeInString, "(short*)"); break;
+		case(is_INT): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
+		case(is_LONG): fprintf(dest, "sp->locals[%d] = (long*) malloc(sizeof(long));\n", offset); strcpy(typeInString, "(long*)"); break;
+		case(is_FLOAT): fprintf(dest, "sp->locals[%d] = (float*) malloc(sizeof(float));\n", offset); strcpy(typeInString, "(float*)"); break;
+		case(is_DOUBLE): fprintf(dest, "sp->locals[%d] = (double*) malloc(sizeof(double));\n", offset); strcpy(typeInString, "(double*)"); break;
+		//TODO: Confirm this.
+		case(is_VOID): break;
+		//TODO: We are limiting strings to 255 characters.
+		case(is_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*256);\n", offset); strcpy(typeInString, "(char*)"); break;
+		//TODO: Confirm this.
+		case(is_STRING_ARRAY): break;
+	}
+	
+	/* If it is initialized, we have to take action. */
 	if (vD->expression != NULL)
 	{
-		fprintf(dest, " = ");
+		fprintf(dest, "%s sp->locals[%d] = ", typeInString, offset);
 		translateExpression(dest, vD->expression, environment);
+		fprintf(dest, ";\n");
 	}
 		
-	fprintf(dest, ";\n");
-
-
 }
 
 void translateStatement(FILE* dest, is_Statement* s, environmentList *environment)
 {
+	/* Translates a given statement. */
+	switch(s->disc_d)
+	{
+		case (d_LabeledStatement):
+			translateLabeledStatement(dest, s->data_Statement.labeledStatement, environment);
+			break;
+		case (d_StatementExpression):
+			translateExpression(dest, s->data_Statement.expression, environment);
+			break;
+		case (d_SelectionStatement):
+			translateSelectionStatement(dest, s->data_Statement.selectionStatement, environment);
+			break;
+		case (d_IterationStatement):
+			translateIterationStatement(dest, s->data_Statement.iterationStatement, environment);
+			break;
+		case (d_JumpStatement):
+			translateJumpStatement(dest, s->data_Statement.jumpStatement, environment);
+			break;
+		case (d_StatementBlock):
+			translateBlock(dest, s->data_Statement.block, environment);
+			break;
+	}
 
-
-	
+	return;
 }
 
 void translateExpression(FILE* dest, is_Expression* exp, environmentList *environment)
 {	
-
+	/* Translate a given expression. */
+	switch(exp->disc_d)
+	{
+		case (d_ConditionalExp):
+			translateConditionalExpression(dest, exp->data_Expression.cExpression, environment);
+			break;
+		case (d_AssignmentExp):
+			translateAssignmentExpression(dest, exp->data_Expression.aExpression, environment);
+			break;
+		/* It's an expression surrounded by brackets, so we ought to add them. */
+		case (d_Exp):
+			fprintf(dest, "(");
+			translateExpression(dest, exp->data_Expression.expression, environment);
+			fprintf(dest, ") ");
+			break;
+	}
+	
+	return;
 	
 }
 
@@ -272,7 +345,49 @@ void translateConditionalExpression(FILE* dest, is_ConditionalExpression* cExp, 
 
 void translateAssignmentExpression(FILE* dest, is_AssignmentExpression* aExp, environmentList *environment)
 {
-
+	int offset;
+	/* We are sure that we will find there an element. */
+	tableElement *search = searchSymbolLocal(aExp->id, environment);
+	
+	offset = search->offset;
+	
+	/* First, print the type of the variable. */
+	switch(search->type)
+	{
+		case (s_BOOLEAN): fprintf(dest, "(int*) sp->locals[%d] = ", offset); break;
+		case (s_CHAR): fprintf(dest, "(char*) sp->locals[%d] =  ", offset); break;
+		case (s_BYTE): fprintf(dest, "(byte*) sp->locals[%d] =  ", offset); break;
+		case (s_SHORT): fprintf(dest, "(short*) sp->locals[%d] =  ", offset); break;
+		case (s_INT): fprintf(dest, "(int*) sp->locals[%d] =  ", offset); break;
+		case (s_LONG): fprintf(dest, "(long*) sp->locals[%d] =  ", offset); break;
+		case (s_FLOAT): fprintf(dest, "(float*) sp->locals[%d] =  ", offset); break;
+		case (s_DOUBLE): fprintf(dest, "(double*) sp->locals[%d] =  ", offset); break;
+		//TODO: Confirm this.
+		case (s_VOID): break;
+		//TODO: We are limiting strings to 255 characters.
+		case (s_STRING): fprintf(dest, "strcpy((char*) sp->locals[%d], ", offset); break;
+		//TODO: Confirm this.
+		case (s_STRING_ARRAY): break;
+		/* We shouldn't get here. */
+		case (s_METHOD): break;
+	}
+	
+	/* Now, we have to translate the assignment expression. */
+	/* If it's not a string, we simply have to print the expression. */
+	if (search->type != s_STRING && search->type != s_STRING_ARRAY)
+		translateExpression(dest, aExp->expression, environment);
+	/* If it's a string, we are using strcpy, so we need to properly close
+	 * the parenthesis.
+	 */
+	else if (search->type != s_STRING)
+	{
+		translateExpression(dest, aExp->expression, environment);
+		fprintf(dest, ")\n");
+	}
+	
+	fprintf(dest, ";\n");
+	
+	return;
 	
 }
 
@@ -332,7 +447,69 @@ void translateUnaryExpression(FILE* dest, is_UnaryExpression* uE, environmentLis
 
 void translateBasicElement(FILE* dest, is_BasicElement* bE, environmentList *environment)
 {
+	tableElement *search;
+	int offset;
+			
+	switch(bE->disc_d)
+	{
+		case (is_ID):
+			/* If it is an ID, we have to look for the offset.
+			 * We know for sure that we will find the element.
+			 */
+			search = searchSymbolLocal(bE->data_BasicElement.name, environment);
+			
+			offset = search->offset;
+			
+			switch (search->type)
+			{
+				/* Now, we have to print the right type. */
+				case (s_BOOLEAN): fprintf(dest, "(int*) "); break;
+				case (s_CHAR): fprintf(dest, "(char*) "); break;
+				case (s_BYTE): fprintf(dest, "(byte*) "); break;
+				case (s_SHORT): fprintf(dest, "(short*) "); break;
+				case (s_INT): fprintf(dest, "(int*) "); break;
+				case (s_LONG): fprintf(dest, "(long*) "); break;
+				case (s_FLOAT): fprintf(dest, "(float*) "); break;
+				case (s_DOUBLE): fprintf(dest, "(double*) "); break;
+				//TODO: Confirm this.
+				case (s_VOID): break;
+				//TODO: Confirm this.
+				case (s_STRING): fprintf(dest, "(char*) "); break;
+				//TODO: Confirm this.
+				case (s_STRING_ARRAY): break;
+				/* We shouldn't get here. */
+				case (s_METHOD): break;
+			}
+
+			/* Print the variable name, meaning its offset in locals of the sp. */
+			fprintf(dest, " sp->locals[%d] ", offset);
+			
+			break;
+			
+		case (is_LITERAL):
+			fprintf(dest, "\"%s\"", bE->data_BasicElement.name);
+			break;
+		case (is_TRUE):
+			fprintf(dest, "1");
+			break;
+		case (is_FALSE):
+			fprintf(dest, "0");
+			break;
+		case (is_INTEGER):
+			fprintf(dest, "%d", bE->data_BasicElement.i);
+			break;
+		case (is_FLOATPOINT):
+			fprintf(dest, "%lf", bE->data_BasicElement.d);
+			break;
+		case (is_METHOD_CALL):
+			translateMethodCall(dest, bE->data_BasicElement.methodCall, environment);
+			break;
+		case (is_PRINTLN):
+			translateSystemOutPrintln(dest, bE->data_BasicElement.print, environment);
+			break;
+	}
 	
+	return;
 }
 
 void translateMethodCall(FILE* dest, is_MethodCall* mC, environmentList *environment)
@@ -359,24 +536,4 @@ void translateSystemOutPrintln(FILE* dest, is_SystemOutPrintln* p, environmentLi
 	//TODO: this xD
 	/* Ends the print. */
 	fprintf(dest, ");");
-}
-
-void printPrimitiveType(FILE *dest, is_TypeSpecifier* tS)
-{
-	switch(tS->typeName->type)
-	{
-		case(is_BOOLEAN): fprintf(dest, "int "); break;
-		case(is_CHAR): fprintf(dest, "char "); break;
-		case(is_BYTE): fprintf(dest, "byte "); break;
-		case(is_SHORT): fprintf(dest, "short "); break;
-		case(is_INT): fprintf(dest, "int "); break;
-		case(is_LONG): fprintf(dest, "long "); break;
-		case(is_FLOAT): fprintf(dest, "float "); break;
-		case(is_DOUBLE): fprintf(dest, "double "); break;
-		case(is_VOID): fprintf(dest, "void "); break;
-		case(is_STRING): fprintf(dest, "char[] "); break;
-		case(is_STRING_ARRAY): fprintf(dest, "char[][] "); break;
-	}
-	
-	return;
 }

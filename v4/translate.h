@@ -3,6 +3,7 @@
 void translateProgramFile(is_ProgramFile* pF);
 void translateHeader(FILE* dest);
 void translateFooter(FILE* dest);
+void translateRedirector(FILE* dest);
 void translateGlobalVariables(FILE* dest);
 void translateMain(FILE* dest,is_MethodDeclaration* mainDecl);
 void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD);
