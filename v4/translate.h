@@ -1,6 +1,8 @@
 #include "structures.h"
 
-void translateProgramFile(FILE* dest, is_ProgramFile* pF);
+void translateProgramFile(is_ProgramFile* pF);
+void translateHeader(FILE* dest);
+void translateFooter(FILE* dest);
 void translateClassHeader(FILE* dest, is_ClassHeader *cH);
 void translateFieldDeclaration(FILE* dest, is_FieldDeclaration* fD);
 void translateAttrDeclaration(FILE* dest, is_AttrDeclaration* aD);

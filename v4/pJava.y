@@ -7,6 +7,7 @@
 #include "showTree.h"
 #include "symbolTable.h"
 #include "semantics.h"
+#include "translate.h"
 
 extern int line_no;
 
@@ -413,6 +414,8 @@ AssignmentExpression
 
 int main()
 {
+	int noErrors;
+	
 	pEnv = malloc(sizeof(progEnv));
 	pEnv->globalTable = malloc(sizeof(environmentList));
 	
@@ -421,8 +424,16 @@ int main()
 	if (yyparse() == 0)
 	{
 		showProgramFile(myProgram);
-		printf("\nWe have found %d errors in the program.\n", checkProgramFile(myProgram));
+		noErrors = checkProgramFile(myProgram);
+		printf("\nWe have found %d errors in the program.\n", noErrors);
 	}
+	
+	if (noErrors == 0)
+	{
+		translateProgramFile(myProgram);
+		printf("Code generation conclude!\n");
+	}
+	
 	return 0;
 }
 
