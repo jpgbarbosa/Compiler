@@ -69,7 +69,7 @@ void translateGlobalVariables(FILE* dest)
 
 	/* Prints, one by one, all the global variables. */
 	for(; gTable; gTable = gTable->next)
-		if (gTable->type != s_METHOD)
+		if (!gTable->isMethod)
 			translateVariablesDeclarator(dest, gTable, true);
 
 }

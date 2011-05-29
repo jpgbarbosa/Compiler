@@ -19,7 +19,30 @@ is_PrimitiveType methodReturnType;
 
 int checkProgramFile(is_ProgramFile* pF)
 {
-	checkClassHeader(pF->classHeader);
+	/* First, we need to verify if there's a main method, with an array
+	 * of strings as input.
+	 */
+	 
+	tableElement *mainMethod = searchSymbolGlobal("main", true);
+	
+	if (mainMethod == NULL)
+	{
+		printf("No method named 'main' could be found.\n");
+		errorCount++;
+	}
+	else
+	{
+		if (mainMethod->type != s_INT)
+		{
+			printf("'main' method return type isn't 'int'.\n");
+			errorCount++;
+		}
+		else if (mainMethod->noParameters != 1 || mainMethod->parameters[0] != s_STRING_ARRAY)
+		{
+			printf("'main' method has incorrect parameters (supports only 'String [] args').\n");
+			errorCount++;
+		}
+	}
 	
 	/* Now gets the errors from the list of field declarations. */
 	is_FieldDeclaration_list* aux;
@@ -29,12 +52,6 @@ int checkProgramFile(is_ProgramFile* pF)
 		
 	return errorCount;
 		
-}
-
-void checkClassHeader(is_ClassHeader *cH)
-{
-	//TODO: Is it correct?
-	//HERE
 }
 
 void checkFieldDeclaration(is_FieldDeclaration* fD)

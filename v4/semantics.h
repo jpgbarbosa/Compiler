@@ -1,7 +1,6 @@
 #include "structures.h"
 
 int checkProgramFile(is_ProgramFile* pF);
-void checkClassHeader(is_ClassHeader *cH);
 void checkFieldDeclaration(is_FieldDeclaration* fD);
 void checkAttrDeclaration(is_AttrDeclaration* aD);
 void checkMethodDeclaration(is_MethodDeclaration* mD);

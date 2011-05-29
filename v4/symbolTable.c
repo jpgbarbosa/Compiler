@@ -21,6 +21,7 @@ tableElement *insertSymbol(char *str, int offset, tableBasicTypes t, environment
 	newSymbol->type = t;
 	newSymbol->next = NULL;
 	newSymbol->isMethod = isMethod;	
+	newSymbol->offset = offset;
 
 	/* If the table has already some elements. */
 	if(environment->locals)
