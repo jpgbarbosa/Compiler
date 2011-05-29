@@ -1,7 +1,9 @@
 public class gcdRrec{
 	
 	public static int gcd(int a, int b) {
-		int a;
+		int c;
+		
+		return c;
 	}
 	
 
