@@ -6,8 +6,6 @@ void translateFooter(FILE* dest);
 void translateGlobalVariables(FILE* dest);
 void translateMain(FILE* dest,is_MethodDeclaration* mainDecl);
 void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD);
-void translateMethodDeclarator(FILE* dest, is_MethodDeclarator* mD, environmentList *environment);
-void translateParameter(FILE* dest, is_Parameter* par, environmentList *environment);
 void translateVariablesDeclarator(FILE* dest, tableElement* element, bool isGlobal);
 void translateTypeSpecifier(FILE* dest, is_TypeSpecifier* tS, environmentList *environment);
 void translateTypename(FILE* dest, is_Typename* tn, environmentList *environment);

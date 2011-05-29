@@ -9,6 +9,8 @@
 
 extern progEnv *pEnv;
 
+int returnCounter = 0;
+
 void translateProgramFile(is_ProgramFile* pF)
 {
 	/* First, we create the file where we will be writing all the output. */
@@ -163,17 +165,6 @@ void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD)
 	
 }
 
-void translateMethodDeclarator(FILE* dest, is_MethodDeclarator* mD, environmentList *environment)
-{
-
-
-}
-
-void translateParameter(FILE* dest, is_Parameter* par, environmentList *environment)
-{
-
-}
-
 void translateVariablesDeclarator(FILE* dest, tableElement* element, bool isGlobal)
 {
 	/* This is used to distinguish local from global variables. */
@@ -304,10 +295,26 @@ void translateBasicElement(FILE* dest, is_BasicElement* bE, environmentList *env
 
 void translateMethodCall(FILE* dest, is_MethodCall* mC, environmentList *environment)
 {
+	/* Saves the retuning address. */
+	fprintf(dest, "_ra=%d;\n",returnCounter);
+	/* Jumps to the called method. */
+	fprintf(dest, "goto %s;\n", mC->id);
 	
+	//TODO: Save and update the parameters vector. 
+	
+	/* Returning label, so we can keep on with the flux of execution after
+	 * the method returns.
+	 */
+	fprintf(dest, "return%d:\n", returnCounter);
+	returnCounter++;	
 }
 
 void translateSystemOutPrintln(FILE* dest, is_SystemOutPrintln* p, environmentList *environment)
 {
-	
+	/* Initiates the print. */
+	fprintf(dest, "printf(%s", p->literal);
+	/* Now, prints all the arguments. */
+	//TODO: this xD
+	/* Ends the print. */
+	fprintf(dest, ");");
 }
