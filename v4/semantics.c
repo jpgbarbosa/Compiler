@@ -7,8 +7,8 @@
 #include "semantics.h"
 
 int errorCount = 0;
-int global_offset = 0;
-int local_offset = 0;
+int globalOffset = 0;
+int localOffset = 0;
 
 extern progEnv *pEnv;
 
@@ -56,7 +56,7 @@ void checkAttrDeclaration(is_AttrDeclaration* aD)
 	is_VariablesDeclarator_list* aux;
 	
 	for(aux = aD->variablesDeclarators; aux != NULL; aux = aux->next)
-		checkVariablesDeclarator(aux->variablesDeclarator,enumConverter(aD->typeSpecifier->typeName->type), pEnv->globalTable);
+		checkVariablesDeclarator(aux->variablesDeclarator,enumConverter(aD->typeSpecifier->typeName->type), pEnv->globalTable, true);
 	
 }
 
@@ -74,6 +74,9 @@ void checkMethodDeclaration(is_MethodDeclaration* mD)
 		errorCount++;
 	
 	}
+	
+	/* Now, we have to reset the localOffset counter for each method. */
+	localOffset = 0;
 	
 	methodReturnType = mD->typeSpecifier->typeName->type;
 	
@@ -98,8 +101,12 @@ void checkMethodDeclarator(is_MethodDeclarator* mD, environmentList *environment
 
 void checkParameter(is_Parameter* par, environmentList *environment)
 {
-	/* Insert the parameter at the local scope of the method. */
-	tableElement *sym = insertSymbol(par->id, enumConverter(par->typeSpecifier->typeName->type), environment, false);
+	/* Insert the parameter at the local scope of the method.
+	 * The same with the local offset as descripted somewhere else. We can
+	 * increment even if there's another symbol with it because in case of
+	 * errors at the semantics, we won't be generating any code.
+	 */
+	tableElement *sym = insertSymbol(par->id, localOffset++, enumConverter(par->typeSpecifier->typeName->type), environment, false);
 	
 	if (sym == NULL)
 	{
@@ -108,10 +115,19 @@ void checkParameter(is_Parameter* par, environmentList *environment)
 	}
 }
 
-void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, environmentList *environment)
+void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, environmentList *environment, bool isGlobal)
 {
-	//HERE
-	tableElement *new = insertSymbol(vD->id, type, environment, false);
+	tableElement *new;
+	
+	/* We can increment the offset variables without worrying if it's a valid symbol
+	 * or not because if they are invalid, they won't conclude the semantics without
+	 * errors and we won't pass to the next stage, of generating code. Therefore,
+	 * at the point of generating code, we will only have correct offsets.
+	 */
+	if (isGlobal)
+		new = insertSymbol(vD->id, globalOffset++, type, environment, false);
+	else
+		new = insertSymbol(vD->id, localOffset++, type, environment, false);
 	
 	if (new == NULL)
 	{
@@ -162,7 +178,7 @@ void checkLocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement
 	is_VariablesDeclarator_list* aux;
 	
 	for(aux = lvds->variablesDeclarator_list; aux != NULL; aux = aux->next)
-		checkVariablesDeclarator(aux->variablesDeclarator, enumConverter(lvds->typeSpecifier->typeName->type), environment);
+		checkVariablesDeclarator(aux->variablesDeclarator, enumConverter(lvds->typeSpecifier->typeName->type), environment, false);
 
 }
 

@@ -7,7 +7,7 @@
 extern progEnv *pEnv;
 
 /* Insert a new identifier at the tail of symbols linked list. */
-tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *environment, bool isMethod)
+tableElement *insertSymbol(char *str, int offset, tableBasicTypes t, environmentList *environment, bool isMethod)
 {
 	/* Make sure we don't have conflicting scopes for this variable. */
 	if (searchInMethodScope(str, environment))

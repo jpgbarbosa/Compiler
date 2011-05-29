@@ -7,7 +7,7 @@ void checkAttrDeclaration(is_AttrDeclaration* aD);
 void checkMethodDeclaration(is_MethodDeclaration* mD);
 void checkMethodDeclarator(is_MethodDeclarator* mD, environmentList *environment);
 void checkParameter(is_Parameter* par, environmentList *environment);
-void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, environmentList *environment);
+void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, environmentList *environment, bool isGlobal);
 void checkTypeSpecifier(is_TypeSpecifier* tS, environmentList *environment);
 void checkTypename(is_Typename* tn, environmentList *environment);
 void checkBlock(is_Block* block, environmentList *environment);

@@ -39,7 +39,7 @@ struct _t5{
 	environmentList* methods;
 } /* progEnv */;
 
-tableElement *insertSymbol(char *str, tableBasicTypes t, environmentList *environment, bool isMethod);
+tableElement *insertSymbol(char *str, int offset, tableBasicTypes t, environmentList *environment, bool isMethod);
 void showTable();
 tableElement *searchSymbolLocal(char *str, environmentList *environment);
 tableElement *searchSymbolGlobal(char *str);
