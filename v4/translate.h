@@ -4,7 +4,7 @@ void translateProgramFile(is_ProgramFile* pF);
 void translateHeader(FILE* dest);
 void translateFooter(FILE* dest);
 void translateGlobalVariables(FILE* dest);
-void translateMethods(FILE* dest);
+void translateMain(FILE* dest,is_MethodDeclaration* mainDecl);
 void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD);
 void translateMethodDeclarator(FILE* dest, is_MethodDeclarator* mD, environmentList *environment);
 void translateParameter(FILE* dest, is_Parameter* par, environmentList *environment);

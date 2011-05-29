@@ -28,7 +28,34 @@ void translateProgramFile(is_ProgramFile* pF)
 	/* Now, we have to call some functions to start writing the final code. */
 	translateHeader(dest);
 	translateGlobalVariables(dest);
-	translateMethods(dest);
+	/* We start by translating the method main and then only the other methods.
+	 * We have to make a special step for the main method because we are not
+	 * assuring that the user places the method at the top of all others.
+	 */
+	is_FieldDeclaration_list* aux;
+	
+	for(aux = pF->fieldDeclarations; aux != NULL; aux = aux->next)
+	{
+		/* We have found the main method, we can stop afterwards. */
+		if (aux->fieldDeclaration->disc_d == d_methodDeclaration && !strcmp("main", aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration->methodDeclarator->id))
+		{
+			translateMain(dest, aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration);
+			break;
+		}
+	}
+	
+	/* And finally, all the other methods. */
+	for(aux = pF->fieldDeclarations; aux != NULL; aux = aux->next)
+	{
+		/* We have found the main method, we can stop afterwards. */
+		if (aux->fieldDeclaration->disc_d == d_methodDeclaration && strcmp("main", aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration->methodDeclarator->id))
+		{
+			translateMethodDeclaration(dest, aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration);
+			break;
+		}
+	}
+	
+	/* Concludes with the footer. */
 	translateFooter(dest);
 	
 	
@@ -62,6 +89,7 @@ void translateFooter(FILE* dest)
 	return;
 }
 
+/* Translates all the global variables. */
 void translateGlobalVariables(FILE* dest)
 {
 		
@@ -74,14 +102,64 @@ void translateGlobalVariables(FILE* dest)
 
 }
 
-void translateMethods(FILE* dest)
+void translateMain(FILE* dest,is_MethodDeclaration* mainDecl)
 {
+	/* We don't have to check if whether the point is NULL or not, because
+	 * at this point, from the semantics analysis, we are certain that 
+	 * there's a main method with the correct parameters.
+	 */
+	
+	environmentList* eL = searchEnvironment("main"); 
+	
+	fprintf(dest, "\n/*Main Block */\n");
+	fprintf(dest, "sp = (frame*)malloc(sizeof(frame));\n");
+
+	/* Now, goes for the rest of the main... */
+	 
 	return;
 }
 
 
 void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD)
 {
+	/* First, look for the environment of the method. */
+	environmentList* eL = searchEnvironment(mD->methodDeclarator->id);
+	
+	/* Prologue. */
+	fprintf(dest, "\n/*METHOD: %s */\n", mD->methodDeclarator->id); 
+	fprintf(dest, "/*Prologue*/\n");
+	/* We have to make sure that the method isn't executed unless we call it. */
+	fprintf(dest, "goto %sskip;\n", mD->methodDeclarator->id);
+	/* Method's label. */
+	fprintf(dest, "%s:\n",mD->methodDeclarator->id);
+	/* Saves the address of the previous frame (sp) on the frame pointer (fp). */
+	fprintf(dest, "fp = sp;\n");
+	/* Creates the new frame, now identified by the stack pointer (sp). */
+	fprintf(dest, "sp = (frame*)malloc(sizeof(frame));\n");
+	/* Saves the address to the previous frame, on the frame itself. */
+	fprintf(dest, "sp->parent = fp;\n");
+	/* Saves the returning address (conventioned to be register _ra) in the frame. */
+	fprintf(dest, "sp->return_address = _ra;\n");
+	
+	/* Method's body. */
+	fprintf(dest, "/*Method's body.*/\n");
+	/*translate_vardecs(dest, ip->vlist, localenv, pe);			
+	translate_statements(dest, ip->slist, localenv, pe);*/		
+
+	/* Epilogue. */
+	fprintf(dest, "/*Epilogue*/\n");
+	/* Restores the returning value, to be used at the flux redirection. */
+	fprintf(dest, "_ra = sp->return_address;\n");
+	/* Pop operation from the frame stack. */
+	fprintf(dest, "sp = sp->parent;\n");
+	/* FP register update. */
+	fprintf(dest, "fp = sp->parent;\n");
+	/* Goes back to the point where we were before calling this method. */
+	fprintf(dest, "goto redirector;\n");
+	/* Marks the end of the method. */
+	fprintf(dest, "%sskip:\n", mD->methodDeclarator->id);
+	
+	return; 
 	
 }
 
