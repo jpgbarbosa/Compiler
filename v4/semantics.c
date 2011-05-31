@@ -258,15 +258,31 @@ tableBasicTypes checkConditionalExpression(is_ConditionalExpression* cExp, envir
 			typeOne = checkExpression(cExp->firstExp, environment);
 			typeTwo = checkExpression(cExp->secondExp, environment);
 			break;
+		case (is_OP_AND):
+			typeOne = checkRelationalExpression(cExp->rExpression, environment);
+			typeTwo = checkConditionalExpression(cExp->next, environment);
+			break;
+		case (is_OP_OR):
+			typeOne = checkRelationalExpression(cExp->rExpression, environment);
+			typeTwo = checkConditionalExpression(cExp->next, environment);
+			break;
 	}
 	
 	/* If we get here, it must have been a is_TRINARY. */
 	
 	/* In the trinary operator, the returning types are different. */
-	if (typeOne != typeTwo)
+	if (typeOne != typeTwo && cExp->type == is_TRINARY)
 	{
 		//TODO: Maybe print the types.
 		printf("Line %d: The returning values of the trinary operator are inconsistent.\n", cExp->line);
+		errorCount++;
+		/* It will go as an error. */	
+		return s_VOID;
+	}
+	else if (typeOne != typeTwo)
+	{
+		//TODO: Maybe print the types.
+		printf("Line %d: Conditional expressions should be booleans.\n", cExp->line);
 		errorCount++;
 		/* It will go as an error. */	
 		return s_VOID;

@@ -13,7 +13,8 @@ public class gcdRrec{
 	{
 		int c, d, e;
 		
-		e = (2 < 5) || (0 == 0);
+		e = 5 < 2 || 0 == 0;
+		//e = 5 + 2 + 3;
 		
 		//System.out.println("The value is %d.\n", e);
 		

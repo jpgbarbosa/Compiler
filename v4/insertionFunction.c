@@ -752,6 +752,17 @@ is_ConditionalExpression* insert_ConditionalExpression(is_ConditionalType type, 
 	return cE;
 }
 
+is_ConditionalExpression* insert_ConditionalExpressionMultiple(is_ConditionalType type, is_RelationalExpression *rExpression, is_ConditionalExpression* cExpression, int line)
+{
+	is_ConditionalExpression* cE = malloc(sizeof(is_ConditionalExpression));
+	cE->type = type;
+	cE->rExpression = rExpression;
+	cE->next = cExpression;
+	cE->line = line;
+	
+	return cE;
+}
+
 is_AssignmentExpression* insert_AssignmentExpression(char *id, is_AssignmentOp assOp, is_Expression* expression, int line)
 {
 	is_AssignmentExpression* aE = malloc(sizeof(is_AssignmentExpression));

@@ -90,7 +90,7 @@ struct _a34{
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {is_PLUS, is_MINUS, is_SLASH, is_TIMES, is_MODULO, is_OP_SHL, is_OP_SHR, is_AE_NONE} is_ArithmeticOp;
+typedef enum {is_PLUS, is_MINUS, is_SLASH, is_TIMES, is_MODULO, is_OP_SHL, is_OP_SHR, is_AE_NONE, is_PARENTHESIS} is_ArithmeticOp;
 	
 struct _a25{
 	is_ArithmeticExpression *firstAE;
@@ -107,7 +107,7 @@ struct _a25{
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {is_OP_GREATER, is_OP_LESS, is_OP_LESS_EQUAL, is_OP_GREATER_EQUAL, is_OP_EQUAL, is_OP_DIFFERENT, is_OP_SAND, is_OP_SXOR, is_OP_SOR, is_OP_AND, is_OP_OR, is_RE_NONE} is_RelationalOp;
+typedef enum {is_OP_GREATER, is_OP_LESS, is_OP_LESS_EQUAL, is_OP_GREATER_EQUAL, is_OP_EQUAL, is_OP_DIFFERENT, is_OP_SAND, is_OP_SXOR, is_OP_SOR, is_RE_NONE} is_RelationalOp;
 	
 struct _a26{
 	is_ArithmeticExpression *aExpression;
@@ -377,11 +377,13 @@ struct _a27{
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {is_UNARY, is_UNARY_NOT, is_TRINARY} is_ConditionalType;
+typedef enum {is_UNARY, is_UNARY_NOT, is_TRINARY, is_OP_AND, is_OP_OR} is_ConditionalType;
 
 struct _a28{
 	is_ConditionalType type;
 	is_RelationalExpression *rExpression;
+	/* The next conditional expression. */
+	is_ConditionalExpression *next;
 	/* Both can be NULL if we aren't using a trinary operator. */
 	is_Expression *firstExp;
 	is_Expression *secondExp;

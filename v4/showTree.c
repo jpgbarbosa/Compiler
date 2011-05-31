@@ -282,6 +282,16 @@ void showConditionalExpression(is_ConditionalExpression* cExp, bool nextLine, bo
 			printf(" : ");
 			showExpression(cExp->secondExp, nextLine, isTabs);
 			break;
+		case (is_OP_AND):
+			showRelationalExpression(cExp->rExpression, false, false);
+			printf(" && ");
+			showConditionalExpression(cExp->next, false, false);
+			break;
+		case (is_OP_OR):
+			showRelationalExpression(cExp->rExpression, false, false);
+			printf(" || ");
+			showConditionalExpression(cExp->next, false, false);
+			break;
 	}
 	
 	return;
@@ -506,6 +516,7 @@ void showJumpStatement(is_JumpStatement* jS)
 void showRelationalExpression(is_RelationalExpression* rExp, bool nextLine, bool isTabs)
 {
 	showArithmeticExpression(rExp->aExpression, nextLine, isTabs);
+	
 	/* Prints the correct operator. */
 	switch(rExp->op)
 	{
@@ -535,12 +546,6 @@ void showRelationalExpression(is_RelationalExpression* rExp, bool nextLine, bool
 			break;
 		case (is_OP_SOR):
 			printf(" | ");
-			break;
-		case (is_OP_AND):
-			printf(" && ");
-			break;
-		case (is_OP_OR):
-			printf(" || ");
 			break;
 		case (is_RE_NONE):
 			break;
@@ -572,7 +577,7 @@ void showArithmeticExpression(is_ArithmeticExpression* aExp, bool nextLine, bool
 	/* If there are more arithmetic expressions on the chain, we have to
 	 * print them.
 	 */
-	if (aExp->firstAE != NULL)
+	if (aExp->firstAE != NULL && aExp->op != is_PARENTHESIS)
 		showArithmeticExpression(aExp->firstAE, false, false);
 		
 	
@@ -599,6 +604,11 @@ void showArithmeticExpression(is_ArithmeticExpression* aExp, bool nextLine, bool
 			break;
 		case (is_OP_SHR):
 			printf(" >> ");
+			break;
+		case (is_PARENTHESIS):
+			printf("(");
+			showArithmeticExpression(aExp->firstAE, nextLine, isTabs);
+			printf(")");
 			break;
 		case (is_AE_NONE):
 			break;

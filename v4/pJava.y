@@ -91,14 +91,14 @@ is_ProgramFile* myProgram;
 /* Priorities */
 %right ASS_MUL ASS_DIV ASS_ADD ASS_SUB ASS_XOR ASS_MOD ASS_SHL ASS_SHR
 %right '='
-%left OP_OR
-%left OP_AND
 %left '|'
 %left '^'
 %left '&'
 %left OP_EQUAL OP_DIFFERENT
 %left '>' OP_GREATER_EQUAL
 %left '<' OP_LESS_EQUAL
+%left OP_OR
+%left OP_AND
 %left OP_SHL OP_SHR
 %left '-' '+'
 %left '*' '/' '%'
@@ -366,7 +366,8 @@ ArithmeticExpression
 	| ArithmeticExpression  '%'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_MODULO, $1, $3, NULL,line_no);}
 	| ArithmeticExpression OP_SHL ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_OP_SHL, $1, $3, NULL,line_no);}
 	| ArithmeticExpression OP_SHR ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_OP_SHR, $1, $3, NULL,line_no);}
-        ;
+	| '(' ArithmeticExpression ')'						{$$ = insert_ArithmeticExpression(is_PARENTHESIS, $2, NULL, NULL, line_no);}
+    ;
 
 
 RelationalExpression
@@ -380,8 +381,6 @@ RelationalExpression
 	| ArithmeticExpression '&'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SAND, $1, $3,line_no);}
 	| ArithmeticExpression '^'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SXOR, $1, $3,line_no);}
 	| ArithmeticExpression '|'		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_SOR, $1, $3,line_no);}
-	| ArithmeticExpression OP_AND		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_AND, $1, $3,line_no);}
-	| ArithmeticExpression OP_OR		RelationalExpression	{$$ = insert_RelationalExpression(is_OP_OR, $1, $3,line_no);}
 	;
 
 Expression
@@ -392,8 +391,10 @@ Expression
 
 
 ConditionalExpression
-	: RelationalExpression					{$$ = insert_ConditionalExpression(is_UNARY, $1, NULL, NULL, line_no);}
-	| '!' '(' RelationalExpression ')'			{$$ = insert_ConditionalExpression(is_UNARY_NOT, $3, NULL, NULL, line_no);}
+	: RelationalExpression									{$$ = insert_ConditionalExpression(is_UNARY, $1, NULL, NULL, line_no);}
+	| RelationalExpression OP_AND ConditionalExpression		{$$ = insert_ConditionalExpressionMultiple(is_OP_AND, $1, $3, line_no);}
+	| RelationalExpression OP_OR ConditionalExpression		{$$ = insert_ConditionalExpressionMultiple(is_OP_OR, $1, $3, line_no);}
+	| '!' '(' RelationalExpression ')'						{$$ = insert_ConditionalExpression(is_UNARY_NOT, $3, NULL, NULL, line_no);}
 	| RelationalExpression '?' Expression ':' Expression	{$$ = insert_ConditionalExpression(is_TRINARY, $1, $3, $5, line_no);}
 	;
 
