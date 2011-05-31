@@ -1,6 +1,12 @@
 typedef struct _f1{
-	struct _f1* parent;	//frame pointer - ambiente da função chamante
-	void* locals[64];		//espaço de endereçamento para variáveis locais	
-	void* outgoing[32];	//espaço de endereçamento para argumentos de funções chamadas
-	int return_address;	//endereço do código na função chamante
+	/* Frame pointer: environemnt of the calling method. */
+	struct _f1* parent;
+	/* Address space for local variables. */
+	void* locals[64];
+	/* Address space for arguments of called methods. */
+	void* outgoing[32];
+	/* The return value of the method. */
+	void* returnValue;	
+	/* Code address in the calling method. */
+	int return_address;
 }frame;

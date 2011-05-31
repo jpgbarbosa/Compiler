@@ -10,6 +10,8 @@
 extern progEnv *pEnv;
 
 int returnCounter = 0;
+/* The counter that will mark the temporary variables. */
+int tempCounter = 0;
 
 /* The file where we will be writing our compiler output. */
 FILE* dest;
@@ -342,7 +344,7 @@ void translateExpression(is_Expression* exp, environmentList *environment)
 
 void translateConditionalExpression(is_ConditionalExpression* cExp, environmentList *environment)
 {
-		switch(cExp->type)
+	switch(cExp->type)
 	{
 		case (is_UNARY):
 			translateRelationalExpression(cExp->rExpression, environment);
@@ -373,17 +375,22 @@ void translateAssignmentExpression(is_AssignmentExpression* aExp, environmentLis
 	
 	offset = search->offset;
 	
-	/* First, print the type of the variable. */
+	/* First, we have to store the outcome of the the expression
+	 * in a temporary variable. 
+	 */	
+	translateExpression(aExp->expression, environment);
+	
+	/* Then, print the type of the variable and save in the locals. */
 	switch(search->type)
 	{
-		case (s_BOOLEAN): fprintf(dest, "(*(int*) sp->locals[%d] ) ", offset); break;
-		case (s_CHAR): fprintf(dest, "(*(char*) sp->locals[%d] ) ", offset); break;
-		case (s_BYTE): fprintf(dest, "(*(byte*) sp->locals[%d] ) ", offset); break;
-		case (s_SHORT): fprintf(dest, "(*(short*) sp->locals[%d] ) ", offset); break;
-		case (s_INT): fprintf(dest, "(*(int*) sp->locals[%d] ) ", offset); break;
-		case (s_LONG): fprintf(dest, "(*(long*) sp->locals[%d] ) ", offset); break;
-		case (s_FLOAT): fprintf(dest, "(*(float*) sp->locals[%d] ) ", offset); break;
-		case (s_DOUBLE): fprintf(dest, "(*(double*) sp->locals[%d] ) ", offset); break;
+		case (s_BOOLEAN): fprintf(dest, "(*(int*) sp->locals[%d] )", offset); break;
+		case (s_CHAR): fprintf(dest, "(*(char*) sp->locals[%d] )", offset); break;
+		case (s_BYTE): fprintf(dest, "(*(byte*) sp->locals[%d] )", offset); break;
+		case (s_SHORT): fprintf(dest, "(*(short*) sp->locals[%d] )", offset); break;
+		case (s_INT): fprintf(dest, "(*(int*) sp->locals[%d] )", offset); break;
+		case (s_LONG): fprintf(dest, "(*(long*) sp->locals[%d] )", offset); break;
+		case (s_FLOAT): fprintf(dest, "(*(float*) sp->locals[%d] )", offset); break;
+		case (s_DOUBLE): fprintf(dest, "(*(double*) sp->locals[%d] )", offset); break;
 		//TODO: Confirm this.
 		case (s_VOID): break;
 		//TODO: We are limiting strings to 255 characters.
@@ -429,15 +436,15 @@ void translateAssignmentExpression(is_AssignmentExpression* aExp, environmentLis
 				fprintf(dest, " >>= ");
 				break;
 		}
-			
-		/* And now the expression. */	
-		translateExpression(aExp->expression, environment);
+		fprintf(dest, "temp%d", (tempCounter-1));
 	}
+	
 	/* If it's a string, we are using strcpy, so we need to properly close
 	 * the parenthesis.
 	 */
 	else if (search->type != s_STRING)
 	{
+		fprintf(dest, "temp%d", (tempCounter - 1));
 		translateExpression(aExp->expression, environment);
 		fprintf(dest, ")\n");
 	}
@@ -482,55 +489,66 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 
 void translateRelationalExpression(is_RelationalExpression* rExp, environmentList *environment)
 {
+	/* First, find the outcome of the first arithmetic expression. */
 	translateArithmeticExpression(rExp->aExpression, environment);
-	/* Prints the correct operator. */
-	switch(rExp->op)
+		
+	/* We have another expression, meaning that we also have an operator
+	 * in between.
+	 */	
+	if (rExp->next != NULL)
 	{
-		case (is_OP_GREATER):
-			fprintf(dest, " > ");
-			break;
-		case (is_OP_LESS):
-			fprintf(dest, " < ");
-			break;
-		case (is_OP_LESS_EQUAL):
-			fprintf(dest, " <= ");
-			break;
-		case (is_OP_GREATER_EQUAL):
-			fprintf(dest, " >= ");
-			break;
-		case (is_OP_EQUAL):
-			fprintf(dest, " == ");
-			break;
-		case (is_OP_DIFFERENT):
-			fprintf(dest, " != ");
-			break;
-		case (is_OP_SAND):
-			fprintf(dest, " & ");
-			break;
-		case (is_OP_SXOR):
-			fprintf(dest, " ^ ");
-			break;
-		case (is_OP_SOR):
-			fprintf(dest, " | ");
-			break;
-		case (is_OP_AND):
-			fprintf(dest, " && ");
-			break;
-		case (is_OP_OR):
-			fprintf(dest, " || ");
-			break;
-		case (is_RE_NONE):
-			break;
+		translateRelationalExpression(rExp->next, environment);
+		fprintf(dest, "int temp%d = temp%d", tempCounter, tempCounter - 1);
+		
+		/* Prints the correct operator. */
+		switch(rExp->op)
+		{
+			case (is_OP_GREATER):
+				fprintf(dest, " > ");
+				break;
+			case (is_OP_LESS):
+				fprintf(dest, " < ");
+				break;
+			case (is_OP_LESS_EQUAL):
+				fprintf(dest, " <= ");
+				break;
+			case (is_OP_GREATER_EQUAL):
+				fprintf(dest, " >= ");
+				break;
+			case (is_OP_EQUAL):
+				fprintf(dest, " == ");
+				break;
+			case (is_OP_DIFFERENT):
+				fprintf(dest, " != ");
+				break;
+			case (is_OP_SAND):
+				fprintf(dest, " & ");
+				break;
+			case (is_OP_SXOR):
+				fprintf(dest, " ^ ");
+				break;
+			case (is_OP_SOR):
+				fprintf(dest, " | ");
+				break;
+			case (is_OP_AND):
+				fprintf(dest, " && ");
+				break;
+			case (is_OP_OR):
+				fprintf(dest, " || ");
+				break;
+			case (is_RE_NONE):
+				break;
+		}
+		
+		fprintf(dest, "temp%d;\n", tempCounter - 2);
+		
+		/* Increments the tempCounter so we may be storing the correct 
+		 * variable.
+		 */
+		tempCounter++;
 	}
 	
-	/* If there are more relational expressions on the chain, we have to
-	 * translate them.
-	 */
-	if (rExp->next != NULL)
-		translateRelationalExpression(rExp->next, environment);
-	
 	return;
-	
 }
 
 void translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment)
@@ -543,7 +561,11 @@ void translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentLis
 	 */
 	if (aExp->cExpression != NULL)
 	{
+		/* Print the type of the temporary variable. */
+		translateTypeSpecifier(aExp->primType, false);
+		fprintf(dest, "temp%d = ", tempCounter++);
 		translateCastExpression(aExp->cExpression, environment);
+		fprintf(dest, ";\n");
 		return;
 	} 
 	 
@@ -552,7 +574,16 @@ void translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentLis
 	 */
 	if (aExp->firstAE != NULL)
 		translateArithmeticExpression(aExp->firstAE, environment);
+	
+	/* Same as above. */
+	if (aExp->secondAE != NULL)
+		translateArithmeticExpression(aExp->secondAE, environment);
 		
+	/* Now, create another temporary variable to save the joint of the
+	 * two arithmetic expressions.
+	 */
+	translateTypeSpecifier(aExp->primType, false);
+	fprintf(dest, "temp%d = temp%d", tempCounter, tempCounter - 1);
 	
 	/* Prints the correct operator. */
 	switch(aExp->op)
@@ -582,9 +613,11 @@ void translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentLis
 			break;
 	}
 	
-	/* Same as above. */
+	/* Make sure we are not printing garbage. */
 	if (aExp->secondAE != NULL)
-		translateArithmeticExpression(aExp->secondAE, environment);
+		fprintf(dest, "temp%d;\n", tempCounter - 2);
+	
+	tempCounter++;
 	
 	return;
 }
@@ -595,7 +628,7 @@ void translateCastExpression(is_CastExpression* cExp, environmentList *environme
 	if (cExp->castType != NULL)
 	{
 		printf(" ( ");
-		translateTypeSpecifier(cExp->castType);
+		translateTypeSpecifier(cExp->castType->typeName->type, true);
 		printf(") ");
 	}
 	
@@ -664,18 +697,18 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 			switch (search->type)
 			{
 				/* Now, we have to print the right type. */
-				case (s_BOOLEAN): fprintf(dest, "(int*) "); break;
-				case (s_CHAR): fprintf(dest, "(char*) "); break;
-				case (s_BYTE): fprintf(dest, "(byte*) "); break;
-				case (s_SHORT): fprintf(dest, "(short*) "); break;
-				case (s_INT): fprintf(dest, "(int*) "); break;
-				case (s_LONG): fprintf(dest, "(long*) "); break;
-				case (s_FLOAT): fprintf(dest, "(float*) "); break;
-				case (s_DOUBLE): fprintf(dest, "(double*) "); break;
+				case (s_BOOLEAN): fprintf(dest, "(*(int*) "); break;
+				case (s_CHAR): fprintf(dest, "(*(char*) "); break;
+				case (s_BYTE): fprintf(dest, "(*(byte*) "); break;
+				case (s_SHORT): fprintf(dest, "(*(short*) "); break;
+				case (s_INT): fprintf(dest, "(*(int*) "); break;
+				case (s_LONG): fprintf(dest, "(*(long*) "); break;
+				case (s_FLOAT): fprintf(dest, "(*(float*) "); break;
+				case (s_DOUBLE): fprintf(dest, "(*(double*) "); break;
 				//TODO: Confirm this.
 				case (s_VOID): break;
 				//TODO: Confirm this.
-				case (s_STRING): fprintf(dest, "(char*) "); break;
+				case (s_STRING): fprintf(dest, "(*(char*) "); break;
 				//TODO: Confirm this.
 				case (s_STRING_ARRAY): break;
 				/* We shouldn't get here. */
@@ -683,7 +716,7 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 			}
 
 			/* Print the variable name, meaning its offset in locals of the sp. */
-			fprintf(dest, " sp->locals[%d] ", offset);
+			fprintf(dest, " sp->locals[%d])", offset);
 			
 			break;
 			
@@ -716,7 +749,7 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 void translateMethodCall(is_MethodCall* mC, environmentList *environment)
 {
 	/* Saves the retuning address. */
-	fprintf(dest, "_ra=%d;\n",returnCounter);
+	fprintf(dest, "_ra = %d;\n",returnCounter);
 	/* Jumps to the called method. */
 	fprintf(dest, "goto %s;\n", mC->id);
 	
@@ -739,22 +772,44 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 	fprintf(dest, ");");
 }
 
-void translateTypeSpecifier(is_TypeSpecifier *type)
+void translateTypeSpecifier(is_PrimitiveType type, bool isPointer)
 {
-	/* Show the type of the variable. */
-	switch(type->typeName->type)
+	if (isPointer)
 	{
-		case (is_BOOLEAN): printf("int *"); break;
-		case (is_CHAR): printf("char *"); break;
-		case (is_BYTE): printf("byte *"); break;
-		case (is_SHORT): printf("short *"); break;
-		case (is_INT): printf("int *"); break;
-		case (is_LONG): printf("long *"); break;
-		case (is_FLOAT): printf("float *"); break;
-		case (is_DOUBLE): printf("double *"); break;
-		case (is_VOID): printf("void *"); break;
-		case (is_STRING): printf("char **"); break;
-		case (is_STRING_ARRAY): printf("char ***"); break;
+		/* Show the type of the variable. */
+		switch(type)
+		{
+			case (is_BOOLEAN): fprintf(dest, "int *"); break;
+			case (is_CHAR): fprintf(dest, "char *"); break;
+			case (is_BYTE): fprintf(dest, "byte *"); break;
+			case (is_SHORT): fprintf(dest, "short *"); break;
+			case (is_INT): fprintf(dest, "int *"); break;
+			case (is_LONG): fprintf(dest, "long *"); break;
+			case (is_FLOAT): fprintf(dest, "float *"); break;
+			case (is_DOUBLE): fprintf(dest, "double *"); break;
+			case (is_VOID): fprintf(dest, "void *"); break;
+			case (is_STRING): fprintf(dest, "char **"); break;
+			case (is_STRING_ARRAY): fprintf(dest, "char ***"); break;
+		}
+	}
+	else
+	{
+		/* Show the type of the variable. */
+		switch(type)
+		{
+			case (is_BOOLEAN): fprintf(dest, "int "); break;
+			case (is_CHAR): fprintf(dest, "char "); break;
+			case (is_BYTE): fprintf(dest, "byte "); break;
+			case (is_SHORT): fprintf(dest, "short "); break;
+			case (is_INT): fprintf(dest, "int "); break;
+			case (is_LONG): fprintf(dest, "long "); break;
+			case (is_FLOAT): fprintf(dest, "float "); break;
+			case (is_DOUBLE): fprintf(dest, "double "); break;
+			case (is_VOID): fprintf(dest, "void "); break;
+			case (is_STRING): fprintf(dest, "char *"); break;
+			case (is_STRING_ARRAY): fprintf(dest, "char **"); break;
+		}
+
 	}
 	
 	return;

@@ -41,6 +41,7 @@ typedef struct _a34 is_SystemOutPrintln;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 typedef enum {is_ID, is_LITERAL, is_METHOD_CALL, is_TRUE, is_FALSE, is_INTEGER, is_FLOATPOINT, is_PRINTLN} disc_BasicElement;
+typedef enum {is_BOOLEAN, is_CHAR, is_BYTE, is_SHORT, is_INT, is_LONG, is_FLOAT, is_DOUBLE, is_VOID, is_STRING, is_STRING_ARRAY} is_PrimitiveType;
 
 struct _a20{
 	disc_BasicElement disc_d;
@@ -96,6 +97,10 @@ struct _a25{
 	is_ArithmeticExpression *secondAE;
 	is_CastExpression *cExpression;
 	is_ArithmeticOp op;
+	/* Used at the code generation, so we can know what type the
+	 * temporary variable will be.
+	 */
+	is_PrimitiveType primType;
 	int line;
 	
 } /*is_ArithmeticExpression*/;
@@ -113,8 +118,6 @@ struct _a26{
 } /*is_RelationalExpression*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
-typedef enum {is_BOOLEAN, is_CHAR, is_BYTE, is_SHORT, is_INT, is_LONG, is_FLOAT, is_DOUBLE, is_VOID, is_STRING, is_STRING_ARRAY} is_PrimitiveType;
 
 struct _a2{
 	is_PrimitiveType type;
@@ -369,6 +372,7 @@ struct _a27{
 		is_Expression *expression;
 	}data_Expression;
 	int line;
+	
 } /*is_Expression*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */

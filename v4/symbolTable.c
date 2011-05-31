@@ -71,11 +71,6 @@ tableElement *insertSymbol(char *str, int offset, tableBasicTypes t, environment
 			aux->next = env;
 		}
 	}
-	/* It's a variable. Therefore, we need to save it's associated expression. */
-	else
-	{
-		newSymbol->exp = exp;
-	}
 	
 	return newSymbol; 
 }

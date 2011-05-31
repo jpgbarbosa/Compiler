@@ -9,10 +9,14 @@ public class gcdRrec{
 		return 0;
 	}
 	
-	public static int gcd(int a, int b) {
-		int c;
+	public static int gcd(int a, int b)
+	{
+		int c, d, e;
 		
-		c = (5 + 2);
+		e = (2 < 5) || (0 == 0);
+		
+		//System.out.println("The value is %d.\n", e);
+		
 		return c;
 	}
 	

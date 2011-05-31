@@ -17,7 +17,7 @@ struct _t1
 	tableBasicTypes type;
 	tableElement* next;
 	/* Only for variables. */
-	is_Expression* exp;
+	
 	bool isMethod;
 	int offset;
 	/* Only for methods. We limit the number of parameters to 32. */

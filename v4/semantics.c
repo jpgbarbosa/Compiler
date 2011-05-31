@@ -488,10 +488,17 @@ tableBasicTypes checkArithmeticExpression(is_ArithmeticExpression* aExp, environ
 	 */
 	if (aExp->cExpression != NULL)
 	{
-		return checkCastExpression(aExp->cExpression, environment);
+		/* We are saving the type of the expression for the code generation
+		 * stage.
+		 */
+		tableBasicTypes temp;
+		
+		temp = checkCastExpression(aExp->cExpression, environment);
+		aExp->primType = enumInvConverter(temp);
+		return temp;
 	} 
 	
-	tableBasicTypes typeOne, typeTwo;
+	tableBasicTypes typeOne, typeTwo, temp;
 	
 	/* If the arithmetic expressions aren't NULL, we find their returning
 	 * value. Else, we assign it as void.
@@ -519,9 +526,15 @@ tableBasicTypes checkArithmeticExpression(is_ArithmeticExpression* aExp, environ
 	
 	/* The second expression is NULL, so we will return the type of the first one. */
 	if (typeTwo == s_VOID)
+	{
+		aExp->primType = enumInvConverter(typeOne);
 		return typeOne;
-		
-	return convertTypes(typeOne, typeTwo);
+	}
+	
+	/* Once again, saving the value for code generation. */
+	temp = convertTypes(typeOne, typeTwo);
+	aExp->primType = temp;	
+	return temp;
 }
 
 tableBasicTypes checkCastExpression(is_CastExpression* cExp, environmentList *environment)
@@ -694,6 +707,30 @@ tableBasicTypes enumConverter(is_PrimitiveType type)
 		case is_STRING:			return s_STRING;
 		case is_STRING_ARRAY:	return s_STRING_ARRAY;
 		
+	}
+	
+	//TODO: WATCHOUT FOR THE DEFAULT!
+	return s_VOID;
+	
+}
+
+is_PrimitiveType enumInvConverter(tableBasicTypes type)
+{
+	switch(type)
+	{
+		case s_BOOLEAN: 		return is_BOOLEAN;
+		case s_CHAR:			return is_CHAR;
+		case s_BYTE:			return is_BYTE;
+		case s_SHORT:			return is_SHORT;
+		case s_INT:				return is_INT;
+		case s_LONG:			return is_LONG;
+		case s_FLOAT:			return is_FLOAT;
+		case s_DOUBLE:			return is_DOUBLE;
+		case s_VOID:			return is_VOID;
+		case s_STRING:			return is_STRING;
+		case s_STRING_ARRAY:	return is_STRING_ARRAY;
+		//TODO: Watchout for the default!
+		default:				return is_VOID;
 	}
 	
 	//TODO: WATCHOUT FOR THE DEFAULT!

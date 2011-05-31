@@ -29,4 +29,4 @@ void translateMethodCall(is_MethodCall* mC, environmentList *environment);
 void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environment);
 void translateForInit(is_ForInit* fI, environmentList *environment);
 void printPrimitiveType(is_TypeSpecifier* tS);
-void translateTypeSpecifier(is_TypeSpecifier *type);
+void translateTypeSpecifier(is_PrimitiveType type, bool isPointer);
