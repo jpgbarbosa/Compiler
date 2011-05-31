@@ -11,10 +11,11 @@ extern progEnv *pEnv;
 
 int returnCounter = 0;
 
+/* The file where we will be writing our compiler output. */
+FILE* dest;
+
 void translateProgramFile(is_ProgramFile* pF)
 {
-	/* First, we create the file where we will be writing all the output. */
-	FILE *dest;
 	/* We are assuming that the class name has no more than 255 characters.
 	 * We will be adding to the final the extension '.c' 
 	 */
@@ -28,8 +29,8 @@ void translateProgramFile(is_ProgramFile* pF)
 	dest = fopen(fileName, "w");
 	
 	/* Now, we have to call some functions to start writing the final code. */
-	translateHeader(dest);
-	translateGlobalVariables(dest);
+	translateHeader();
+	translateGlobalVariables();
 	/* We start by translating the method main and then only the other methods.
 	 * We have to make a special step for the main method because we are not
 	 * assuring that the user places the method at the top of all others.
@@ -41,7 +42,7 @@ void translateProgramFile(is_ProgramFile* pF)
 		/* We have found the main method, we can stop afterwards. */
 		if (aux->fieldDeclaration->disc_d == d_methodDeclaration && !strcmp("main", aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration->methodDeclarator->id))
 		{
-			translateMain(dest, aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration);
+			translateMain(aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration);
 			break;
 		}
 	}
@@ -52,13 +53,13 @@ void translateProgramFile(is_ProgramFile* pF)
 		/* We have found the main method, we can stop afterwards. */
 		if (aux->fieldDeclaration->disc_d == d_methodDeclaration && strcmp("main", aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration->methodDeclarator->id))
 		{
-			translateMethodDeclaration(dest, aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration);
+			translateMethodDeclaration(aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration);
 			break;
 		}
 	}
 	
 	/* Concludes with the footer. */
-	translateFooter(dest);
+	translateFooter();
 	
 	
 	/* Closes the output file. */
@@ -68,7 +69,7 @@ void translateProgramFile(is_ProgramFile* pF)
 		
 }
 
-void translateHeader(FILE* dest)
+void translateHeader()
 {
 	/* This header writes in the output file all C headers that our
 	 * program will need, as well as the start of the main.
@@ -86,17 +87,17 @@ void translateHeader(FILE* dest)
 	return;
 }
 
-void translateFooter(FILE* dest)
+void translateFooter()
 {
 	/* Finishes the output file. */
-	translateRedirector(dest);
+	translateRedirector();
 	fprintf(dest, "\n}\n\n");
 	
 	return;
 }
 
 /* Function to redirect the code's flux according to the returning addresses (necessary for C). */
-void translateRedirector(FILE* dest)
+void translateRedirector()
 {
 	int i;
 	fprintf(dest, "\n/*Redirector*/\n");
@@ -111,7 +112,7 @@ void translateRedirector(FILE* dest)
 }
 
 /* Translates all the global variables. */
-void translateGlobalVariables(FILE* dest)
+void translateGlobalVariables()
 {
 		
 	tableElement* gTable = pEnv->globalTable->locals;
@@ -119,11 +120,11 @@ void translateGlobalVariables(FILE* dest)
 	/* Prints, one by one, all the global variables. */
 	for(; gTable; gTable = gTable->next)
 		if (!gTable->isMethod)
-			translateGlobalVariablesDeclarator(dest, gTable, true);
+			translateGlobalVariablesDeclarator(gTable, true);
 
 }
 
-void translateMain(FILE* dest,is_MethodDeclaration* mainDecl)
+void translateMain(is_MethodDeclaration* mainDecl)
 {
 	/* We don't have to check if whether the point is NULL or not, because
 	 * at this point, from the semantics analysis, we are certain that 
@@ -137,13 +138,13 @@ void translateMain(FILE* dest,is_MethodDeclaration* mainDecl)
 
 	/* Now, goes for the rest of the main... */
 	fprintf(dest, "/*Main's body.*/\n");
-	translateBlock(dest, mainDecl->block, eL);
+	translateBlock(mainDecl->block, eL);
 	 
 	return;
 }
 
 
-void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD)
+void translateMethodDeclaration(is_MethodDeclaration* mD)
 {
 	/* First, look for the environment of the method. */
 	environmentList* eL = searchEnvironment(mD->methodDeclarator->id);
@@ -166,7 +167,7 @@ void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD)
 	
 	/* Method's body. */
 	fprintf(dest, "\n/*Method's body.*/\n");
-	translateBlock(dest, mD->block, eL);	
+	translateBlock(mD->block, eL);	
 
 	/* Epilogue. */
 	fprintf(dest, "\n/*Epilogue*/\n");
@@ -185,7 +186,7 @@ void translateMethodDeclaration(FILE* dest, is_MethodDeclaration* mD)
 	
 }
 
-void translateGlobalVariablesDeclarator(FILE* dest, tableElement* element, bool isGlobal)
+void translateGlobalVariablesDeclarator(tableElement* element, bool isGlobal)
 {
 	/* This is used to distinguish local from global variables. */
 	char varScope[2];
@@ -213,43 +214,44 @@ void translateGlobalVariablesDeclarator(FILE* dest, tableElement* element, bool 
 		default:break;
 	}
 
+	return;
 }
 
-void translateBlock(FILE* dest, is_Block* block, environmentList *environment)
+void translateBlock(is_Block* block, environmentList *environment)
 {
 	/* Shows the list of variables declarations or statements. */
 	is_LocalVariableDeclarationsOrStatements_list* aux;
 	
 	for (aux = block->lvdos_list; aux != NULL; aux = aux->next)
-		translateLocalVariableDeclarationsOrStatements(dest, aux->lvdos, environment);
+		translateLocalVariableDeclarationsOrStatements(aux->lvdos, environment);
 
 }
 
-void translateLocalVariableDeclarationsOrStatements(FILE* dest, is_LocalVariableDeclarationsOrStatements* lvdos, environmentList *environment)
+void translateLocalVariableDeclarationsOrStatements(is_LocalVariableDeclarationsOrStatements* lvdos, environmentList *environment)
 {
 	switch(lvdos->disc_d)
 	{
 		case (d_LocalVariableDeclarationStatement):
-			translateLocalVariableDeclarationStatement(dest, lvdos->data_LocalVariableDeclarationsOrStatements.u_lvds, environment);
+			translateLocalVariableDeclarationStatement(lvdos->data_LocalVariableDeclarationsOrStatements.u_lvds, environment);
 			break;
 		case (d_Statement):
-			translateStatement(dest, lvdos->data_LocalVariableDeclarationsOrStatements.u_statement, environment);
+			translateStatement(lvdos->data_LocalVariableDeclarationsOrStatements.u_statement, environment);
 			break;
 	}
 }
 
-void translateLocalVariableDeclarationStatement(FILE* dest, is_LocalVariableDeclarationStatement* lvds, environmentList *environment)
+void translateLocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement* lvds, environmentList *environment)
 {	
 	/* And now the names and initializations. */
 	is_VariablesDeclarator_list* aux;
 	
 	for(aux = lvds->variablesDeclarator_list; aux != NULL; aux = aux->next)
-		translateVariablesDeclarator(dest, aux->variablesDeclarator, lvds->typeSpecifier, environment);
+		translateVariablesDeclarator( aux->variablesDeclarator, lvds->typeSpecifier, environment);
 
 	return;
 }
 
-void translateVariablesDeclarator(FILE* dest, is_VariablesDeclarator* vD, is_TypeSpecifier *tS, environmentList *environment)
+void translateVariablesDeclarator(is_VariablesDeclarator* vD, is_TypeSpecifier *tS, environmentList *environment)
 {
 	int offset;
 	char typeInString[15];
@@ -281,55 +283,55 @@ void translateVariablesDeclarator(FILE* dest, is_VariablesDeclarator* vD, is_Typ
 	if (vD->expression != NULL)
 	{
 		fprintf(dest, "%s sp->locals[%d] = ", typeInString, offset);
-		translateExpression(dest, vD->expression, environment);
+		translateExpression(vD->expression, environment);
 		fprintf(dest, ";\n");
 	}
 		
 }
 
-void translateStatement(FILE* dest, is_Statement* s, environmentList *environment)
+void translateStatement(is_Statement* s, environmentList *environment)
 {
 	/* Translates a given statement. */
 	switch(s->disc_d)
 	{
 		case (d_LabeledStatement):
-			translateLabeledStatement(dest, s->data_Statement.labeledStatement, environment);
+			translateLabeledStatement(s->data_Statement.labeledStatement, environment);
 			break;
 		case (d_StatementExpression):
-			translateExpression(dest, s->data_Statement.expression, environment);
+			translateExpression(s->data_Statement.expression, environment);
 			break;
 		case (d_SelectionStatement):
-			translateSelectionStatement(dest, s->data_Statement.selectionStatement, environment);
+			translateSelectionStatement(s->data_Statement.selectionStatement, environment);
 			break;
 		case (d_IterationStatement):
-			translateIterationStatement(dest, s->data_Statement.iterationStatement, environment);
+			translateIterationStatement(s->data_Statement.iterationStatement, environment);
 			break;
 		case (d_JumpStatement):
-			translateJumpStatement(dest, s->data_Statement.jumpStatement, environment);
+			translateJumpStatement(s->data_Statement.jumpStatement, environment);
 			break;
 		case (d_StatementBlock):
-			translateBlock(dest, s->data_Statement.block, environment);
+			translateBlock(s->data_Statement.block, environment);
 			break;
 	}
 
 	return;
 }
 
-void translateExpression(FILE* dest, is_Expression* exp, environmentList *environment)
+void translateExpression(is_Expression* exp, environmentList *environment)
 {	
 	/* Translate a given expression. */
 	switch(exp->disc_d)
 	{
 		case (d_ConditionalExp):
-			translateConditionalExpression(dest, exp->data_Expression.cExpression, environment);
+			translateConditionalExpression(exp->data_Expression.cExpression, environment);
 			break;
 		case (d_AssignmentExp):
-			translateAssignmentExpression(dest, exp->data_Expression.aExpression, environment);
+			translateAssignmentExpression(exp->data_Expression.aExpression, environment);
 			break;
 		/* It's an expression surrounded by brackets, so we ought to add them. */
 		case (d_Exp):
 			fprintf(dest, "(");
-			translateExpression(dest, exp->data_Expression.expression, environment);
+			translateExpression(exp->data_Expression.expression, environment);
 			fprintf(dest, ") ");
 			break;
 	}
@@ -338,12 +340,32 @@ void translateExpression(FILE* dest, is_Expression* exp, environmentList *enviro
 	
 }
 
-void translateConditionalExpression(FILE* dest, is_ConditionalExpression* cExp, environmentList *environment)
+void translateConditionalExpression(is_ConditionalExpression* cExp, environmentList *environment)
 {
+		switch(cExp->type)
+	{
+		case (is_UNARY):
+			translateRelationalExpression(cExp->rExpression, environment);
+			break;
+		case (is_UNARY_NOT):
+			fprintf(dest, "! (");
+			translateRelationalExpression(cExp->rExpression, environment);
+			fprintf(dest, ")");
+			break;
+		case (is_TRINARY):
+			//TODO: We have to translate this into an if!
+			/*showRelationalExpression(cExp->rExpression, false, false);
+			printf(" ? ");
+			showExpression(cExp->firstExp, false, false);
+			printf(" : ");
+			showExpression(cExp->secondExp, nextLine, isTabs);*/
+			break;
+	}
 	
+	return;
 }
 
-void translateAssignmentExpression(FILE* dest, is_AssignmentExpression* aExp, environmentList *environment)
+void translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList *environment)
 {
 	int offset;
 	/* We are sure that we will find there an element. */
@@ -354,14 +376,14 @@ void translateAssignmentExpression(FILE* dest, is_AssignmentExpression* aExp, en
 	/* First, print the type of the variable. */
 	switch(search->type)
 	{
-		case (s_BOOLEAN): fprintf(dest, "(int*) sp->locals[%d] = ", offset); break;
-		case (s_CHAR): fprintf(dest, "(char*) sp->locals[%d] =  ", offset); break;
-		case (s_BYTE): fprintf(dest, "(byte*) sp->locals[%d] =  ", offset); break;
-		case (s_SHORT): fprintf(dest, "(short*) sp->locals[%d] =  ", offset); break;
-		case (s_INT): fprintf(dest, "(int*) sp->locals[%d] =  ", offset); break;
-		case (s_LONG): fprintf(dest, "(long*) sp->locals[%d] =  ", offset); break;
-		case (s_FLOAT): fprintf(dest, "(float*) sp->locals[%d] =  ", offset); break;
-		case (s_DOUBLE): fprintf(dest, "(double*) sp->locals[%d] =  ", offset); break;
+		case (s_BOOLEAN): fprintf(dest, "(int*) sp->locals[%d] ", offset); break;
+		case (s_CHAR): fprintf(dest, "(char*) sp->locals[%d] ", offset); break;
+		case (s_BYTE): fprintf(dest, "(byte*) sp->locals[%d] ", offset); break;
+		case (s_SHORT): fprintf(dest, "(short*) sp->locals[%d] ", offset); break;
+		case (s_INT): fprintf(dest, "(int*) sp->locals[%d] ", offset); break;
+		case (s_LONG): fprintf(dest, "(long*) sp->locals[%d] ", offset); break;
+		case (s_FLOAT): fprintf(dest, "(float*) sp->locals[%d] ", offset); break;
+		case (s_DOUBLE): fprintf(dest, "(double*) sp->locals[%d] ", offset); break;
 		//TODO: Confirm this.
 		case (s_VOID): break;
 		//TODO: We are limiting strings to 255 characters.
@@ -375,13 +397,48 @@ void translateAssignmentExpression(FILE* dest, is_AssignmentExpression* aExp, en
 	/* Now, we have to translate the assignment expression. */
 	/* If it's not a string, we simply have to print the expression. */
 	if (search->type != s_STRING && search->type != s_STRING_ARRAY)
-		translateExpression(dest, aExp->expression, environment);
+	{
+		char tempChar = '%';
+		switch(aExp->assOp)
+		{
+			case (is_ASSIGN):
+				fprintf(dest, " = ");
+				break;
+			case (is_ASS_MUL):
+				fprintf(dest, " *= ");
+				break;
+			case (is_ASS_DIV):
+				fprintf(dest, " /= ");
+				break;
+			case (is_ASS_ADD):
+				fprintf(dest, " += ");
+				break;
+			case (is_ASS_SUB):
+				fprintf(dest, " -= ");
+				break;
+			case (is_ASS_XOR):
+				fprintf(dest, " ^= ");
+				break;
+			case (is_ASS_MOD):
+				fprintf(dest, " %c= ", tempChar);
+				break;
+			case (is_ASS_SHL):
+				fprintf(dest, " <<= ");
+				break;
+			case (is_ASS_SHR):
+				fprintf(dest, " >>= ");
+				break;
+		}
+			
+		/* And now the expression. */	
+		translateExpression(aExp->expression, environment);
+	}
 	/* If it's a string, we are using strcpy, so we need to properly close
 	 * the parenthesis.
 	 */
 	else if (search->type != s_STRING)
 	{
-		translateExpression(dest, aExp->expression, environment);
+		translateExpression(aExp->expression, environment);
 		fprintf(dest, ")\n");
 	}
 	
@@ -391,61 +448,205 @@ void translateAssignmentExpression(FILE* dest, is_AssignmentExpression* aExp, en
 	
 }
 
-void translateLabeledStatement(FILE* dest, is_LabeledStatement* lS, environmentList *environment)
+void translateLabeledStatement(is_LabeledStatement* lS, environmentList *environment)
 {
 	
 	
 }
 
-void translateSelectionStatement(FILE* dest, is_SelectionStatement* sS, environmentList *environment)
+void translateSelectionStatement(is_SelectionStatement* sS, environmentList *environment)
 {
 	
 	
 }
 
-void translateIterationStatement(FILE* dest, is_IterationStatement* iS, environmentList *environment)
+void translateIterationStatement(is_IterationStatement* iS, environmentList *environment)
 {
 	
 	
 	
 }
 
-void translateForInit(FILE* dest, is_ForInit* fI, environmentList *environment)
+void translateForInit(is_ForInit* fI, environmentList *environment)
 {
 	
 
 	
 }
 
-void translateJumpStatement(FILE* dest, is_JumpStatement* jS, environmentList *environment)
+void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 {
 	
 	
 }
 
-void translateRelationalExpression(FILE* dest, is_RelationalExpression* rExp, environmentList *environment)
+void translateRelationalExpression(is_RelationalExpression* rExp, environmentList *environment)
 {
+	translateArithmeticExpression(rExp->aExpression, environment);
+	/* Prints the correct operator. */
+	switch(rExp->op)
+	{
+		case (is_OP_GREATER):
+			fprintf(dest, " > ");
+			break;
+		case (is_OP_LESS):
+			fprintf(dest, " < ");
+			break;
+		case (is_OP_LESS_EQUAL):
+			fprintf(dest, " <= ");
+			break;
+		case (is_OP_GREATER_EQUAL):
+			fprintf(dest, " >= ");
+			break;
+		case (is_OP_EQUAL):
+			fprintf(dest, " == ");
+			break;
+		case (is_OP_DIFFERENT):
+			fprintf(dest, " != ");
+			break;
+		case (is_OP_SAND):
+			fprintf(dest, " & ");
+			break;
+		case (is_OP_SXOR):
+			fprintf(dest, " ^ ");
+			break;
+		case (is_OP_SOR):
+			fprintf(dest, " | ");
+			break;
+		case (is_OP_AND):
+			fprintf(dest, " && ");
+			break;
+		case (is_OP_OR):
+			fprintf(dest, " || ");
+			break;
+		case (is_RE_NONE):
+			break;
+	}
 	
+	/* If there are more relational expressions on the chain, we have to
+	 * translate them.
+	 */
+	if (rExp->next != NULL)
+		translateRelationalExpression(rExp->next, environment);
+	
+	return;
 	
 }
 
-void translateArithmeticExpression(FILE* dest, is_ArithmeticExpression* aExp, environmentList *environment)
+void translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment)
 {
+	/* We have to use otherwise we will have troubles in the printf. */
+	char tempChar = '%';
 	
+	/* This is a cast expression and consequently, we have to stop the 
+	 * recursive calls.
+	 */
+	if (aExp->cExpression != NULL)
+	{
+		translateCastExpression(aExp->cExpression, environment);
+		return;
+	} 
+	 
+	/* If there are more arithmetic expressions on the chain, we have to
+	 * print them.
+	 */
+	if (aExp->firstAE != NULL)
+		translateArithmeticExpression(aExp->firstAE, environment);
+		
+	
+	/* Prints the correct operator. */
+	switch(aExp->op)
+	{
+		case (is_PLUS):
+			fprintf(dest, " + ");
+			break;
+		case (is_MINUS):
+			fprintf(dest, " - ");
+			break;
+		case (is_SLASH):
+			fprintf(dest, " / ");
+			break;
+		case (is_TIMES):
+			fprintf(dest, " * ");
+			break;
+		case (is_MODULO):
+			fprintf(dest, " %c ", tempChar);
+			break;
+		case (is_OP_SHL):
+			fprintf(dest, " << ");
+			break;
+		case (is_OP_SHR):
+			fprintf(dest, " >> ");
+			break;
+		case (is_AE_NONE):
+			break;
+	}
+	
+	/* Same as above. */
+	if (aExp->secondAE != NULL)
+		translateArithmeticExpression(aExp->secondAE, environment);
+	
+	return;
 }
 
-void translateCastExpression(FILE* dest, is_CastExpression* cExp, environmentList *environment)
+void translateCastExpression(is_CastExpression* cExp, environmentList *environment)
 {
-
+	/* Prints the cast type if applicable. */
+	if (cExp->castType != NULL)
+	{
+		printf(" ( ");
+		translateTypeSpecifier(cExp->castType);
+		printf(") ");
+	}
+	
+	switch(cExp->disc_d)
+	{
+		case (d_UnaryExpression):
+			translateUnaryExpression(cExp->data_CastExpression.unaryExpression, environment);
+			break;
+		case (d_AssignmentExpression):
+			translateAssignmentExpression(cExp->data_CastExpression.assignmentExpression, environment);
+			break;
+		case (d_ConditionalExpression):
+			translateConditionalExpression(cExp->data_CastExpression.conditionalExpression, environment);
+			break;
+	}
 }
 
-void translateUnaryExpression(FILE* dest, is_UnaryExpression* uE, environmentList *environment)
+void translateUnaryExpression(is_UnaryExpression* uE, environmentList *environment)
 {	
+	switch(uE->op)
+	{
+		case (is_OP_INC_AFTER):
+			translateBasicElement(uE->element, environment);
+			fprintf(dest, "++");
+			break;
+		case (is_OP_DCR_AFTER):
+			translateBasicElement(uE->element, environment);
+			fprintf(dest, "--");
+			break;
+		case (is_OP_INC_BEFORE):
+			fprintf(dest, "++");
+			translateBasicElement(uE->element, environment);
+			break;
+		case (is_OP_DCR_BEFORE):
+			fprintf(dest, "--");
+			translateBasicElement(uE->element, environment);
+			break;
+		case (is_OP_DIFFERENT_UNARY):
+			fprintf(dest, "!");
+			translateBasicElement(uE->element, environment);
+			break;
+		case (is_NONE):
+			translateBasicElement(uE->element, environment);
+			break;
+	}
 	
+	return;
 }
 
 
-void translateBasicElement(FILE* dest, is_BasicElement* bE, environmentList *environment)
+void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 {
 	tableElement *search;
 	int offset;
@@ -502,17 +703,17 @@ void translateBasicElement(FILE* dest, is_BasicElement* bE, environmentList *env
 			fprintf(dest, "%lf", bE->data_BasicElement.d);
 			break;
 		case (is_METHOD_CALL):
-			translateMethodCall(dest, bE->data_BasicElement.methodCall, environment);
+			translateMethodCall(bE->data_BasicElement.methodCall, environment);
 			break;
 		case (is_PRINTLN):
-			translateSystemOutPrintln(dest, bE->data_BasicElement.print, environment);
+			translateSystemOutPrintln(bE->data_BasicElement.print, environment);
 			break;
 	}
 	
 	return;
 }
 
-void translateMethodCall(FILE* dest, is_MethodCall* mC, environmentList *environment)
+void translateMethodCall(is_MethodCall* mC, environmentList *environment)
 {
 	/* Saves the retuning address. */
 	fprintf(dest, "_ra=%d;\n",returnCounter);
@@ -528,7 +729,7 @@ void translateMethodCall(FILE* dest, is_MethodCall* mC, environmentList *environ
 	returnCounter++;	
 }
 
-void translateSystemOutPrintln(FILE* dest, is_SystemOutPrintln* p, environmentList *environment)
+void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environment)
 {
 	/* Initiates the print. */
 	fprintf(dest, "printf(%s", p->literal);
@@ -536,4 +737,9 @@ void translateSystemOutPrintln(FILE* dest, is_SystemOutPrintln* p, environmentLi
 	//TODO: this xD
 	/* Ends the print. */
 	fprintf(dest, ");");
+}
+
+void translateTypeSpecifier(is_TypeSpecifier *type)
+{
+	
 }
