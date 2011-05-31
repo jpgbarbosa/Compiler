@@ -376,14 +376,14 @@ void translateAssignmentExpression(is_AssignmentExpression* aExp, environmentLis
 	/* First, print the type of the variable. */
 	switch(search->type)
 	{
-		case (s_BOOLEAN): fprintf(dest, "(int*) sp->locals[%d] ", offset); break;
-		case (s_CHAR): fprintf(dest, "(char*) sp->locals[%d] ", offset); break;
-		case (s_BYTE): fprintf(dest, "(byte*) sp->locals[%d] ", offset); break;
-		case (s_SHORT): fprintf(dest, "(short*) sp->locals[%d] ", offset); break;
-		case (s_INT): fprintf(dest, "(int*) sp->locals[%d] ", offset); break;
-		case (s_LONG): fprintf(dest, "(long*) sp->locals[%d] ", offset); break;
-		case (s_FLOAT): fprintf(dest, "(float*) sp->locals[%d] ", offset); break;
-		case (s_DOUBLE): fprintf(dest, "(double*) sp->locals[%d] ", offset); break;
+		case (s_BOOLEAN): fprintf(dest, "(*(int*) sp->locals[%d] ) ", offset); break;
+		case (s_CHAR): fprintf(dest, "(*(char*) sp->locals[%d] ) ", offset); break;
+		case (s_BYTE): fprintf(dest, "(*(byte*) sp->locals[%d] ) ", offset); break;
+		case (s_SHORT): fprintf(dest, "(*(short*) sp->locals[%d] ) ", offset); break;
+		case (s_INT): fprintf(dest, "(*(int*) sp->locals[%d] ) ", offset); break;
+		case (s_LONG): fprintf(dest, "(*(long*) sp->locals[%d] ) ", offset); break;
+		case (s_FLOAT): fprintf(dest, "(*(float*) sp->locals[%d] ) ", offset); break;
+		case (s_DOUBLE): fprintf(dest, "(*(double*) sp->locals[%d] ) ", offset); break;
 		//TODO: Confirm this.
 		case (s_VOID): break;
 		//TODO: We are limiting strings to 255 characters.
@@ -741,5 +741,21 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 
 void translateTypeSpecifier(is_TypeSpecifier *type)
 {
+	/* Show the type of the variable. */
+	switch(type->typeName->type)
+	{
+		case (is_BOOLEAN): printf("int *"); break;
+		case (is_CHAR): printf("char *"); break;
+		case (is_BYTE): printf("byte *"); break;
+		case (is_SHORT): printf("short *"); break;
+		case (is_INT): printf("int *"); break;
+		case (is_LONG): printf("long *"); break;
+		case (is_FLOAT): printf("float *"); break;
+		case (is_DOUBLE): printf("double *"); break;
+		case (is_VOID): printf("void *"); break;
+		case (is_STRING): printf("char **"); break;
+		case (is_STRING_ARRAY): printf("char ***"); break;
+	}
 	
+	return;
 }
