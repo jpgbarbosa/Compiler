@@ -3,6 +3,44 @@
 
 #include <stdbool.h>
 
+typedef enum {s_BOOLEAN, s_CHAR, s_BYTE, s_SHORT, s_INT, s_LONG, s_FLOAT, s_DOUBLE, s_VOID,
+				s_STRING, s_STRING_ARRAY, s_METHOD} tableBasicTypes;
+
+typedef struct _t1 tableElement;
+typedef struct _t4 environmentList;
+typedef struct _t5 progEnv;
+
+struct _t1
+{
+	char name[256];
+	tableBasicTypes type;
+	tableElement* next;
+	/* Only for variables. */
+	
+	bool isMethod;
+	int offset;
+	/* Only for methods. We limit the number of parameters to 32. */
+	tableBasicTypes parameters[32];
+	int noParameters;
+
+} /* tableElement */;
+
+
+struct _t4{
+	tableElement *locals;
+	environmentList *parent;
+	/* Only for methods. */
+	char name[256];
+	tableBasicTypes returnType;
+	environmentList *next;
+} /* environmentList */;
+
+struct _t5{
+	environmentList* globalTable;
+	environmentList* methods;
+} /* progEnv */;
+
+
 #define MAX_SIZE 256
 typedef struct _a1 is_AssignmentExpression;
 typedef struct _a2 is_Typename;
@@ -52,6 +90,7 @@ struct _a20{
 		int i;
 		double d;
 	}data_BasicElement;
+	environmentList *env;
 	int line;
 
 } /*is_BasicElement*/;
@@ -62,6 +101,7 @@ typedef enum {is_OP_INC_AFTER, is_OP_DCR_AFTER, is_OP_INC_BEFORE, is_OP_DCR_BEFO
 struct _a23{
 	is_UnaryOp op;
 	is_BasicElement *element;
+	environmentList *env;
 	int line;
 	
 } /*is_UnaryExpression*/;
@@ -78,6 +118,7 @@ struct _a22{
 struct _a21{
 	char id[MAX_SIZE];
 	is_Expressions_list *argumentsList; /* The list of arguments is a list of expressions. */
+	environmentList *env;
 	int line;	
 } /* is_MethodCall */;
 
@@ -85,6 +126,7 @@ struct _a21{
 struct _a34{
 	char literal[MAX_SIZE];
 	is_Expressions_list *argumentsList; /* The list of arguments is a list of expressions. */
+	environmentList *env;
 	int line;	
 } /* is_SystemOutPrintln */;
 
@@ -101,6 +143,7 @@ struct _a25{
 	 * temporary variable will be.
 	 */
 	is_PrimitiveType primType;
+	environmentList *env;
 	int line;
 	
 } /*is_ArithmeticExpression*/;
@@ -113,6 +156,7 @@ struct _a26{
 	is_ArithmeticExpression *aExpression;
 	is_RelationalExpression *next; /* It's null if it's the last element. */
 	is_RelationalOp op; /* If the above is NULL, this is useless. */
+	environmentList *env;
 	int line;
 	
 } /*is_RelationalExpression*/;
@@ -142,7 +186,7 @@ struct _a24{
 		is_AssignmentExpression *assignmentExpression;
 		is_ConditionalExpression *conditionalExpression;
 	}data_CastExpression;
-	
+	environmentList *env;
 	int line;
 	is_TypeSpecifier* castType; /* It is used when we make a cast. Otherwise, it remains NULL. */
 	
@@ -159,6 +203,7 @@ struct _a5{
 struct _a14{
 	is_TypeSpecifier *typeSpecifier;
 	char id[MAX_SIZE];
+	environmentList *env;
 	int line;
 }/*is_Parameter*/;
 
@@ -179,6 +224,7 @@ struct _a12{
 	 * task.
 	 */
 	bool isReturnOk;
+	environmentList *env;
 	int line;
 	
 } /*is_MethodDeclarator*/;
@@ -189,6 +235,7 @@ struct _a12{
 struct _a10{
 	char id[MAX_SIZE];
 	is_Expression *expression;
+	environmentList *env;
 	int line;
 } /*is_VariablesDeclarator*/;
 
@@ -205,6 +252,7 @@ struct _a9{
 struct _a18{
 	is_TypeSpecifier *typeSpecifier;
 	is_VariablesDeclarator_list *variablesDeclarator_list;
+	environmentList *env;
 	int line;
 }/*is_LocalVariableDeclarationStatement*/;
 
@@ -223,12 +271,14 @@ struct _a29{
 	is_ForInit *forInit;
 	/* ForIncr. */
 	is_Expressions_list *forIncr;
+	environmentList *env;
 	int line;
 } /*is_IterationStatement */;
 
 struct _a33{
 	is_Expressions_list* list;
 	is_LocalVariableDeclarationStatement* lvds;
+	environmentList *env;
 	
 } /*is_ForInit */;
 
@@ -244,6 +294,7 @@ struct _a30{
 		char id[MAX_SIZE];
 		is_ConditionalExpression *exp;
 	}data_LabeledStatement;
+	environmentList *env;
 	int line;
 } /*is_LabeledStatement */;
 
@@ -258,6 +309,7 @@ struct _a31{
 		char id[MAX_SIZE];
 		is_Expression *exp;
 	}data_JumpStatement;
+	environmentList *env;
 	int line;
 } /*is_JumpStatement. */;
 
@@ -272,6 +324,7 @@ struct _a32{
 	is_Statement *stat;
 	is_Statement *statSecond;
 	is_Block *block;
+	environmentList *env;
 	int line;
 } /*is_SelectionStatement */;
 
@@ -288,6 +341,7 @@ struct _a19{
 		is_JumpStatement *jumpStatement;
 		is_Block *block;
 	}data_Statement;
+	environmentList *env;
 	
 } /*is_Statement*/;
 
@@ -300,7 +354,9 @@ struct _a17{
 		is_LocalVariableDeclarationStatement *u_lvds;
 		is_Statement *u_statement;
 	}data_LocalVariableDeclarationsOrStatements;
+	environmentList *env;
 	int line;
+	
 } /*is_LocalVariableDeclarationsOrStatements */;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -314,6 +370,8 @@ struct _a16{
 
 struct _a15{
 	is_LocalVariableDeclarationsOrStatements_list *lvdos_list;
+	environmentList *env;
+	
 } /*is_Block*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -322,7 +380,9 @@ struct _a11{
 	is_TypeSpecifier *typeSpecifier;
 	is_MethodDeclarator *methodDeclarator;
 	is_Block *block;
+	environmentList *env;
 	int line;
+	
 } /*is_MethodDeclaration*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -330,7 +390,9 @@ struct _a11{
 struct _a8{
 	is_TypeSpecifier *typeSpecifier;
 	is_VariablesDeclarator_list * variablesDeclarators;
+	environmentList *env;
 	int line;
+	
 } /*is_AttrDeclaration*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -342,7 +404,9 @@ struct _a7{
 		is_AttrDeclaration *u_attrDeclaration;
 		is_MethodDeclaration *u_methodDeclaration;
 	}data_FieldDeclaration;
+	environmentList *env;
 	int line;
+	
 } /*is_FieldDeclaration*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -371,6 +435,7 @@ struct _a27{
 		is_AssignmentExpression *aExpression;
 		is_Expression *expression;
 	}data_Expression;
+	environmentList *env;
 	int line;
 	
 } /*is_Expression*/;
@@ -387,6 +452,7 @@ struct _a28{
 	/* Both can be NULL if we aren't using a trinary operator. */
 	is_Expression *firstExp;
 	is_Expression *secondExp;
+	environmentList *env;
 	int line;
 	
 } /*is_ConditionalExpression*/;
@@ -397,6 +463,7 @@ struct _a1{
 	char id[MAX_SIZE];
 	is_AssignmentOp assOp;
 	is_Expression* expression;
+	environmentList *env;
 	int line;
 
 } /*is_AssignmnetExpression*/;

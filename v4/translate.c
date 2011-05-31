@@ -13,6 +13,13 @@ int returnCounter = 0;
 /* The counter that will mark the temporary variables. */
 int tempCounter = 0;
 
+/* Now the counters for the instructions. */
+int ifCounter = 0;
+int forCounter = 0;
+int doCounter = 0;
+int whileCounter = 0;
+int switchCounter = 0;
+
 /* The file where we will be writing our compiler output. */
 FILE* dest;
 
@@ -480,7 +487,25 @@ void translateLabeledStatement(is_LabeledStatement* lS, environmentList *environ
 
 void translateSelectionStatement(is_SelectionStatement* sS, environmentList *environment)
 {
+	environmentList *newEnv = createNewEnvironment(environment);
 	
+	switch(sS->disc_d)
+	{
+		case (is_IF):
+			checkExpression(sS->exp, newEnv);
+			checkStatement(sS->stat, newEnv);
+			break;
+		case (is_IFELSE):
+			checkExpression(sS->exp, newEnv);
+			checkStatement(sS->stat, newEnv);
+			checkStatement(sS->statSecond, newEnv);
+			break;
+		case (is_SWITCH):
+			checkExpression(sS->exp, newEnv);
+			//TODO Block here
+			checkBlock(sS->block, newEnv);
+			break;
+	}
 	
 }
 

@@ -113,7 +113,9 @@ void checkMethodDeclarator(is_MethodDeclarator* mD, environmentList *environment
 	
 	for(aux = mD->parametersList; aux != NULL; aux = aux->next)
 		checkParameter(aux->parameter, environment);
-
+	
+	/* Before leaving, saves the environemnt of this object. */
+	mD->env = environment;
 }
 
 void checkParameter(is_Parameter* par, environmentList *environment)
@@ -130,6 +132,9 @@ void checkParameter(is_Parameter* par, environmentList *environment)
 		printf("Line %d: There's another parameter with that name ('%s')!\n", par->line, par->id);
 		errorCount++;
 	}
+	
+	/* Before leaving, saves the environemnt of this object. */
+	par->env = environment;
 }
 
 void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, environmentList *environment, bool isGlobal)
@@ -164,6 +169,8 @@ void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, 
 		}
 	}
 
+	/* Before leaving, saves the environemnt of this object. */
+	vD->env = environment;
 }
 
 void checkBlock(is_Block* block, environmentList *environment)
@@ -174,6 +181,8 @@ void checkBlock(is_Block* block, environmentList *environment)
 	for (aux = block->lvdos_list; aux != NULL; aux = aux->next)
 		checkLocalVariableDeclarationsOrStatements(aux->lvdos, environment);
 
+	/* Before leaving, saves the environemnt of this object. */
+	block->env = environment;
 }
 
 void checkLocalVariableDeclarationsOrStatements(is_LocalVariableDeclarationsOrStatements* lvdos, environmentList *environment)
@@ -196,7 +205,9 @@ void checkLocalVariableDeclarationStatement(is_LocalVariableDeclarationStatement
 	
 	for(aux = lvds->variablesDeclarator_list; aux != NULL; aux = aux->next)
 		checkVariablesDeclarator(aux->variablesDeclarator, enumConverter(lvds->typeSpecifier->typeName->type), environment, false);
-
+	
+	/* Before leaving, saves the environemnt of this object. */
+	lvds->env = environment;
 }
 
 void checkStatement(is_Statement* s, environmentList *environment)
@@ -223,11 +234,15 @@ void checkStatement(is_Statement* s, environmentList *environment)
 			break;
 	}
 
-	
+	/* Before leaving, saves the environemnt of this object. */
+	s->env = environment;
 }
 
 tableBasicTypes checkExpression(is_Expression* exp, environmentList *environment)
 {	
+	/* Before starting, saves the environemnt of this object. */
+	exp->env = environment;
+	
 	switch(exp->disc_d)
 	{
 		case (d_ConditionalExp):
@@ -245,6 +260,9 @@ tableBasicTypes checkExpression(is_Expression* exp, environmentList *environment
 
 tableBasicTypes checkConditionalExpression(is_ConditionalExpression* cExp, environmentList *environment)
 {
+	/* Before starting, saves the environemnt of this object. */
+	cExp->env = environment;
+	
 	tableBasicTypes typeOne, typeTwo;
 	
 	switch(cExp->type)
@@ -296,7 +314,9 @@ tableBasicTypes checkConditionalExpression(is_ConditionalExpression* cExp, envir
 
 tableBasicTypes checkAssignmentExpression(is_AssignmentExpression* aExp, environmentList *environment)
 {
-
+	/* Before starting, saves the environemnt of this object. */
+	aExp->env = environment;
+	
 	tableElement *search = searchSymbolLocal(aExp->id, environment);
 	if (search == NULL)
 	{
@@ -326,7 +346,11 @@ tableBasicTypes checkAssignmentExpression(is_AssignmentExpression* aExp, environ
 
 void checkLabeledStatement(is_LabeledStatement* lS, environmentList *environment)
 {
+	
 	environmentList *newEnv = createNewEnvironment(environment);
+	
+	/* Before starting, saves the environemnt of this object. */
+	lS->env = newEnv;
 	
 	switch(lS->disc_d)
 	{
@@ -350,6 +374,9 @@ void checkLabeledStatement(is_LabeledStatement* lS, environmentList *environment
 void checkSelectionStatement(is_SelectionStatement* sS, environmentList *environment)
 {
 	environmentList *newEnv = createNewEnvironment(environment);
+	
+	/* Before starting, saves the environemnt of this object. */
+	sS->env = newEnv;
 	
 	switch(sS->disc_d)
 	{
@@ -378,6 +405,9 @@ void checkIterationStatement(is_IterationStatement* iS, environmentList *environ
 	environmentList *newEnv = createNewEnvironment(environment);
 	is_Expressions_list* aux;
 	
+	/* Before starting, saves the environemnt of this object. */
+	iS->env = newEnv;
+	
 	switch(iS->disc_d)
 	{
 		case (is_WHILE):
@@ -404,7 +434,8 @@ void checkIterationStatement(is_IterationStatement* iS, environmentList *environ
 
 void checkForInit(is_ForInit* fI, environmentList *environment)
 {
-	
+	/* Before starting, saves the environemnt of this object. */
+	fI->env = environment;
 	
 	if (fI != NULL)
 	{
@@ -431,6 +462,9 @@ void checkJumpStatement(is_JumpStatement* jS, environmentList *environment)
 {
 	environmentList *newEnv = createNewEnvironment(environment);
 	tableBasicTypes bType;
+	
+	/* Before starting, saves the environemnt of this object. */
+	jS->env = newEnv;
 
 	switch(jS->disc_d)
 	{
@@ -466,6 +500,8 @@ void checkJumpStatement(is_JumpStatement* jS, environmentList *environment)
 
 tableBasicTypes checkRelationalExpression(is_RelationalExpression* rExp, environmentList *environment)
 {
+	/* Before starting, saves the environemnt of this object. */
+	rExp->env = environment;
 	
 	tableBasicTypes type = checkArithmeticExpression(rExp->aExpression, environment);
 	
@@ -498,6 +534,9 @@ tableBasicTypes checkArithmeticExpression(is_ArithmeticExpression* aExp, environ
 	 *    	CastExpression
 	 * 		ArithmeticExpression OPERAND ArithmeticExpression
 	 */
+	
+	/* Before starting, saves the environemnt of this object. */
+	aExp->env = environment;
 	
 	/* This is a cast expression and consequently, we have to stop the 
 	 * recursive calls.
@@ -558,6 +597,9 @@ tableBasicTypes checkCastExpression(is_CastExpression* cExp, environmentList *en
 
 	tableBasicTypes type = s_VOID;
 	
+	/* Before starting, saves the environemnt of this object. */
+	cExp->env = environment;
+	
 	switch(cExp->disc_d)
 	{
 		case (d_UnaryExpression):
@@ -579,6 +621,9 @@ tableBasicTypes checkCastExpression(is_CastExpression* cExp, environmentList *en
 
 tableBasicTypes checkUnaryExpression(is_UnaryExpression* uE, environmentList *environment)
 {	
+	/* Before starting, saves the environemnt of this object. */
+	uE->env = environment;
+	
 	switch(uE->op)
 	{
 		case (is_OP_INC_AFTER):
@@ -602,6 +647,8 @@ tableBasicTypes checkUnaryExpression(is_UnaryExpression* uE, environmentList *en
 
 tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environment)
 {
+	/* Before starting, saves the environemnt of this object. */
+	bE->env = environment;
 	
 	tableElement *search;
 			
@@ -644,6 +691,9 @@ tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environm
 
 tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 {
+	/* Before starting, saves the environemnt of this object. */
+	mC->env = environment;
+	
 	is_Expressions_list* aux;
 	tableElement* element = searchMethodCall(mC);
 	int parCounter = 0;
@@ -697,6 +747,9 @@ tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 
 tableBasicTypes checkSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environment)
 {
+	/* Before starting, saves the environemnt of this object. */
+	p->env = environment;
+	
 	is_Expressions_list* aux;
 	
 	//TODO: Correct this!
