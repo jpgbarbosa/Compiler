@@ -323,6 +323,7 @@ void translateStatement(is_Statement* s, environmentList *environment)
 			break;
 	}
 
+	/* Should never get here. */
 	return;
 }
 
@@ -479,54 +480,69 @@ int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList
 	
 }
 
-void translateLabeledStatement(is_LabeledStatement* lS, environmentList *environment)
+int translateLabeledStatement(is_LabeledStatement* lS, environmentList *environment)
 {
 	
-	
+	return 0;
 }
 
-void translateSelectionStatement(is_SelectionStatement* sS, environmentList *environment)
+int translateSelectionStatement(is_SelectionStatement* sS, environmentList *environment)
 {
-	environmentList *newEnv = createNewEnvironment(environment);
+	int tOne, tempIf;
 	
 	switch(sS->disc_d)
 	{
 		case (is_IF):
-			checkExpression(sS->exp, newEnv);
-			checkStatement(sS->stat, newEnv);
+			tOne = translateExpression(sS->exp, environment);
+			fprintf(dest, "if (!temp%d) goto ELSE%d;\n", tOne, ifCounter);
+			/* Save the number of the if counter. */
+			tempIf = ifCounter++;
+			/* There's a new environement, so we need to pass the new one. */
+			translateStatement(sS->stat, sS->env);
+			fprintf(dest, "ELSE%d: ;\n", tempIf);
 			break;
 		case (is_IFELSE):
-			checkExpression(sS->exp, newEnv);
-			checkStatement(sS->stat, newEnv);
-			checkStatement(sS->statSecond, newEnv);
+			tOne = translateExpression(sS->exp, environment);
+			fprintf(dest, "if (!temp%d) goto ELSE%d;\n", tOne, ifCounter);
+			/* Save the number of the if counter. */
+			tempIf = ifCounter++;
+			/* There's a new environement, so we need to pass the new one. */
+			translateStatement(sS->stat, sS->env);
+			fprintf(dest, "goto ENDIF%d;\n", tempIf);
+			fprintf(dest, "ELSE%d: ;\n", tempIf);
+			translateStatement(sS->statSecond, sS->env);
+			fprintf(dest, "ENDIF%d: ;\n", tempIf);			
 			break;
 		case (is_SWITCH):
-			checkExpression(sS->exp, newEnv);
+			tOne = translateExpression(sS->exp, sS->env);
 			//TODO Block here
-			checkBlock(sS->block, newEnv);
+			translateBlock(sS->block, sS->env);
 			break;
 	}
 	
-}
-
-void translateIterationStatement(is_IterationStatement* iS, environmentList *environment)
-{
-	
-	
+	//TODO: Is it necessary?
+	return 0;
 	
 }
 
-void translateForInit(is_ForInit* fI, environmentList *environment)
+int translateIterationStatement(is_IterationStatement* iS, environmentList *environment)
 {
 	
-
 	
+	return 0;
 }
 
-void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
+int translateForInit(is_ForInit* fI, environmentList *environment)
 {
 	
+
+	return 0;
+}
+
+int translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
+{
 	
+	return 0;
 }
 
 int translateRelationalExpression(is_RelationalExpression* rExp, environmentList *environment)

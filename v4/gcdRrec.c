@@ -33,16 +33,26 @@ sp->return_address = _ra;
 sp->locals[2] = (int*) malloc(sizeof(int));
 sp->locals[3] = (int*) malloc(sizeof(int));
 sp->locals[4] = (int*) malloc(sizeof(int));
-int temp1 = 5;
-int temp2 = 2;
-int temp3 = temp1 < temp2;
-int temp4 = 0;
-int temp5 = 0;
-int temp6 = temp4 == temp5;
-int temp7 = temp3 || temp6;
-(*(int*) sp->locals[4] ) = temp7;
-
-printf("%d\n", temp7);
+int temp1 = 8;
+(*(int*) sp->locals[2] ) = temp1;
+int temp2 = (*(int*)  sp->locals[2]);
+int temp3 = 10;
+int temp4 = temp2 == temp3;
+if (!temp4) goto ELSE0;
+int temp5 = 10;
+int temp6 = 1;
+int temp7 = 5;
+int temp8 = temp6 + temp7;
+int temp9 = 4;
+int temp10 = temp8 + temp9;
+int temp11 = temp5 == temp10;
+(*(int*) sp->locals[4] ) = temp11;
+goto ENDIF0;
+ELSE0: ;
+int temp12 = 15;
+(*(int*) sp->locals[4] ) = temp12;
+ENDIF0: ;
+printf("%d\n", (*(int*) sp->locals[4] ));
 
 /*Epilogue*/
 _ra = sp->return_address;

@@ -13,8 +13,12 @@ public class gcdRrec{
 	{
 		int c, d, e;
 		
-		e = 5 < 2 || 0 == 0;
-		//e = 5 + 2 + 3;
+		c = 10;
+		
+		if (c == 10)
+			e = 10 == 1 + 5 + 4;
+		else
+			e = 15;
 		
 		//System.out.println("The value is %d.\n", e);
 		
