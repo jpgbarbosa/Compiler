@@ -64,11 +64,22 @@ int temp16 = (*(int*)  sp->locals[5]);
 int temp17 = 5;
 int temp18 = temp16 < temp17;
 if (!temp18) goto ENDCYCLE0;
-int temp19 = printf("%d\n", (*(int*)  sp->locals[5]));;
-int temp20 = (*(int*)  sp->locals[5])++;
+int temp19 = (*(int*)  sp->locals[5]);
+int temp20 = 2;
+int temp21 = temp19 == temp20;
+if (!temp21) goto ELSE1;
+goto INCRCYCLE0;
+ELSE1: ;
+int temp22 = printf("%d\n", (*(int*)  sp->locals[5]));;
+INCRCYCLE0: ;
+int temp23 = (*(int*)  sp->locals[5])++;
 goto CYCLE0;
 ENDCYCLE0: ;
-int temp21 = printf("The value is %d.\n", (*(int*)  sp->locals[4]));;
+int temp24 = printf("The value is %d.\n", (*(int*)  sp->locals[4]));;
+_ra = sp->return_address;
+sp = sp->parent;
+fp = sp->parent;
+goto redirector;
 
 /*Epilogue*/
 _ra = sp->return_address;

@@ -535,6 +535,15 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 	
 	is_Expressions_list* aux;
 	
+	/* NOTE: In the whiles and do whiles, the label INCRCYCLE isn't necessary
+	 * at all for a correct function of the cycle.
+	 * However, we need it because in the for cycle, when there's a continue,
+	 * we need to execute the incremental expressions, like i++.
+	 * To mantain compatibility and avoid having to check if we are inside
+	 * a for or a while cycle, we preferred to print this label in all the
+	 * cycles, making the continue translation more generic and easy going.
+	 */
+	
 	switch(iS->disc_d)
 	{
 		case (is_WHILE):
@@ -543,6 +552,7 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 			tOne = translateExpression(iS->exp, iS->env, false);
 			fprintf(dest, "if (!temp%d) goto ENDCYCLE%d;\n", tOne, tempIt);
 			translateStatement(iS->statement, iS->env);
+			fprintf(dest, "INCRCYCLE%d: ;\n", tempIt);
 			fprintf(dest, "goto CYCLE%d;\n", tempIt);
 			fprintf(dest, "ENDCYCLE%d: ;\n", tempIt);
 			break;
@@ -552,6 +562,7 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 			translateStatement(iS->statement, iS->env);
 			tOne = translateExpression(iS->exp, iS->env, false);
 			fprintf(dest, "if (!temp%d) goto ENDCYCLE%d;\n", tOne, tempIt);
+			fprintf(dest, "INCRCYCLE%d: ;\n", tempIt);
 			fprintf(dest, "goto CYCLE%d;\n", tempIt);
 			fprintf(dest, "ENDCYCLE%d: ;\n", tempIt);
 			break;
@@ -568,6 +579,7 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 			/* Then, execute whatever code it has to execute. */
 			translateStatement(iS->statement, iS->env);
 			
+			fprintf(dest, "INCRCYCLE%d: ;\n", tempIt);
 			/* The incrementation expressions at the end of the cycle. */
 			for(aux = iS->forIncr; aux != NULL; aux = aux->next)
 				translateExpression(aux->exp, iS->env, false);
@@ -608,10 +620,53 @@ void translateForInit(is_ForInit* fI, environmentList *environment)
 	return;
 }
 
-int translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
+void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 {
+	int tOne; 
 	
-	return 0;
+	switch(jS->disc_d)
+	{
+		case (is_BREAK):
+			
+		case (is_BREAK_ID):
+			fprintf(dest, "goto ENDCYCLE%d;\n", cycleCounter - 1);
+			break;
+		case (is_CONTINUE_ID):
+			//This is not a declaration
+			//HERE
+			break;
+		case (is_CONTINUE):
+			fprintf(dest, "goto INCRCYCLE%d;\n", cycleCounter - 1);
+			break;
+		case (is_RETURN_EXP):
+			break;
+			tOne = translateExpression(jS->data_JumpStatement.exp, jS->env, false);
+			/* First, we have to print the epilogue of the function. */
+			/* Restores the returning value, to be used at the flux redirection. */
+			fprintf(dest, "_ra = sp->return_address;\n");
+			/* Pop operation from the frame stack. */
+			fprintf(dest, "sp = sp->parent;\n");
+			/* FP register update. */
+			fprintf(dest, "fp = sp->parent;\n");
+			/* Goes back to the point where we were before calling this method. */
+			fprintf(dest, "goto redirector;\n");
+			break;
+		case (is_RETURN):
+			/* First, we have to print the epilogue of the function. */
+			/* Restores the returning value, to be used at the flux redirection. */
+			fprintf(dest, "_ra = sp->return_address;\n");
+			/* Pop operation from the frame stack. */
+			fprintf(dest, "sp = sp->parent;\n");
+			/* FP register update. */
+			fprintf(dest, "fp = sp->parent;\n");
+			/* Goes back to the point where we were before calling this method. */
+			fprintf(dest, "goto redirector;\n");
+			break;
+		default:
+			break;
+	}
+	
+	return;
 }
 
 int translateRelationalExpression(is_RelationalExpression* rExp, environmentList *environment, bool isArgument)

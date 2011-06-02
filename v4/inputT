@@ -9,7 +9,7 @@ public class gcdRrec{
 		return 0;
 	}
 	
-	public static int gcd(int a, int b)
+	public static void gcd(int a, int b)
 	{
 		int c, d, e;
 		
@@ -28,12 +28,15 @@ public class gcdRrec{
 		
 		for (int i = 0; i < 5; i++)
 		{
+			if (i == 2)
+				continue;
 			System.out.println("%d\n", i);
+			
 		}
 		
 		System.out.println("The value is %d.\n", e);
 		
-		return c;
+		return;
 	}
 	
 

@@ -20,7 +20,7 @@ int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList
 int translateLabeledStatement(is_LabeledStatement* lS, environmentList *environment);
 int translateSelectionStatement(is_SelectionStatement* sS, environmentList *environment);
 int translateIterationStatement(is_IterationStatement* iS, environmentList *environment);
-int translateJumpStatement(is_JumpStatement* jS, environmentList *environment);
+void translateJumpStatement(is_JumpStatement* jS, environmentList *environment);
 int translateRelationalExpression(is_RelationalExpression* rExp, environmentList *environment, bool isArgument);
 int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment, bool isArgument);
 void translateCastExpression(is_CastExpression* cExp, environmentList *environment, bool isArgument);
