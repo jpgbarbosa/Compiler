@@ -15,8 +15,7 @@ int tempCounter = 0;
 
 /* Now the counters for the instructions. */
 int ifCounter = 0;
-int forCounter = 0;
-int whileCounter = 0;
+int cycleCounter = 0;
 int switchCounter = 0;
 
 /* The file where we will be writing our compiler output. */
@@ -539,42 +538,74 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 	switch(iS->disc_d)
 	{
 		case (is_WHILE):
-			tempIt = whileCounter++;
-			fprintf(dest, "WHILE%d: ;\n", tempIt);
+			tempIt = cycleCounter++;
+			fprintf(dest, "CYCLE%d: ;\n", tempIt);
 			tOne = translateExpression(iS->exp, iS->env, false);
-			fprintf(dest, "if (!temp%d) goto ENDWHILE%d;\n", tOne, tempIt);
+			fprintf(dest, "if (!temp%d) goto ENDCYCLE%d;\n", tOne, tempIt);
 			translateStatement(iS->statement, iS->env);
-			fprintf(dest, "goto WHILE%d;\n", tempIt);
-			fprintf(dest, "ENDWHILE%d: ;\n", tempIt);
+			fprintf(dest, "goto CYCLE%d;\n", tempIt);
+			fprintf(dest, "ENDCYCLE%d: ;\n", tempIt);
 			break;
 		case (is_DO):
-			tempIt = whileCounter++;
-			fprintf(dest, "WHILE%d: ;\n", tempIt);
+			tempIt = cycleCounter++;
+			fprintf(dest, "CYCLE%d: ;\n", tempIt);
 			translateStatement(iS->statement, iS->env);
 			tOne = translateExpression(iS->exp, iS->env, false);
-			fprintf(dest, "if (!temp%d) goto ENDWHILE%d;\n", tOne, tempIt);
-			fprintf(dest, "goto WHILE%d;\n", tempIt);
-			fprintf(dest, "ENDWHILE%d: ;\n", tempIt);
+			fprintf(dest, "if (!temp%d) goto ENDCYCLE%d;\n", tOne, tempIt);
+			fprintf(dest, "goto CYCLE%d;\n", tempIt);
+			fprintf(dest, "ENDCYCLE%d: ;\n", tempIt);
 			break;
 		case (is_FOR):
+			/* We initiate everything out of the for cycle. Then, it's
+			 * quite similar to a while.
+			 */
 			translateForInit(iS->forInit, iS->env);
-			translateExpression(iS->exp, iS->env, false);
-			/* The incrementation expressions. */
+			tempIt = cycleCounter++;
+			fprintf(dest, "CYCLE%d: ;\n", tempIt);
+			/* The conditional expressions that keep the cycle alive. */
+			tOne = translateExpression(iS->exp, iS->env, false);
+			fprintf(dest, "if (!temp%d) goto ENDCYCLE%d;\n", tOne, tempIt);
+			/* Then, execute whatever code it has to execute. */
+			translateStatement(iS->statement, iS->env);
+			
+			/* The incrementation expressions at the end of the cycle. */
 			for(aux = iS->forIncr; aux != NULL; aux = aux->next)
 				translateExpression(aux->exp, iS->env, false);
+				
+			/* Another iteration on the cycle. */	
+			fprintf(dest, "goto CYCLE%d;\n", tempIt);
+			/* The end of the cycle. */	
+			fprintf(dest, "ENDCYCLE%d: ;\n", tempIt);
 
-			translateStatement(iS->statement, iS->env);
+			
 			break;
 	}
 	
 	return 0;
 }
 
-int translateForInit(is_ForInit* fI, environmentList *environment)
+void translateForInit(is_ForInit* fI, environmentList *environment)
 {
 	
-
-	return 0;
+	if (fI != NULL)
+	{
+		/* It's a list of expressions. */
+		if (fI->list != NULL)
+		{
+			/* And now the list of parameters. */
+			is_Expressions_list* aux;
+			
+			for(aux = fI->list; aux != NULL; aux = aux->next)
+				translateExpression(aux->exp, environment, false);
+		}
+		/* It's a declaration statement. */
+		else
+		{
+			translateLocalVariableDeclarationStatement(fI->lvds, environment);
+		}
+	}
+	
+	return;
 }
 
 int translateJumpStatement(is_JumpStatement* jS, environmentList *environment)

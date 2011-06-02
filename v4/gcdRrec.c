@@ -59,15 +59,15 @@ ENDIF0: ;
 sp->locals[5] = (int*) malloc(sizeof(int));
 int temp15 = 0;
 (*((int*) sp->locals[5])) = temp15;
-WHILE0: ;
-int temp16 = (*(int*)  sp->locals[5])++;
-int temp17 = printf("%d\n", (*(int*)  sp->locals[5]));;
-int temp18 = (*(int*)  sp->locals[5]);
-int temp19 = 5;
-int temp20 = temp18 < temp19;
-if (!temp20) goto ENDWHILE0;
-goto WHILE0;
-ENDWHILE0: ;
+CYCLE0: ;
+int temp16 = (*(int*)  sp->locals[5]);
+int temp17 = 5;
+int temp18 = temp16 < temp17;
+if (!temp18) goto ENDCYCLE0;
+int temp19 = printf("%d\n", (*(int*)  sp->locals[5]));;
+int temp20 = (*(int*)  sp->locals[5])++;
+goto CYCLE0;
+ENDCYCLE0: ;
 int temp21 = printf("The value is %d.\n", (*(int*)  sp->locals[4]));;
 
 /*Epilogue*/

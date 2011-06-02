@@ -28,6 +28,6 @@ void translateUnaryExpression(is_UnaryExpression* uE, environmentList *environme
 void translateBasicElement(is_BasicElement* bE, environmentList *environment);
 void translateMethodCall(is_MethodCall* mC, environmentList *environment);
 void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environment);
-int translateForInit(is_ForInit* fI, environmentList *environment);
+void translateForInit(is_ForInit* fI, environmentList *environment);
 void printPrimitiveType(is_TypeSpecifier* tS);
 void translateTypeSpecifier(is_PrimitiveType type, bool isPointer);
