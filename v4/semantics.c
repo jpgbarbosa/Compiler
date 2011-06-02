@@ -405,6 +405,8 @@ void checkIterationStatement(is_IterationStatement* iS, environmentList *environ
 	environmentList *newEnv = createNewEnvironment(environment);
 	is_Expressions_list* aux;
 	
+	iS->env = newEnv;
+	
 	/* Before starting, saves the environemnt of this object. */
 	iS->env = newEnv;
 	

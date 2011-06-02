@@ -2998,15 +2998,18 @@ int main()
 	/* Only makes the semantic analysis if the parsing went well. */
 	if (yyparse() == 0)
 	{
+		printf("\n=====================================\n\n");
 		showProgramFile(myProgram);
 		noErrors = checkProgramFile(myProgram);
-		printf("\nWe have found %d errors in the program.\n", noErrors);
+		printf("\n\n=====================================\n\n");
+		printf("We have found %d errors in the program.\n", noErrors);
 	}
 	
 	if (noErrors == 0)
 	{
 		translateProgramFile(myProgram);
-		printf("Code generation conclude!\n");
+		printf("Code generation conclude!\n\n");
+		printf("=====================================\n\n");
 	}
 	
 	return 0;

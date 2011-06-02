@@ -16,11 +16,24 @@ public class gcdRrec{
 		c = 10;
 		
 		if (c == 10)
+		{
 			e = 10 == 1 + 5 + 4;
+			e = 0;
+		}
 		else
+		{
 			e = 15;
+			e = 20;
+		}
 		
-		//System.out.println("The value is %d.\n", e);
+		int i = 0; 
+		do
+		{
+			i++;
+			System.out.println("%d\n", i);
+		} while ( i < 5);
+		
+		System.out.println("The value is %d.\n", e);
 		
 		return c;
 	}

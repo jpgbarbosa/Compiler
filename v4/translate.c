@@ -16,7 +16,6 @@ int tempCounter = 0;
 /* Now the counters for the instructions. */
 int ifCounter = 0;
 int forCounter = 0;
-int doCounter = 0;
 int whileCounter = 0;
 int switchCounter = 0;
 
@@ -266,6 +265,7 @@ void translateVariablesDeclarator(is_VariablesDeclarator* vD, is_TypeSpecifier *
 	char typeInString[15];
 	/* Looks for the tableElement corresponding to this variable. */
 	tableElement* t = searchSymbolLocal(vD->id, environment);
+	int tOne;
 	
 	offset = t->offset;
 	
@@ -291,9 +291,8 @@ void translateVariablesDeclarator(is_VariablesDeclarator* vD, is_TypeSpecifier *
 	/* If it is initialized, we have to take action. */
 	if (vD->expression != NULL)
 	{
-		fprintf(dest, "%s sp->locals[%d] = ", typeInString, offset);
-		translateExpression(vD->expression, environment);
-		fprintf(dest, ";\n");
+		tOne = translateExpression(vD->expression, environment, false);
+		fprintf(dest, "(*(%s sp->locals[%d])) = temp%d;\n", typeInString, offset, tOne);
 	}
 		
 }
@@ -307,7 +306,7 @@ void translateStatement(is_Statement* s, environmentList *environment)
 			translateLabeledStatement(s->data_Statement.labeledStatement, environment);
 			break;
 		case (d_StatementExpression):
-			translateExpression(s->data_Statement.expression, environment);
+			translateExpression(s->data_Statement.expression, environment, false);
 			break;
 		case (d_SelectionStatement):
 			translateSelectionStatement(s->data_Statement.selectionStatement, environment);
@@ -327,7 +326,7 @@ void translateStatement(is_Statement* s, environmentList *environment)
 	return;
 }
 
-int translateExpression(is_Expression* exp, environmentList *environment)
+int translateExpression(is_Expression* exp, environmentList *environment, bool isArgument)
 {	
 	int tOne;
 	
@@ -335,13 +334,13 @@ int translateExpression(is_Expression* exp, environmentList *environment)
 	switch(exp->disc_d)
 	{
 		case (d_ConditionalExp):
-			return translateConditionalExpression(exp->data_Expression.cExpression, environment);
+			return translateConditionalExpression(exp->data_Expression.cExpression, environment, isArgument);
 		case (d_AssignmentExp):
-			return translateAssignmentExpression(exp->data_Expression.aExpression, environment);
+			return translateAssignmentExpression(exp->data_Expression.aExpression, environment, isArgument);
 		/* It's an expression surrounded by brackets, so we ought to add them. */
 		case (d_Exp):
 			fprintf(dest, "(");
-			tOne = translateExpression(exp->data_Expression.expression, environment);
+			tOne = translateExpression(exp->data_Expression.expression, environment, isArgument);
 			fprintf(dest, ") ");
 			return tOne;
 	}
@@ -351,7 +350,7 @@ int translateExpression(is_Expression* exp, environmentList *environment)
 	
 }
 
-int translateConditionalExpression(is_ConditionalExpression* cExp, environmentList *environment)
+int translateConditionalExpression(is_ConditionalExpression* cExp, environmentList *environment, bool isArgument)
 {
 	/* Variables to save the numbers of the temporary variables coming
 	 * from each branch.
@@ -361,11 +360,11 @@ int translateConditionalExpression(is_ConditionalExpression* cExp, environmentLi
 	switch(cExp->type)
 	{
 		case (is_UNARY):
-			translateRelationalExpression(cExp->rExpression, environment);
+			translateRelationalExpression(cExp->rExpression, environment, isArgument);
 			break;
 		case (is_UNARY_NOT):
 			fprintf(dest, "! (");
-			translateRelationalExpression(cExp->rExpression, environment);
+			translateRelationalExpression(cExp->rExpression, environment, isArgument);
 			fprintf(dest, ")");
 			break;
 		case (is_TRINARY):
@@ -377,13 +376,13 @@ int translateConditionalExpression(is_ConditionalExpression* cExp, environmentLi
 			showExpression(cExp->secondExp, nextLine, isTabs);*/
 			break;
 		case (is_OP_AND):
-			tOne = translateRelationalExpression(cExp->rExpression, environment);
-			tTwo = translateConditionalExpression(cExp->next, environment);
+			tOne = translateRelationalExpression(cExp->rExpression, environment, isArgument);
+			tTwo = translateConditionalExpression(cExp->next, environment, isArgument);
 			fprintf(dest, "int temp%d = temp%d && temp%d;\n", tempCounter++, tOne, tTwo);
 			break;
 		case (is_OP_OR):
-			tOne = translateRelationalExpression(cExp->rExpression, environment);
-			tTwo = translateConditionalExpression(cExp->next, environment);
+			tOne = translateRelationalExpression(cExp->rExpression, environment, isArgument);
+			tTwo = translateConditionalExpression(cExp->next, environment, isArgument);
 			fprintf(dest, "int temp%d = temp%d || temp%d;\n", tempCounter++, tOne, tTwo);
 			break;
 	}
@@ -391,7 +390,7 @@ int translateConditionalExpression(is_ConditionalExpression* cExp, environmentLi
 	return tempCounter - 1;
 }
 
-int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList *environment)
+int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList *environment, bool isArgument)
 {
 	int offset, tOne;
 	/* We are sure that we will find there an element. */
@@ -402,7 +401,7 @@ int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList
 	/* First, we have to store the outcome of the the expression
 	 * in a temporary variable. 
 	 */	
-	tOne = translateExpression(aExp->expression, environment);
+	tOne = translateExpression(aExp->expression, environment, isArgument);
 	
 	/* Then, print the type of the variable and save in the locals. */
 	switch(search->type)
@@ -469,7 +468,7 @@ int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList
 	else if (search->type != s_STRING)
 	{
 		fprintf(dest, "temp%d", tOne);
-		translateExpression(aExp->expression, environment);
+		translateExpression(aExp->expression, environment, isArgument);
 		fprintf(dest, ")\n");
 	}
 	
@@ -488,12 +487,15 @@ int translateLabeledStatement(is_LabeledStatement* lS, environmentList *environm
 
 int translateSelectionStatement(is_SelectionStatement* sS, environmentList *environment)
 {
+	/* Variables that save the counter so we make sure we are assigning
+	 * the right values.
+	 */
 	int tOne, tempIf;
 	
 	switch(sS->disc_d)
 	{
 		case (is_IF):
-			tOne = translateExpression(sS->exp, environment);
+			tOne = translateExpression(sS->exp, environment, false);
 			fprintf(dest, "if (!temp%d) goto ELSE%d;\n", tOne, ifCounter);
 			/* Save the number of the if counter. */
 			tempIf = ifCounter++;
@@ -502,7 +504,7 @@ int translateSelectionStatement(is_SelectionStatement* sS, environmentList *envi
 			fprintf(dest, "ELSE%d: ;\n", tempIf);
 			break;
 		case (is_IFELSE):
-			tOne = translateExpression(sS->exp, environment);
+			tOne = translateExpression(sS->exp, environment, false);
 			fprintf(dest, "if (!temp%d) goto ELSE%d;\n", tOne, ifCounter);
 			/* Save the number of the if counter. */
 			tempIf = ifCounter++;
@@ -514,7 +516,7 @@ int translateSelectionStatement(is_SelectionStatement* sS, environmentList *envi
 			fprintf(dest, "ENDIF%d: ;\n", tempIf);			
 			break;
 		case (is_SWITCH):
-			tOne = translateExpression(sS->exp, sS->env);
+			tOne = translateExpression(sS->exp, sS->env, false);
 			//TODO Block here
 			translateBlock(sS->block, sS->env);
 			break;
@@ -527,7 +529,43 @@ int translateSelectionStatement(is_SelectionStatement* sS, environmentList *envi
 
 int translateIterationStatement(is_IterationStatement* iS, environmentList *environment)
 {
+	/* Variables that save the counter so we make sure we are assigning
+	 * the right values.
+	 */
+	int tOne, tempIt;
 	
+	is_Expressions_list* aux;
+	
+	switch(iS->disc_d)
+	{
+		case (is_WHILE):
+			tempIt = whileCounter++;
+			fprintf(dest, "WHILE%d: ;\n", tempIt);
+			tOne = translateExpression(iS->exp, iS->env, false);
+			fprintf(dest, "if (!temp%d) goto ENDWHILE%d;\n", tOne, tempIt);
+			translateStatement(iS->statement, iS->env);
+			fprintf(dest, "goto WHILE%d;\n", tempIt);
+			fprintf(dest, "ENDWHILE%d: ;\n", tempIt);
+			break;
+		case (is_DO):
+			tempIt = whileCounter++;
+			fprintf(dest, "WHILE%d: ;\n", tempIt);
+			translateStatement(iS->statement, iS->env);
+			tOne = translateExpression(iS->exp, iS->env, false);
+			fprintf(dest, "if (!temp%d) goto ENDWHILE%d;\n", tOne, tempIt);
+			fprintf(dest, "goto WHILE%d;\n", tempIt);
+			fprintf(dest, "ENDWHILE%d: ;\n", tempIt);
+			break;
+		case (is_FOR):
+			translateForInit(iS->forInit, iS->env);
+			translateExpression(iS->exp, iS->env, false);
+			/* The incrementation expressions. */
+			for(aux = iS->forIncr; aux != NULL; aux = aux->next)
+				translateExpression(aux->exp, iS->env, false);
+
+			translateStatement(iS->statement, iS->env);
+			break;
+	}
 	
 	return 0;
 }
@@ -545,21 +583,21 @@ int translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 	return 0;
 }
 
-int translateRelationalExpression(is_RelationalExpression* rExp, environmentList *environment)
+int translateRelationalExpression(is_RelationalExpression* rExp, environmentList *environment, bool isArgument)
 {
 	/* Variables to save the numbers of the temporary variables coming
 	 * from each branch.
 	 */
 	int tOne, tTwo;
 	/* First, find the outcome of the first arithmetic expression. */
-	tOne = translateArithmeticExpression(rExp->aExpression, environment);
+	tOne = translateArithmeticExpression(rExp->aExpression, environment, isArgument);
 		
 	/* We have another expression, meaning that we also have an operator
 	 * in between.
 	 */	
 	if (rExp->next != NULL)
 	{
-		tTwo = translateRelationalExpression(rExp->next, environment);
+		tTwo = translateRelationalExpression(rExp->next, environment, isArgument);
 		fprintf(dest, "int temp%d = temp%d", tempCounter++, tOne);
 		
 		/* Prints the correct operator. */
@@ -602,7 +640,7 @@ int translateRelationalExpression(is_RelationalExpression* rExp, environmentList
 	return tempCounter - 1;
 }
 
-int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment)
+int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment, bool isArgument)
 {
 	/* We have to use otherwise we will have troubles in the printf. */
 	char tempChar = '%';
@@ -612,11 +650,18 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 	 */
 	if (aExp->cExpression != NULL)
 	{
-		/* Print the type of the temporary variable. */
-		translateTypeSpecifier(aExp->primType, false);
-		fprintf(dest, "temp%d = ", tempCounter++);
-		translateCastExpression(aExp->cExpression, environment);
-		fprintf(dest, ";\n");
+		if (!isArgument)
+		{
+			/* Print the type of the temporary variable. */
+			translateTypeSpecifier(aExp->primType, false);
+			fprintf(dest, "temp%d = ", tempCounter++);
+			translateCastExpression(aExp->cExpression, environment, isArgument);
+			fprintf(dest, ";\n");
+		}
+		else
+		{
+			translateCastExpression(aExp->cExpression, environment, isArgument);
+		}
 		return tempCounter - 1;
 	} 
 	 
@@ -627,11 +672,11 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 	 * print them.
 	 */
 	if (aExp->firstAE != NULL)
-		tOne = translateArithmeticExpression(aExp->firstAE, environment);
+		tOne = translateArithmeticExpression(aExp->firstAE, environment, isArgument);
 	
 	/* Same as above. */
 	if (aExp->secondAE != NULL)
-		tTwo = translateArithmeticExpression(aExp->secondAE, environment);
+		tTwo = translateArithmeticExpression(aExp->secondAE, environment, isArgument);
 		
 	/* Now, create another temporary variable to save the joint of the
 	 * two arithmetic expressions.
@@ -679,7 +724,7 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 	return tempCounter - 1;
 }
 
-void translateCastExpression(is_CastExpression* cExp, environmentList *environment)
+void translateCastExpression(is_CastExpression* cExp, environmentList *environment, bool isArgument)
 {
 	/* Prints the cast type if applicable. */
 	if (cExp->castType != NULL)
@@ -695,10 +740,10 @@ void translateCastExpression(is_CastExpression* cExp, environmentList *environme
 			translateUnaryExpression(cExp->data_CastExpression.unaryExpression, environment);
 			break;
 		case (d_AssignmentExpression):
-			translateAssignmentExpression(cExp->data_CastExpression.assignmentExpression, environment);
+			translateAssignmentExpression(cExp->data_CastExpression.assignmentExpression, environment, isArgument);
 			break;
 		case (d_ConditionalExpression):
-			translateConditionalExpression(cExp->data_CastExpression.conditionalExpression, environment);
+			translateConditionalExpression(cExp->data_CastExpression.conditionalExpression, environment, isArgument);
 			break;
 	}
 }
@@ -821,10 +866,18 @@ void translateMethodCall(is_MethodCall* mC, environmentList *environment)
 
 void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environment)
 {
+	/* The arguments of the print. */
+	is_Expressions_list* aux;
+	
 	/* Initiates the print. */
-	fprintf(dest, "printf(%s", p->literal);
+	fprintf(dest, "printf(%s, ", p->literal);
 	/* Now, prints all the arguments. */
-	//TODO: this xD
+	for (aux = p->argumentsList; aux != NULL; aux = aux->next)
+	{
+		translateExpression(aux->exp, environment, true);
+		if (aux->next != NULL)
+			fprintf(dest, ", ");
+	}
 	/* Ends the print. */
 	fprintf(dest, ");");
 }
@@ -862,7 +915,8 @@ void translateTypeSpecifier(is_PrimitiveType type, bool isPointer)
 			case (is_LONG): fprintf(dest, "long "); break;
 			case (is_FLOAT): fprintf(dest, "float "); break;
 			case (is_DOUBLE): fprintf(dest, "double "); break;
-			case (is_VOID): fprintf(dest, "void "); break;
+			/* This will go for the printf function. */
+			case (is_VOID): fprintf(dest, "int "); break;
 			case (is_STRING): fprintf(dest, "char *"); break;
 			case (is_STRING_ARRAY): fprintf(dest, "char **"); break;
 		}
