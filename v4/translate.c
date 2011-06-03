@@ -681,6 +681,8 @@ void translateForInit(is_ForInit* fI, environmentList *environment)
 void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 {
 	int tOne; 
+	char typeInString[15];
+	is_Parameters_list* aux;
 	
 	switch(jS->disc_d)
 	{
@@ -697,7 +699,6 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 			fprintf(dest, "goto INCRCYCLE%d;\n", cycleCounter - 1);
 			break;
 		case (is_RETURN_EXP):
-			break;
 			tOne = translateExpression(jS->data_JumpStatement.exp, jS->env, false);
 			/* First, we have to print the epilogue of the function. */
 			/* Restores the returning value, to be used at the flux redirection. */
@@ -706,6 +707,28 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 			fprintf(dest, "sp = sp->parent;\n");
 			/* FP register update. */
 			fprintf(dest, "fp = sp->parent;\n");
+			
+			/* First, print the type of the variable. */
+			switch(jS->data_JumpStatement.exp->primType)
+			{
+				case(is_BOOLEAN): fprintf(dest, "sp->parent->returnValue = (int*) malloc(sizeof(int));\n"); strcpy(typeInString, "(int*)"); break;
+				case(is_CHAR): fprintf(dest, "sp->parent->returnValue = (char*) malloc(sizeof(char));\n"); strcpy(typeInString, "(char*)"); break;
+				case(is_BYTE): fprintf(dest, "sp->parent->returnValue = (byte*) malloc(sizeof(byte));\n"); strcpy(typeInString, "(byte*)"); break;
+				case(is_SHORT): fprintf(dest, "sp->parent->returnValue = (short*) malloc(sizeof(short));\n"); strcpy(typeInString, "(short*)"); break;
+				case(is_INT): fprintf(dest, "sp->parent->returnValue = (int*) malloc(sizeof(int));\n"); strcpy(typeInString, "(int*)"); break;
+				case(is_LONG): fprintf(dest, "sp->parent->returnValue = (long*) malloc(sizeof(long));\n"); strcpy(typeInString, "(long*)"); break;
+				case(is_FLOAT): fprintf(dest, "sp->parent->returnValue = (float*) malloc(sizeof(float));\n"); strcpy(typeInString, "(float*)"); break;
+				case(is_DOUBLE): fprintf(dest, "sp->parent->returnValue = (double*) malloc(sizeof(double));\n"); strcpy(typeInString, "(double*)"); break;
+				//TODO: Confirm this.
+				case(is_VOID): break;
+				//TODO: We are limiting strings to 255 characters.
+				case(is_STRING): fprintf(dest, "sp->parent->returnValue = (char*) malloc(sizeof(char)*256);\n"); strcpy(typeInString, "(char*)"); break;
+				//TODO: Confirm this.
+				case(is_STRING_ARRAY): break;
+			}
+			
+			fprintf(dest, "(*(%s sp->parent->returnValue)) = temp%d;\n", typeInString, tOne);
+			
 			/* Goes back to the point where we were before calling this method. */
 			fprintf(dest, "goto redirector;\n");
 			break;
@@ -999,7 +1022,7 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 
 void translateMethodCall(is_MethodCall* mC, environmentList *environment)
 {
-	
+	fprintf(dest, "0;\n");
 	/* Saves the parameters that we pass to the function. */
 	translatePassParameters(mC, environment);
 	
@@ -1007,6 +1030,8 @@ void translateMethodCall(is_MethodCall* mC, environmentList *environment)
 	fprintf(dest, "_ra = %d;\n",returnCounter);
 	/* Jumps to the called method. */
 	fprintf(dest, "goto %s;\n", mC->id);
+	
+	if (mC->)
 		
 	/* Returning label, so we can keep on with the flux of execution after
 	 * the method returns.

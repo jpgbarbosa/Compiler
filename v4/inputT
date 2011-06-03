@@ -5,12 +5,12 @@ public class gcdRrec{
 	public static int main(String [] args)
 	{
 		int a;
-		gcd(2,2);
-		System.out.println("Wonderful!\n");
+		a = gcd(2,2);
+		System.out.println("Wonderful %d!\n", a);
 		return 0;
 	}
 	
-	public static void gcd(int a, int b)
+	public static int gcd(int a, int b)
 	{
 		int c, d, e;
 		
@@ -37,7 +37,7 @@ public class gcdRrec{
 		
 		System.out.println("The value is %d and parameters %d - %d.\n", e, a, b);
 		
-		return;
+		return 5;
 	}
 	
 
