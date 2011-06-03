@@ -242,15 +242,22 @@ tableBasicTypes checkExpression(is_Expression* exp, environmentList *environment
 {	
 	/* Before starting, saves the environemnt of this object. */
 	exp->env = environment;
+	tableBasicTypes temp;
 	
 	switch(exp->disc_d)
 	{
 		case (d_ConditionalExp):
-			return checkConditionalExpression(exp->data_Expression.cExpression, environment);
+			temp = checkConditionalExpression(exp->data_Expression.cExpression, environment);
+			exp->primType = enumInvConverter(temp);
+			return temp;
 		case (d_AssignmentExp):
-			return checkAssignmentExpression(exp->data_Expression.aExpression, environment);
+			temp = checkAssignmentExpression(exp->data_Expression.aExpression, environment);
+			exp->primType = enumInvConverter(temp);
+			return temp;
 		case (d_Exp):
-			return checkExpression(exp->data_Expression.expression, environment);
+			temp = checkExpression(exp->data_Expression.expression, environment);
+			exp->primType = enumInvConverter(temp);
+			return temp;
 	}
 	
 	/* Should never get here. */

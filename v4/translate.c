@@ -8,6 +8,11 @@
 #include "translate.h"
 
 extern progEnv *pEnv;
+/* This variable is used to track the current active method. Its value
+ * will be used when we execute a return, to jump directly to the method
+ * epilogue.
+ */
+char currentMethod[256];
 
 int returnCounter = 0;
 /* The counter that will mark the temporary variables. */
@@ -91,6 +96,9 @@ void translateHeader()
 	fprintf(dest, "frame* fp = NULL;\n");
 	fprintf(dest, "frame* sp = NULL;\n");
 	
+	/* We start at the main method. */
+	strcpy(currentMethod, "main");
+	
 	return;
 }
 
@@ -115,6 +123,10 @@ void translateRedirector()
 	for(i = 0; i < returnCounter; i++)
 		fprintf(dest, "if( _ra == %d ) goto return%d;\n", i, i);
 
+	/* In case we have a return at the main method, it will go directly
+	 * here.
+	 */
+	fprintf(dest, "EPILOGUE_main: ;\n");
 	fprintf(dest, "exit:\n;\n");
 }
 
@@ -156,6 +168,9 @@ void translateMethodDeclaration(is_MethodDeclaration* mD)
 	/* First, look for the environment of the method. */
 	environmentList* eL = searchEnvironment(mD->methodDeclarator->id);
 	
+	/* Saves the name of the method where we are at the moment. */
+	strcpy(currentMethod, mD->methodDeclarator->id);
+	
 	/* Prologue. */
 	fprintf(dest, "\n/*METHOD: %s */\n", mD->methodDeclarator->id); 
 	fprintf(dest, "/*Prologue*/\n");
@@ -172,12 +187,24 @@ void translateMethodDeclaration(is_MethodDeclaration* mD)
 	/* Saves the returning address (conventioned to be register _ra) in the frame. */
 	fprintf(dest, "sp->return_address = _ra;\n");
 	
+	/* Now, we have to save into the locals vector the parameters passed by
+	 * the calling method.
+	 */
+	translateParametersIntoLocals(mD);
+	
 	/* Method's body. */
 	fprintf(dest, "\n/*Method's body.*/\n");
 	translateBlock(mD->block, eL);	
 
 	/* Epilogue. */
 	fprintf(dest, "\n/*Epilogue*/\n");
+	/* Creates a label to where the code will flow when a return is executed. Then,
+	 * we recover the old information concerning the current method, because that
+	 * variables holds the name of the method that has called this one in the first
+	 * place.
+	 */
+	fprintf(dest, "EPILOGUE_%s: ;\n", currentMethod);
+	
 	/* Restores the returning value, to be used at the flux redirection. */
 	fprintf(dest, "_ra = sp->return_address;\n");
 	/* Pop operation from the frame stack. */
@@ -191,6 +218,39 @@ void translateMethodDeclaration(is_MethodDeclaration* mD)
 	
 	return; 
 	
+}
+
+void translateParametersIntoLocals(is_MethodDeclaration* mD)
+{
+	int parCounter = 0;
+	is_Parameters_list* aux;
+	char typeInString[15];
+	
+	for(aux = mD->methodDeclarator->parametersList; aux != NULL; aux = aux->next)
+	{
+		/* First, print the type of the variable. */
+		switch(aux->parameter->typeSpecifier->typeName->type)
+		{
+			case(is_BOOLEAN): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			case(is_CHAR): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char));\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			case(is_BYTE): fprintf(dest, "sp->locals[%d] = (byte*) malloc(sizeof(byte));\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			case(is_SHORT): fprintf(dest, "sp->locals[%d] = (short*) malloc(sizeof(short));\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			case(is_INT): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			case(is_LONG): fprintf(dest, "sp->locals[%d] = (long*) malloc(sizeof(long));\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			case(is_FLOAT): fprintf(dest, "sp->locals[%d] = (float*) malloc(sizeof(float));\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			case(is_DOUBLE): fprintf(dest, "sp->locals[%d] = (double*) malloc(sizeof(double));\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			//TODO: Confirm this.
+			case(is_VOID): break;
+			//TODO: We are limiting strings to 255 characters.
+			case(is_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*256);\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			//TODO: Confirm this.
+			case(is_STRING_ARRAY): break;
+		}
+		
+		fprintf(dest, "(*(%s sp->locals[%d])) = (*(%s sp->parent->outgoing[%d]));\n", typeInString, parCounter, typeInString, parCounter);
+		
+		parCounter++;
+	}
 }
 
 void translateGlobalVariablesDeclarator(tableElement* element, bool isGlobal)
@@ -588,8 +648,6 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 			fprintf(dest, "goto CYCLE%d;\n", tempIt);
 			/* The end of the cycle. */	
 			fprintf(dest, "ENDCYCLE%d: ;\n", tempIt);
-
-			
 			break;
 	}
 	
@@ -652,15 +710,8 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 			fprintf(dest, "goto redirector;\n");
 			break;
 		case (is_RETURN):
-			/* First, we have to print the epilogue of the function. */
-			/* Restores the returning value, to be used at the flux redirection. */
-			fprintf(dest, "_ra = sp->return_address;\n");
-			/* Pop operation from the frame stack. */
-			fprintf(dest, "sp = sp->parent;\n");
-			/* FP register update. */
-			fprintf(dest, "fp = sp->parent;\n");
-			/* Goes back to the point where we were before calling this method. */
-			fprintf(dest, "goto redirector;\n");
+			/* Goes directly to the epilogue of current method. */
+			fprintf(dest, "goto EPILOGUE_%s;\n", currentMethod);
 			break;
 		default:
 			break;
@@ -738,11 +789,23 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 	{
 		if (!isArgument)
 		{
-			/* Print the type of the temporary variable. */
-			translateTypeSpecifier(aExp->primType, false);
-			fprintf(dest, "temp%d = ", tempCounter++);
-			translateCastExpression(aExp->cExpression, environment, isArgument);
-			fprintf(dest, ";\n");
+			/* If the type of the expression isn't void, we have to
+			 * attribute the value of the expression to some variable.
+			 */
+			if (aExp->primType != is_VOID)
+			{
+				/* Print the type of the temporary variable. */
+				translateTypeSpecifier(aExp->primType, false);
+				fprintf(dest, "temp%d = ", tempCounter++);
+				translateCastExpression(aExp->cExpression, environment, isArgument);
+				fprintf(dest, ";\n");
+			}
+			/* It's void, so we won't be assigning the outcome to any variable. */
+			else
+			{
+				translateCastExpression(aExp->cExpression, environment, isArgument);
+				fprintf(dest, "\n");
+			}
 		}
 		else
 		{
@@ -936,18 +999,58 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 
 void translateMethodCall(is_MethodCall* mC, environmentList *environment)
 {
+	
+	/* Saves the parameters that we pass to the function. */
+	translatePassParameters(mC, environment);
+	
 	/* Saves the retuning address. */
 	fprintf(dest, "_ra = %d;\n",returnCounter);
 	/* Jumps to the called method. */
 	fprintf(dest, "goto %s;\n", mC->id);
-	
-	//TODO: Save and update the parameters vector. 
-	
+		
 	/* Returning label, so we can keep on with the flux of execution after
 	 * the method returns.
 	 */
 	fprintf(dest, "return%d:\n", returnCounter);
 	returnCounter++;	
+}
+
+void translatePassParameters(is_MethodCall* mC, environmentList *environment)
+{
+	/* And now the list of parameters. */
+	is_Expressions_list* aux;
+	char typeInString[15];
+	int tOne;
+	int parCounter = 0;
+	
+	/* Now, we have to check the parameters. */
+	for (aux = mC->argumentsList; aux != NULL; aux = aux->next)
+	{	
+		tOne = translateExpression(aux->exp, environment, false);
+		/* First, print the type of the variable. */
+		switch(aux->exp->primType)
+		{
+			case(is_BOOLEAN): fprintf(dest, "sp->outgoing[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			case(is_CHAR): fprintf(dest, "sp->outgoing[%d] = (char*) malloc(sizeof(char));\n", parCounter); strcpy(typeInString, "(char*)"); break;
+			case(is_BYTE): fprintf(dest, "sp->outgoing[%d] = (byte*) malloc(sizeof(byte));\n", parCounter); strcpy(typeInString, "(byte*)"); break;
+			case(is_SHORT): fprintf(dest, "sp->outgoing[%d] = (short*) malloc(sizeof(short));\n", parCounter); strcpy(typeInString, "(short*)"); break;
+			case(is_INT): fprintf(dest, "sp->outgoing[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			case(is_LONG): fprintf(dest, "sp->outgoing[%d] = (long*) malloc(sizeof(long));\n", parCounter); strcpy(typeInString, "(long*)"); break;
+			case(is_FLOAT): fprintf(dest, "sp->outgoing[%d] = (float*) malloc(sizeof(float));\n", parCounter); strcpy(typeInString, "(float*)"); break;
+			case(is_DOUBLE): fprintf(dest, "sp->outgoing[%d] = (double*) malloc(sizeof(double));\n", parCounter); strcpy(typeInString, "(double*)"); break;
+			//TODO: Confirm this.
+			case(is_VOID): break;
+			//TODO: We are limiting strings to 255 characters.
+			case(is_STRING): fprintf(dest, "sp->outgoing[%d] = (char*) malloc(sizeof(char)*256);\n", parCounter); strcpy(typeInString, "(char*)"); break;
+			//TODO: Confirm this.
+			case(is_STRING_ARRAY): break;
+		}
+		
+		fprintf(dest, "(*(%s sp->outgoing[%d])) = temp%d;\n", typeInString, parCounter, tOne);
+		
+		parCounter++;
+	}
+	
 }
 
 void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environment)
@@ -956,13 +1059,12 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 	is_Expressions_list* aux;
 	
 	/* Initiates the print. */
-	fprintf(dest, "printf(%s, ", p->literal);
+	fprintf(dest, "printf(%s ", p->literal);
 	/* Now, prints all the arguments. */
 	for (aux = p->argumentsList; aux != NULL; aux = aux->next)
 	{
-		translateExpression(aux->exp, environment, true);
-		if (aux->next != NULL)
-			fprintf(dest, ", ");
+		fprintf(dest, ", ");
+		translateExpression(aux->exp, environment, true);			
 	}
 	/* Ends the print. */
 	fprintf(dest, ");");
@@ -1001,8 +1103,7 @@ void translateTypeSpecifier(is_PrimitiveType type, bool isPointer)
 			case (is_LONG): fprintf(dest, "long "); break;
 			case (is_FLOAT): fprintf(dest, "float "); break;
 			case (is_DOUBLE): fprintf(dest, "double "); break;
-			/* This will go for the printf function. */
-			case (is_VOID): fprintf(dest, "int "); break;
+			case (is_VOID): fprintf(dest, "void "); break;
 			case (is_STRING): fprintf(dest, "char *"); break;
 			case (is_STRING_ARRAY): fprintf(dest, "char **"); break;
 		}

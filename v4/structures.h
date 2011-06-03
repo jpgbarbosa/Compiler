@@ -435,6 +435,8 @@ struct _a27{
 		is_AssignmentExpression *aExpression;
 		is_Expression *expression;
 	}data_Expression;
+	
+	is_PrimitiveType primType;
 	environmentList *env;
 	int line;
 	

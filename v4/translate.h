@@ -8,6 +8,7 @@ void translateRedirector();
 void translateGlobalVariables();
 void translateMain(is_MethodDeclaration* mainDecl);
 void translateMethodDeclaration(is_MethodDeclaration* mD);
+void translateParametersIntoLocals(is_MethodDeclaration* mD);
 void translateGlobalVariablesDeclarator(tableElement* element, bool isGlobal);
 void translateVariablesDeclarator(is_VariablesDeclarator* vD, is_TypeSpecifier *tS, environmentList *environment);
 void translateBlock(is_Block* block, environmentList *environment);
@@ -27,6 +28,7 @@ void translateCastExpression(is_CastExpression* cExp, environmentList *environme
 void translateUnaryExpression(is_UnaryExpression* uE, environmentList *environment);
 void translateBasicElement(is_BasicElement* bE, environmentList *environment);
 void translateMethodCall(is_MethodCall* mC, environmentList *environment);
+void translatePassParameters(is_MethodCall* mC, environmentList *environment);
 void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environment);
 void translateForInit(is_ForInit* fI, environmentList *environment);
 void printPrimitiveType(is_TypeSpecifier* tS);
