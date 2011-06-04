@@ -700,37 +700,36 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 			break;
 		case (is_RETURN_EXP):
 			tOne = translateExpression(jS->data_JumpStatement.exp, jS->env, false);
-			/* First, we have to print the epilogue of the function. */
-			/* Restores the returning value, to be used at the flux redirection. */
-			fprintf(dest, "_ra = sp->return_address;\n");
-			/* Pop operation from the frame stack. */
-			fprintf(dest, "sp = sp->parent;\n");
-			/* FP register update. */
-			fprintf(dest, "fp = sp->parent;\n");
 			
-			/* First, print the type of the variable. */
-			switch(jS->data_JumpStatement.exp->primType)
-			{
-				case(is_BOOLEAN): fprintf(dest, "sp->parent->returnValue = (int*) malloc(sizeof(int));\n"); strcpy(typeInString, "(int*)"); break;
-				case(is_CHAR): fprintf(dest, "sp->parent->returnValue = (char*) malloc(sizeof(char));\n"); strcpy(typeInString, "(char*)"); break;
-				case(is_BYTE): fprintf(dest, "sp->parent->returnValue = (byte*) malloc(sizeof(byte));\n"); strcpy(typeInString, "(byte*)"); break;
-				case(is_SHORT): fprintf(dest, "sp->parent->returnValue = (short*) malloc(sizeof(short));\n"); strcpy(typeInString, "(short*)"); break;
-				case(is_INT): fprintf(dest, "sp->parent->returnValue = (int*) malloc(sizeof(int));\n"); strcpy(typeInString, "(int*)"); break;
-				case(is_LONG): fprintf(dest, "sp->parent->returnValue = (long*) malloc(sizeof(long));\n"); strcpy(typeInString, "(long*)"); break;
-				case(is_FLOAT): fprintf(dest, "sp->parent->returnValue = (float*) malloc(sizeof(float));\n"); strcpy(typeInString, "(float*)"); break;
-				case(is_DOUBLE): fprintf(dest, "sp->parent->returnValue = (double*) malloc(sizeof(double));\n"); strcpy(typeInString, "(double*)"); break;
-				//TODO: Confirm this.
-				case(is_VOID): break;
-				//TODO: We are limiting strings to 255 characters.
-				case(is_STRING): fprintf(dest, "sp->parent->returnValue = (char*) malloc(sizeof(char)*256);\n"); strcpy(typeInString, "(char*)"); break;
-				//TODO: Confirm this.
-				case(is_STRING_ARRAY): break;
+			/* We will only save the return address if we aren't at the
+			 * main method.
+			 */
+			if (strcmp(currentMethod, "main"))
+			{		
+				/* First, print the type of the variable. */
+				switch(jS->data_JumpStatement.exp->primType)
+				{
+					case(is_BOOLEAN): fprintf(dest, "sp->parent->returnValue = (int*) malloc(sizeof(int));\n"); strcpy(typeInString, "(int*)"); break;
+					case(is_CHAR): fprintf(dest, "sp->parent->returnValue = (char*) malloc(sizeof(char));\n"); strcpy(typeInString, "(char*)"); break;
+					case(is_BYTE): fprintf(dest, "sp->parent->returnValue = (byte*) malloc(sizeof(byte));\n"); strcpy(typeInString, "(byte*)"); break;
+					case(is_SHORT): fprintf(dest, "sp->parent->returnValue = (short*) malloc(sizeof(short));\n"); strcpy(typeInString, "(short*)"); break;
+					case(is_INT): fprintf(dest, "sp->parent->returnValue = (int*) malloc(sizeof(int));\n"); strcpy(typeInString, "(int*)"); break;
+					case(is_LONG): fprintf(dest, "sp->parent->returnValue = (long*) malloc(sizeof(long));\n"); strcpy(typeInString, "(long*)"); break;
+					case(is_FLOAT): fprintf(dest, "sp->parent->returnValue = (float*) malloc(sizeof(float));\n"); strcpy(typeInString, "(float*)"); break;
+					case(is_DOUBLE): fprintf(dest, "sp->parent->returnValue = (double*) malloc(sizeof(double));\n"); strcpy(typeInString, "(double*)"); break;
+					//TODO: Confirm this.
+					case(is_VOID): break;
+					//TODO: We are limiting strings to 255 characters.
+					case(is_STRING): fprintf(dest, "sp->parent->returnValue = (char*) malloc(sizeof(char)*256);\n"); strcpy(typeInString, "(char*)"); break;
+					//TODO: Confirm this.
+					case(is_STRING_ARRAY): break;
+				}
+				
+				fprintf(dest, "(*(%s sp->parent->returnValue)) = temp%d;\n", typeInString, tOne);
 			}
 			
-			fprintf(dest, "(*(%s sp->parent->returnValue)) = temp%d;\n", typeInString, tOne);
-			
-			/* Goes back to the point where we were before calling this method. */
-			fprintf(dest, "goto redirector;\n");
+			/* Goes directly to the epilogue of current method. */
+			fprintf(dest, "goto EPILOGUE_%s;\n", currentMethod);
 			break;
 		case (is_RETURN):
 			/* Goes directly to the epilogue of current method. */
@@ -1022,6 +1021,14 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 
 void translateMethodCall(is_MethodCall* mC, environmentList *environment)
 {
+	char mType[15];
+	
+	/* To make the solution general, we are always creating a temporary
+	 * variable that will hold the value of the expression. As in this case
+	 * we are making a method call, that variable will be useless. Therefore,
+	 * we assign it the value 0 so it won't interfere with the rest of the
+	 * program.
+	 */
 	fprintf(dest, "0;\n");
 	/* Saves the parameters that we pass to the function. */
 	translatePassParameters(mC, environment);
@@ -1030,13 +1037,40 @@ void translateMethodCall(is_MethodCall* mC, environmentList *environment)
 	fprintf(dest, "_ra = %d;\n",returnCounter);
 	/* Jumps to the called method. */
 	fprintf(dest, "goto %s;\n", mC->id);
-	
-	if (mC->)
 		
 	/* Returning label, so we can keep on with the flux of execution after
 	 * the method returns.
 	 */
-	fprintf(dest, "return%d:\n", returnCounter);
+	fprintf(dest, "return%d: ;\n", returnCounter);
+	
+	/* Then, look for the entry of this method on the symbol table. We will
+	 * use the information to know if the method returns any type other than
+	 * void and therefore, assign or not its return value to a temporary
+	 * variable.
+	 */
+	tableElement* element = searchMethodCall(mC);
+	if (element->type != s_VOID)
+	{
+		switch(element->type)
+		{
+			case(is_BOOLEAN): strcpy(mType, "int "); break;
+			case(is_CHAR): strcpy(mType, "char "); break;
+			case(is_BYTE): strcpy(mType, "byte "); break;
+			case(is_SHORT): strcpy(mType, "short "); break;
+			case(is_INT): strcpy(mType, "int "); break;
+			case(is_LONG): strcpy(mType, "long "); break;
+			case(is_FLOAT): strcpy(mType, "float "); break;
+			case(is_DOUBLE): strcpy(mType, "double "); break;
+			//TODO: We are limiting strings to 255 characters.
+			case(is_STRING): strcpy(mType, "char * "); break;
+			//TODO: Confirm this.
+			case(is_STRING_ARRAY): break;
+			/* Shouldn't get here. */
+			default: break;
+		}
+		fprintf(dest, "%s temp%d = *((%s*) sp->returnValue)", mType, tempCounter++, mType);
+	}
+	
 	returnCounter++;	
 }
 
