@@ -7,6 +7,9 @@ public class gcdRrec{
 		int a;
 		a = gcd(2,2);
 		System.out.println("Wonderful %d!\n", a);
+		
+		recursive(0);
+		
 		return 0;
 	}
 	
@@ -38,6 +41,18 @@ public class gcdRrec{
 		System.out.println("The value is %d and parameters %d - %d.\n", e, a, b);
 		
 		return 5;
+	}
+	
+	public static void recursive(int a)
+	{
+		if (a > 5)
+			System.out.println("End RECURSIVE!\n");
+		else
+		{
+			System.out.println("Calling for %d.\n", a);
+			recursive(a+1);
+		}
+	
 	}
 	
 

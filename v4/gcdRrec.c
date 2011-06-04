@@ -28,7 +28,15 @@ return0: ;
 int  temp3 = *((int *) sp->returnValue);
 (*(int*) sp->locals[1] ) = temp3;
 printf("Wonderful %d!\n" , (*(int*)  sp->locals[1]));
+0;
 int temp4 = 0;
+sp->outgoing[0] = (int*) malloc(sizeof(int));
+(*((int*) sp->outgoing[0])) = temp4;
+_ra = 1;
+goto recursive;
+return1: ;
+
+int temp5 = 0;
 goto EPILOGUE_main;
 
 /*METHOD: gcd */
@@ -48,52 +56,52 @@ sp->locals[1] = (int*) malloc(sizeof(int));
 sp->locals[2] = (int*) malloc(sizeof(int));
 sp->locals[3] = (int*) malloc(sizeof(int));
 sp->locals[4] = (int*) malloc(sizeof(int));
-int temp5 = 10;
-(*(int*) sp->locals[2] ) = temp5;
-int temp6 = (*(int*)  sp->locals[2]);
-int temp7 = 10;
-int temp8 = temp6 == temp7;
-if (!temp8) goto ELSE0;
-int temp9 = 10;
-int temp10 = 1;
-int temp11 = 5;
-int temp12 = temp10 + temp11;
-int temp13 = 4;
-int temp14 = temp12 + temp13;
-int temp15 = temp9 == temp14;
-(*(int*) sp->locals[4] ) = temp15;
-int temp16 = 0;
+int temp6 = 10;
+(*(int*) sp->locals[2] ) = temp6;
+int temp7 = (*(int*)  sp->locals[2]);
+int temp8 = 10;
+int temp9 = temp7 == temp8;
+if (!temp9) goto ELSE0;
+int temp10 = 10;
+int temp11 = 1;
+int temp12 = 5;
+int temp13 = temp11 + temp12;
+int temp14 = 4;
+int temp15 = temp13 + temp14;
+int temp16 = temp10 == temp15;
 (*(int*) sp->locals[4] ) = temp16;
+int temp17 = 0;
+(*(int*) sp->locals[4] ) = temp17;
 goto ENDIF0;
 ELSE0: ;
-int temp17 = 15;
-(*(int*) sp->locals[4] ) = temp17;
-int temp18 = 20;
+int temp18 = 15;
 (*(int*) sp->locals[4] ) = temp18;
+int temp19 = 20;
+(*(int*) sp->locals[4] ) = temp19;
 ENDIF0: ;
 sp->locals[5] = (int*) malloc(sizeof(int));
-int temp19 = 0;
-(*((int*) sp->locals[5])) = temp19;
+int temp20 = 0;
+(*((int*) sp->locals[5])) = temp20;
 CYCLE0: ;
-int temp20 = (*(int*)  sp->locals[5]);
-int temp21 = 5;
-int temp22 = temp20 < temp21;
-if (!temp22) goto ENDCYCLE0;
-int temp23 = (*(int*)  sp->locals[5]);
-int temp24 = 2;
-int temp25 = temp23 == temp24;
-if (!temp25) goto ELSE1;
+int temp21 = (*(int*)  sp->locals[5]);
+int temp22 = 5;
+int temp23 = temp21 < temp22;
+if (!temp23) goto ENDCYCLE0;
+int temp24 = (*(int*)  sp->locals[5]);
+int temp25 = 2;
+int temp26 = temp24 == temp25;
+if (!temp26) goto ELSE1;
 goto ENDCYCLE0;
 ELSE1: ;
 printf("%d\n" , (*(int*)  sp->locals[5]));
 INCRCYCLE0: ;
-int temp26 = (*(int*)  sp->locals[5])++;
+int temp27 = (*(int*)  sp->locals[5])++;
 goto CYCLE0;
 ENDCYCLE0: ;
 printf("The value is %d and parameters %d - %d.\n" , (*(int*)  sp->locals[4]), (*(int*)  sp->locals[0]), (*(int*)  sp->locals[1]));
-int temp27 = 5;
+int temp28 = 5;
 sp->parent->returnValue = (int*) malloc(sizeof(int));
-(*((int*) sp->parent->returnValue)) = temp27;
+(*((int*) sp->parent->returnValue)) = temp28;
 goto EPILOGUE_gcd;
 
 /*Epilogue*/
@@ -104,10 +112,52 @@ fp = sp->parent;
 goto redirector;
 gcdskip:
 
+/*METHOD: recursive */
+/*Prologue*/
+goto recursiveskip;
+recursive:
+fp = sp;
+sp = (frame*)malloc(sizeof(frame));
+sp->parent = fp;
+sp->return_address = _ra;
+sp->locals[0] = (int*) malloc(sizeof(int));
+(*((int*) sp->locals[0])) = (*((int*) sp->parent->outgoing[0]));
+
+/*Method's body.*/
+int temp29 = (*(int*)  sp->locals[0]);
+int temp30 = 5;
+int temp31 = temp29 > temp30;
+if (!temp31) goto ELSE2;
+printf("End RECURSIVE!\n" );
+goto ENDIF2;
+ELSE2: ;
+printf("Calling for %d.\n" , (*(int*)  sp->locals[0]));
+0;
+int temp32 = (*(int*)  sp->locals[0]);
+int temp33 = 1;
+int temp34 = temp32 + temp33;
+sp->outgoing[0] = (int*) malloc(sizeof(int));
+(*((int*) sp->outgoing[0])) = temp34;
+_ra = 2;
+goto recursive;
+return2: ;
+
+ENDIF2: ;
+
+/*Epilogue*/
+EPILOGUE_recursive: ;
+_ra = sp->return_address;
+sp = sp->parent;
+fp = sp->parent;
+goto redirector;
+recursiveskip:
+
 /*Redirector*/
 goto exit;
 redirector:
 if( _ra == 0 ) goto return0;
+if( _ra == 1 ) goto return1;
+if( _ra == 2 ) goto return2;
 EPILOGUE_main: ;
 exit:
 ;

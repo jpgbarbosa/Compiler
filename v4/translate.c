@@ -62,12 +62,9 @@ void translateProgramFile(is_ProgramFile* pF)
 	/* And finally, all the other methods. */
 	for(aux = pF->fieldDeclarations; aux != NULL; aux = aux->next)
 	{
-		/* We have found the main method, we can stop afterwards. */
+		/* Now translates all the other methods. */
 		if (aux->fieldDeclaration->disc_d == d_methodDeclaration && strcmp("main", aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration->methodDeclarator->id))
-		{
 			translateMethodDeclaration(aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration);
-			break;
-		}
 	}
 	
 	/* Concludes with the footer. */
