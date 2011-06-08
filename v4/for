@@ -6,19 +6,12 @@ public class gcdRrec{
 		
 		a=2;
 
-		switch(a){
-			case 1: {
-				c=3;
-				break;
+		for (i=0;i<2;i++){
+			for(c=0;c<3;c++){
+				c++;
 			}
-			case 2: {
-				c=4;
-				break;
-			}
-			default: {
-				c=5; 
-				break;
-			}
+
+			break;
 		}
 
 

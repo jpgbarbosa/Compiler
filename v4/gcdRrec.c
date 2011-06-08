@@ -21,24 +21,31 @@ sp->locals[3] = (int*) malloc(sizeof(int));
 sp->locals[4] = (int*) malloc(sizeof(int));
 int temp0 = 2;
 (*(int*) sp->locals[2] ) = temp0;
-int temp1 = (*(int*)  sp->locals[2]);
-int temp2 = 1;
-if (temp1!=temp2) goto ELSE0;
-int temp3 = 3;
-(*(int*) sp->locals[4] ) = temp3;
-goto ENDCYCLE0;
-ELSE0:
-int temp4 = 2;
-if (temp1!=temp4) goto ELSE1;
-int temp5 = 4;
+int temp1 = 0;
+(*(int*) sp->locals[1] ) = temp1;
+CYCLE0: ;
+int temp2 = (*(int*)  sp->locals[1]);
+int temp3 = 2;
+int temp4 = temp2 < temp3;
+if (!temp4) goto ENDCYCLE0;
+int temp5 = 0;
 (*(int*) sp->locals[4] ) = temp5;
-goto ENDCYCLE0;
-ELSE1:
-int temp6 = 5;
-(*(int*) sp->locals[4] ) = temp6;
-goto ENDCYCLE0;
-ENDCYCLE0:
-int temp7 = 1;
+CYCLE1: ;
+int temp6 = (*(int*)  sp->locals[4]);
+int temp7 = 3;
+int temp8 = temp6 < temp7;
+if (!temp8) goto ENDCYCLE1;
+int temp9 = (*(int*)  sp->locals[4])++;
+INCRCYCLE1: ;
+int temp10 = (*(int*)  sp->locals[4])++;
+goto CYCLE1;
+ENDCYCLE1: ;
+goto ENDCYCLE1;
+INCRCYCLE0: ;
+int temp11 = (*(int*)  sp->locals[1])++;
+goto CYCLE0;
+ENDCYCLE0: ;
+int temp12 = 1;
 goto EPILOGUE_main;
 
 /*Redirector*/

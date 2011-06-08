@@ -544,8 +544,10 @@ int translateLabeledStatement(is_LabeledStatement* lS, environmentList *environm
 
 	switch(lS->disc_d)
 	{
-		case (d_ID): 
-			
+		case (d_ID):
+			//TODO: do we have goto's? I cant find them so I didnt test it. if we wont have goto's this case is useless.
+			fprintf(dest, "%s:\n", lS->data_LabeledStatement.id);			
+			translateConditionalExpression(lS->data_LabeledStatement.exp,environment,false);
 			break;
 
 		case (d_CASE):
@@ -560,6 +562,8 @@ int translateLabeledStatement(is_LabeledStatement* lS, environmentList *environm
 			translateLocalVariableDeclarationsOrStatements(lS->lvdos, environment);
 			break;
 	}
+
+	
 
 	
 	return 0;
