@@ -52,8 +52,6 @@ is_ProgramFile* myProgram;
 %token <i> INTEGER
 %token <d> FLOATPOINT
 
-%nonassoc LOW_PRIORITY 
-
 %type <_typeSpecifier> TypeSpecifier;
 %type <_typename> TypeName;
 %type <_programFile> ProgramFile;
@@ -83,7 +81,6 @@ is_ProgramFile* myProgram;
 %type <_systemOutPrintln> SystemOutPrintln;
 %type <_unaryExpression> UnaryExpression;
 %type <_basicElement> BasicElement;
-%type <_castExpression> CastExpression;
 %type <_arithmeticExpression> ArithmeticExpression;
 %type <_relationalExpression> RelationalExpression;
 %type <_expression> Expression;
@@ -142,7 +139,6 @@ is_ProgramFile* myProgram;
 	is_SystemOutPrintln* _systemOutPrintln;
 	is_UnaryExpression* _unaryExpression;
 	is_BasicElement* _basicElement;
-	is_CastExpression* _castExpression;
 	is_ArithmeticExpression* _arithmeticExpression;
 	is_RelationalExpression* _relationalExpression;
 	is_ConditionalExpression* _conditionalExpression;
@@ -359,15 +355,8 @@ BasicElement
 	| SystemOutPrintln		{$$ = insert_BasicElement_PRINTLN($1, line_no);}
 	;
 
-CastExpression
-	: UnaryExpression					{$$ = insert_CastExpression_UnaryExpression(NULL, $1, line_no);}
-	| '(' TypeSpecifier ')' UnaryExpression			{$$ = insert_CastExpression_UnaryExpression($2, $4, line_no);}
-	| '(' TypeSpecifier ')' '(' AssignmentExpression ')'		{$$ = insert_CastExpression_AssignmentExpression($2, $5, line_no);}
-	| '(' TypeSpecifier ')' '(' ConditionalExpression ')'	{$$ = insert_CastExpression_ConditionalExpression($2, $5, line_no);}
-	;
-
 ArithmeticExpression
-	: CastExpression					{$$ = insert_ArithmeticExpression(is_AE_NONE, NULL, NULL, $1,line_no);}
+	: UnaryExpression					{$$ = insert_ArithmeticExpression(is_AE_NONE, NULL, NULL, $1,line_no);}
 	| ArithmeticExpression  '+'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_PLUS, $1, $3, NULL,line_no);}
 	| ArithmeticExpression  '-'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_MINUS, $1, $3, NULL,line_no);}
 	| ArithmeticExpression  '/'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_SLASH, $1, $3, NULL,line_no);}
@@ -375,12 +364,11 @@ ArithmeticExpression
 	| ArithmeticExpression  '%'   ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_MODULO, $1, $3, NULL,line_no);}
 	| ArithmeticExpression OP_SHL ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_OP_SHL, $1, $3, NULL,line_no);}
 	| ArithmeticExpression OP_SHR ArithmeticExpression	{$$ = insert_ArithmeticExpression(is_OP_SHR, $1, $3, NULL,line_no);}
-	| '(' ArithmeticExpression 	')'	 				{$$ = insert_ArithmeticExpression(is_PARENTHESIS, $2, NULL, NULL, line_no);}
-    ;
+	;
 
 
 RelationalExpression
-	: ArithmeticExpression		%prec LOW_PRIORITY 				{$$ = insert_RelationalExpression(is_RE_NONE, $1, NULL,line_no);}
+	: ArithmeticExpression						{$$ = insert_RelationalExpression(is_RE_NONE, $1, NULL,line_no);}
 	| ArithmeticExpression '<' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS, $1, $3,line_no);}
 	| ArithmeticExpression '>' 	        RelationalExpression	{$$ = insert_RelationalExpression(is_OP_GREATER, $1, $3,line_no);}
 	| ArithmeticExpression OP_LESS_EQUAL    RelationalExpression	{$$ = insert_RelationalExpression(is_OP_LESS_EQUAL, $1, $3,line_no);}

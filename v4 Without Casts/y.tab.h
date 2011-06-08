@@ -94,8 +94,7 @@
      TRUE = 310,
      FALSE = 311,
      INTEGER = 312,
-     FLOATPOINT = 313,
-     LOW_PRIORITY = 314
+     FLOATPOINT = 313
    };
 #endif
 /* Tokens.  */
@@ -155,7 +154,6 @@
 #define FALSE 311
 #define INTEGER 312
 #define FLOATPOINT 313
-#define LOW_PRIORITY 314
 
 
 
@@ -165,7 +163,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 112 "pJava.y"
+#line 109 "pJava.y"
 
 	int i;
 	double d;
@@ -199,7 +197,6 @@ typedef union YYSTYPE
 	is_SystemOutPrintln* _systemOutPrintln;
 	is_UnaryExpression* _unaryExpression;
 	is_BasicElement* _basicElement;
-	is_CastExpression* _castExpression;
 	is_ArithmeticExpression* _arithmeticExpression;
 	is_RelationalExpression* _relationalExpression;
 	is_ConditionalExpression* _conditionalExpression;
@@ -209,7 +206,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 213 "y.tab.h"
+#line 210 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
