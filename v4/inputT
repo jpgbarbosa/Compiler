@@ -10,9 +10,9 @@ public class gcdRrec{
 		
 		switch(i)
 		{
-			case 1: System.out.println("First"); break;
-			case 2: System.out.println("Second"); break;
-			default: System.out.println("Third"); break;
+			case 1: System.out.println("First"); System.out.println("First"); break;
+			case 2: System.out.println("Second"); System.out.println("Second"); break;
+			default: System.out.println("Third"); System.out.println("Third"); break;
 		}
 		
 		System.out.println("End");
