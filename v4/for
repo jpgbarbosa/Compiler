@@ -1,0 +1,30 @@
+public class gcdRrec{
+	static int a, b;
+
+	public static int main(String[] args) {
+		int i,a,b,c;
+		
+		a=2;
+
+		switch(a){
+			case 1: {
+				c=3;
+				break;
+			}
+			case 2: {
+				c=4;
+				break;
+			}
+			default: {
+				c=5; 
+				break;
+			}
+		}
+
+
+		return 1;
+		
+	}
+	
+}
+

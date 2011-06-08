@@ -22,6 +22,9 @@ int tempCounter = 0;
 int ifCounter = 0;
 int cycleCounter = 0;
 int switchCounter = 0;
+int labCounter = 0;
+
+int tSwitch;
 
 /* The file where we will be writing our compiler output. */
 FILE* dest;
@@ -537,6 +540,27 @@ int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList
 
 int translateLabeledStatement(is_LabeledStatement* lS, environmentList *environment)
 {
+	int tOne, tempIf, temp;
+
+	switch(lS->disc_d)
+	{
+		case (d_ID): 
+			
+			break;
+
+		case (d_CASE):
+			tempIf = translateConditionalExpression(lS->data_LabeledStatement.exp,environment,false);
+			temp = ifCounter++;
+			fprintf(dest, "if (temp%d!=temp%d) goto ELSE%d;\n", tSwitch, tempIf,temp);
+			translateLocalVariableDeclarationsOrStatements(lS->lvdos, environment);
+			fprintf(dest, "ELSE%d:\n",temp);
+			break;
+
+		case (d_DEFAULT): 
+			translateLocalVariableDeclarationsOrStatements(lS->lvdos, environment);
+			break;
+	}
+
 	
 	return 0;
 }
@@ -546,7 +570,7 @@ int translateSelectionStatement(is_SelectionStatement* sS, environmentList *envi
 	/* Variables that save the counter so we make sure we are assigning
 	 * the right values.
 	 */
-	int tOne, tempIf;
+	int tOne, tempIf,tempSw;
 	
 	switch(sS->disc_d)
 	{
@@ -572,9 +596,12 @@ int translateSelectionStatement(is_SelectionStatement* sS, environmentList *envi
 			fprintf(dest, "ENDIF%d: ;\n", tempIf);			
 			break;
 		case (is_SWITCH):
-			tOne = translateExpression(sS->exp, sS->env, false);
+			tSwitch = translateExpression(sS->exp, sS->env, false);
+			tempSw=cycleCounter++;
 			//TODO Block here
 			translateBlock(sS->block, sS->env);
+			fprintf(dest, "ENDCYCLE%d:\n",tempSw);
+
 			break;
 	}
 	
