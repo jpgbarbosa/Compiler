@@ -1,0 +1,23 @@
+public class gcdRrec{
+	static int a, b;
+
+	public static int main(String[] args) {
+		int i,a,b,c;
+		
+		a=2;
+
+		for (i=0;i<2;i++){
+			for(c=0;c<3;c++){
+				c++;
+			}
+
+			break;
+		}
+
+
+		return 1;
+		
+	}
+	
+}
+
