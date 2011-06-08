@@ -13,6 +13,7 @@ extern progEnv *pEnv;
  * epilogue.
  */
 char currentMethod[256];
+int currentCycle;
 
 int returnCounter = 0;
 /* The counter that will mark the temporary variables. */
@@ -540,7 +541,7 @@ int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList
 
 int translateLabeledStatement(is_LabeledStatement* lS, environmentList *environment)
 {
-	int tOne, tempIf, temp;
+	int tempIf, temp;
 
 	switch(lS->disc_d)
 	{
@@ -555,7 +556,7 @@ int translateLabeledStatement(is_LabeledStatement* lS, environmentList *environm
 			temp = ifCounter++;
 			fprintf(dest, "if (temp%d!=temp%d) goto ELSE%d;\n", tSwitch, tempIf,temp);
 			translateLocalVariableDeclarationsOrStatements(lS->lvdos, environment);
-			fprintf(dest, "ELSE%d:\n",temp);
+			fprintf(dest, "ELSE%d: ;\n",temp);
 			break;
 
 		case (d_DEFAULT): 
@@ -574,7 +575,7 @@ int translateSelectionStatement(is_SelectionStatement* sS, environmentList *envi
 	/* Variables that save the counter so we make sure we are assigning
 	 * the right values.
 	 */
-	int tOne, tempIf,tempSw;
+	int tOne, tempIf,tempSw, oldIt;
 	
 	switch(sS->disc_d)
 	{
@@ -601,10 +602,12 @@ int translateSelectionStatement(is_SelectionStatement* sS, environmentList *envi
 			break;
 		case (is_SWITCH):
 			tSwitch = translateExpression(sS->exp, sS->env, false);
-			tempSw=cycleCounter++;
-			//TODO Block here
+			tempSw = cycleCounter++;
+			oldIt = currentCycle;
+			currentCycle = tempSw;
 			translateBlock(sS->block, sS->env);
-			fprintf(dest, "ENDCYCLE%d:\n",tempSw);
+			currentCycle = oldIt;
+			fprintf(dest, "ENDCYCLE%d: ;\n",tempSw);
 
 			break;
 	}
@@ -619,7 +622,7 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 	/* Variables that save the counter so we make sure we are assigning
 	 * the right values.
 	 */
-	int tOne, tempIt;
+	int tOne, tempIt, oldIt;
 	
 	is_Expressions_list* aux;
 	
@@ -639,7 +642,10 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 			fprintf(dest, "CYCLE%d: ;\n", tempIt);
 			tOne = translateExpression(iS->exp, iS->env, false);
 			fprintf(dest, "if (!temp%d) goto ENDCYCLE%d;\n", tOne, tempIt);
+			oldIt = currentCycle;
+			currentCycle = tempIt;
 			translateStatement(iS->statement, iS->env);
+			currentCycle = oldIt;
 			fprintf(dest, "INCRCYCLE%d: ;\n", tempIt);
 			fprintf(dest, "goto CYCLE%d;\n", tempIt);
 			fprintf(dest, "ENDCYCLE%d: ;\n", tempIt);
@@ -647,7 +653,10 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 		case (is_DO):
 			tempIt = cycleCounter++;
 			fprintf(dest, "CYCLE%d: ;\n", tempIt);
+			oldIt = currentCycle;
+			currentCycle = tempIt;
 			translateStatement(iS->statement, iS->env);
+			currentCycle = oldIt;
 			tOne = translateExpression(iS->exp, iS->env, false);
 			fprintf(dest, "if (!temp%d) goto ENDCYCLE%d;\n", tOne, tempIt);
 			fprintf(dest, "INCRCYCLE%d: ;\n", tempIt);
@@ -665,7 +674,10 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 			tOne = translateExpression(iS->exp, iS->env, false);
 			fprintf(dest, "if (!temp%d) goto ENDCYCLE%d;\n", tOne, tempIt);
 			/* Then, execute whatever code it has to execute. */
+			oldIt = currentCycle;
+			currentCycle = tempIt;
 			translateStatement(iS->statement, iS->env);
+			currentCycle = oldIt;
 			
 			fprintf(dest, "INCRCYCLE%d: ;\n", tempIt);
 			/* The incrementation expressions at the end of the cycle. */
@@ -710,21 +722,20 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 {
 	int tOne; 
 	char typeInString[15];
-	is_Parameters_list* aux;
 	
 	switch(jS->disc_d)
 	{
 		case (is_BREAK):
 			
 		case (is_BREAK_ID):
-			fprintf(dest, "goto ENDCYCLE%d;\n", cycleCounter - 1);
+			fprintf(dest, "goto ENDCYCLE%d;\n", currentCycle);
 			break;
 		case (is_CONTINUE_ID):
 			//This is not a declaration
 			//HERE
 			break;
 		case (is_CONTINUE):
-			fprintf(dest, "goto INCRCYCLE%d;\n", cycleCounter - 1);
+			fprintf(dest, "goto INCRCYCLE%d;\n", currentCycle);
 			break;
 		case (is_RETURN_EXP):
 			tOne = translateExpression(jS->data_JumpStatement.exp, jS->env, false);

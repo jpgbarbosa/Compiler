@@ -4,9 +4,18 @@ public class gcdRrec{
 	
 	public static int main(String [] args)
 	{
-		int a = (2 + 4)*2;
-		System.out.println(recursive(2));
-		System.out.println(a);
+	 
+		
+		int i = 4;
+		
+		switch(i)
+		{
+			case 1: {System.out.println("First"); break;}
+			case 2: {System.out.println("Second"); break;}
+			default: {System.out.println("Third"); break;}
+		}
+		
+		System.out.println("End");
 		
 		return 0;
 	}
