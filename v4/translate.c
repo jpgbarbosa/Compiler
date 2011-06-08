@@ -230,7 +230,7 @@ void translateParametersIntoLocals(is_MethodDeclaration* mD)
 		{
 			case(is_BOOLEAN): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
 			case(is_CHAR): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char));\n", parCounter); strcpy(typeInString, "(int*)"); break;
-			case(is_BYTE): fprintf(dest, "sp->locals[%d] = (byte*) malloc(sizeof(byte));\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			case(is_BYTE): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
 			case(is_SHORT): fprintf(dest, "sp->locals[%d] = (short*) malloc(sizeof(short));\n", parCounter); strcpy(typeInString, "(int*)"); break;
 			case(is_INT): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
 			case(is_LONG): fprintf(dest, "sp->locals[%d] = (long*) malloc(sizeof(long));\n", parCounter); strcpy(typeInString, "(int*)"); break;
@@ -330,7 +330,7 @@ void translateVariablesDeclarator(is_VariablesDeclarator* vD, is_TypeSpecifier *
 	{
 		case(is_BOOLEAN): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
 		case(is_CHAR): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char));\n", offset); strcpy(typeInString, "(char*)"); break;
-		case(is_BYTE): fprintf(dest, "sp->locals[%d] = (byte*) malloc(sizeof(byte));\n", offset); strcpy(typeInString, "(byte*)"); break;
+		case(is_BYTE): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
 		case(is_SHORT): fprintf(dest, "sp->locals[%d] = (short*) malloc(sizeof(short));\n", offset); strcpy(typeInString, "(short*)"); break;
 		case(is_INT): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
 		case(is_LONG): fprintf(dest, "sp->locals[%d] = (long*) malloc(sizeof(long));\n", offset); strcpy(typeInString, "(long*)"); break;
@@ -464,7 +464,7 @@ int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList
 	{
 		case (s_BOOLEAN): fprintf(dest, "(*(int*) sp->locals[%d] )", offset); break;
 		case (s_CHAR): fprintf(dest, "(*(char*) sp->locals[%d] )", offset); break;
-		case (s_BYTE): fprintf(dest, "(*(byte*) sp->locals[%d] )", offset); break;
+		case (s_BYTE): fprintf(dest, "(*(int*) sp->locals[%d] )", offset); break;
 		case (s_SHORT): fprintf(dest, "(*(short*) sp->locals[%d] )", offset); break;
 		case (s_INT): fprintf(dest, "(*(int*) sp->locals[%d] )", offset); break;
 		case (s_LONG): fprintf(dest, "(*(long*) sp->locals[%d] )", offset); break;
@@ -708,7 +708,7 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 				{
 					case(is_BOOLEAN): fprintf(dest, "sp->parent->returnValue = (int*) malloc(sizeof(int));\n"); strcpy(typeInString, "(int*)"); break;
 					case(is_CHAR): fprintf(dest, "sp->parent->returnValue = (char*) malloc(sizeof(char));\n"); strcpy(typeInString, "(char*)"); break;
-					case(is_BYTE): fprintf(dest, "sp->parent->returnValue = (byte*) malloc(sizeof(byte));\n"); strcpy(typeInString, "(byte*)"); break;
+					case(is_BYTE): fprintf(dest, "sp->parent->returnValue = (int*) malloc(sizeof(int));\n"); strcpy(typeInString, "(int*)"); break;
 					case(is_SHORT): fprintf(dest, "sp->parent->returnValue = (short*) malloc(sizeof(short));\n"); strcpy(typeInString, "(short*)"); break;
 					case(is_INT): fprintf(dest, "sp->parent->returnValue = (int*) malloc(sizeof(int));\n"); strcpy(typeInString, "(int*)"); break;
 					case(is_LONG): fprintf(dest, "sp->parent->returnValue = (long*) malloc(sizeof(long));\n"); strcpy(typeInString, "(long*)"); break;
@@ -969,7 +969,7 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 				/* Now, we have to print the right type. */
 				case (s_BOOLEAN): fprintf(dest, "(*(int*) "); break;
 				case (s_CHAR): fprintf(dest, "(*(char*) "); break;
-				case (s_BYTE): fprintf(dest, "(*(byte*) "); break;
+				case (s_BYTE): fprintf(dest, "(*(int*) "); break;
 				case (s_SHORT): fprintf(dest, "(*(short*) "); break;
 				case (s_INT): fprintf(dest, "(*(int*) "); break;
 				case (s_LONG): fprintf(dest, "(*(long*) "); break;
@@ -1016,7 +1016,7 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 	return;
 }
 
-void translateMethodCall(is_MethodCall* mC, environmentList *environment)
+int translateMethodCall(is_MethodCall* mC, environmentList *environment)
 {
 	char mType[15];
 	
@@ -1029,7 +1029,6 @@ void translateMethodCall(is_MethodCall* mC, environmentList *environment)
 	fprintf(dest, "0;\n");
 	/* Saves the parameters that we pass to the function. */
 	translatePassParameters(mC, environment);
-	
 	/* Saves the retuning address. */
 	fprintf(dest, "_ra = %d;\n",returnCounter);
 	/* Jumps to the called method. */
@@ -1045,14 +1044,16 @@ void translateMethodCall(is_MethodCall* mC, environmentList *environment)
 	 * void and therefore, assign or not its return value to a temporary
 	 * variable.
 	 */
+	
 	tableElement* element = searchMethodCall(mC);
+		
 	if (element->type != s_VOID)
 	{
 		switch(element->type)
 		{
 			case(is_BOOLEAN): strcpy(mType, "int "); break;
 			case(is_CHAR): strcpy(mType, "char "); break;
-			case(is_BYTE): strcpy(mType, "byte "); break;
+			case(is_BYTE): strcpy(mType, "int "); break;
 			case(is_SHORT): strcpy(mType, "short "); break;
 			case(is_INT): strcpy(mType, "int "); break;
 			case(is_LONG): strcpy(mType, "long "); break;
@@ -1068,7 +1069,9 @@ void translateMethodCall(is_MethodCall* mC, environmentList *environment)
 		fprintf(dest, "%s temp%d = *((%s*) sp->returnValue)", mType, tempCounter++, mType);
 	}
 	
-	returnCounter++;	
+	returnCounter++;
+	
+	return	tempCounter - 1;
 }
 
 void translatePassParameters(is_MethodCall* mC, environmentList *environment)
@@ -1088,7 +1091,7 @@ void translatePassParameters(is_MethodCall* mC, environmentList *environment)
 		{
 			case(is_BOOLEAN): fprintf(dest, "sp->outgoing[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
 			case(is_CHAR): fprintf(dest, "sp->outgoing[%d] = (char*) malloc(sizeof(char));\n", parCounter); strcpy(typeInString, "(char*)"); break;
-			case(is_BYTE): fprintf(dest, "sp->outgoing[%d] = (byte*) malloc(sizeof(byte));\n", parCounter); strcpy(typeInString, "(byte*)"); break;
+			case(is_BYTE): fprintf(dest, "sp->outgoing[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
 			case(is_SHORT): fprintf(dest, "sp->outgoing[%d] = (short*) malloc(sizeof(short));\n", parCounter); strcpy(typeInString, "(short*)"); break;
 			case(is_INT): fprintf(dest, "sp->outgoing[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
 			case(is_LONG): fprintf(dest, "sp->outgoing[%d] = (long*) malloc(sizeof(long));\n", parCounter); strcpy(typeInString, "(long*)"); break;
@@ -1113,17 +1116,151 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 {
 	/* The arguments of the print. */
 	is_Expressions_list* aux;
+	is_PrintExpressions_list* exps;
+	
+	int helpTemp, tOne, tTwo;
+	/* For printing the control caracters on the final code file. */
+	char strTemp[4], strTemp2[4];
 	
 	/* Initiates the print. */
-	fprintf(dest, "printf(%s ", p->literal);
-	/* Now, prints all the arguments. */
-	for (aux = p->argumentsList; aux != NULL; aux = aux->next)
+	
+	/* A C style printf. */
+	if (p->printExps == NULL)
 	{
-		fprintf(dest, ", ");
-		translateExpression(aux->exp, environment, true);			
+		fprintf(dest, "printf(%s ", p->literal);
+		/* Now, prints all the arguments. */
+		for (aux = p->argumentsList; aux != NULL; aux = aux->next)
+		{
+			fprintf(dest, ", ");
+			translateExpression(aux->exp, environment, true);			
+		}
+		/* Ends the print. */
+		fprintf(dest, ");");
 	}
-	/* Ends the print. */
-	fprintf(dest, ");");
+	/* A Java style println. */
+	else
+	{
+		/* We are assuming that strings won't be larger than 1024 characters. */
+		helpTemp = tempCounter++;
+		fprintf(dest, "char temp%d[1025]; temp%d[0] = '\\0';", helpTemp, helpTemp);
+		
+		/* Now, prints all the arguments. */
+		for (exps = p->printExps; exps != NULL; exps = exps->next)
+		{
+			tableElement *search;
+			int offset;
+			char mType[15];
+			
+			switch(exps->bE->disc_d)
+			{
+				/* And then, we assume that substrings are never greater
+				 * than 256 characters.
+				 */
+				
+				case is_ID:
+					/* If it is an ID, we have to look for the offset.
+					 * We know for sure that we will find the element.
+					 */
+					search = searchSymbolLocal(exps->bE->data_BasicElement.name, environment);
+					offset = search->offset;
+					
+					switch (search->type)
+					{
+						/* Now, we have to print the right type. */
+						case(is_BOOLEAN): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; strcpy(mType, "int* "); break;
+						case(is_CHAR): strTemp[0] = '%'; strTemp[1] = 'c'; strTemp[2] = '\0'; strcpy(mType, "char* "); break;
+						case(is_BYTE): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; strcpy(mType, "int* "); break;
+						case(is_SHORT): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; strcpy(mType, "short* "); break;
+						case(is_INT): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; strcpy(mType, "int* "); break;
+						case(is_LONG): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'u'; strTemp[3] = '\0'; strcpy(mType, "long* "); break;
+						case(is_FLOAT): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; strcpy(mType, "float* "); break;
+						case(is_DOUBLE): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; strcpy(mType, "double* "); break;
+						//TODO: We are limiting strings to 255 characters.
+						case(is_STRING): strTemp[0] = '%'; strTemp[1] = 's'; strTemp[2] = '\0'; strcpy(mType, "char** "); break;
+						//TODO: Confirm this.
+						case(is_STRING_ARRAY): break;
+						/* Shouldn't get here. */
+						default: break;
+					}
+					
+					/* Prints the value of this identifier. */
+					tTwo = tempCounter++;
+					fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%s\", *((%s) sp->locals[%d]));\n", tTwo, tTwo, strTemp, mType, offset);
+					fprintf(dest, "strcat(temp%d, temp%d);\n", helpTemp, tTwo);
+					
+					break;
+				case is_LITERAL:
+					fprintf(dest, "strcat(temp%d, %s);\n", helpTemp, exps->bE->data_BasicElement.name);
+					break;
+				case is_METHOD_CALL:
+					tTwo = tempCounter++;
+					tOne = translateMethodCall(exps->bE->data_BasicElement.methodCall, environment);
+					fprintf(dest, ";\n");
+					/* Now, we have to recheck the type of the method, so we 
+					 * can print the proper control caracter.
+					 */
+					tableElement* element = searchMethodCall(exps->bE->data_BasicElement.methodCall);
+						
+					if (element->type != s_VOID)
+					{
+						switch(element->type)
+						{
+							case(is_BOOLEAN): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; break;
+							case(is_CHAR): strTemp[0] = '%'; strTemp[1] = 'c'; strTemp[2] = '\0'; break;
+							case(is_BYTE): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; break;
+							case(is_SHORT): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; break;
+							case(is_INT): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; break;
+							case(is_LONG): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; break;
+							case(is_FLOAT): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; break;
+							case(is_DOUBLE): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; break;
+							//TODO: We are limiting strings to 255 characters.
+							case(is_STRING): strTemp[0] = '%'; strTemp[1] = 's'; strTemp[2] = '\0'; break;
+							//TODO: Confirm this.
+							case(is_STRING_ARRAY): break;
+							/* Shouldn't get here. */
+							default: break;
+						}
+					}
+					fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%s\", temp%d);\n", tTwo, tTwo, strTemp, tOne);
+					fprintf(dest, "strcat(temp%d, temp%d);\n", helpTemp, tTwo);
+					break;
+				case is_FALSE:
+					fprintf(dest, "strcat(temp%d, \"false\");\n", helpTemp);
+					break;
+				case is_TRUE:	
+					fprintf(dest, "strcat(temp%d, \"true\");\n", helpTemp);
+					break;
+				case is_INTEGER:
+					tOne = tempCounter++;
+					tTwo = tempCounter++;
+					fprintf(dest, "int temp%d = ", tOne);
+					translateBasicElement(exps->bE, environment);
+					fprintf(dest, ";\n");
+					strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; 					
+					fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%s\", temp%d);\n", tTwo, tTwo, strTemp, tOne);
+					fprintf(dest, "strcat(temp%d, temp%d);\n", helpTemp, tTwo);
+					break;
+				case is_FLOATPOINT:
+					tOne = tempCounter++;
+					tTwo = tempCounter++;
+					fprintf(dest, "double temp%d = ", tOne);
+					translateBasicElement(exps->bE, environment);
+					fprintf(dest, ";\n");
+					strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; 					
+					fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%s\", temp%d);\n", tTwo, tTwo, strTemp, tOne);
+					fprintf(dest, "strcat(temp%d, temp%d);\n", helpTemp, tTwo);
+					break;
+				//TODO: Should never be this.
+				case is_PRINTLN:
+					break;
+			}
+		
+		}
+		/* Ends the print. */
+		strTemp[0] = '%'; strTemp[1] = 's'; strTemp[2] = '\0'; 
+		strTemp2[0] = '\\'; strTemp2[1] = 'n'; strTemp2[2] = '\0'; 
+		fprintf(dest, "printf(\"%s%s\", temp%d);", strTemp, strTemp2, helpTemp);
+	}
 }
 
 void translateTypeSpecifier(is_PrimitiveType type, bool isPointer)
@@ -1135,7 +1272,7 @@ void translateTypeSpecifier(is_PrimitiveType type, bool isPointer)
 		{
 			case (is_BOOLEAN): fprintf(dest, "int *"); break;
 			case (is_CHAR): fprintf(dest, "char *"); break;
-			case (is_BYTE): fprintf(dest, "byte *"); break;
+			case (is_BYTE): fprintf(dest, "int *"); break;
 			case (is_SHORT): fprintf(dest, "short *"); break;
 			case (is_INT): fprintf(dest, "int *"); break;
 			case (is_LONG): fprintf(dest, "long *"); break;
@@ -1153,7 +1290,7 @@ void translateTypeSpecifier(is_PrimitiveType type, bool isPointer)
 		{
 			case (is_BOOLEAN): fprintf(dest, "int "); break;
 			case (is_CHAR): fprintf(dest, "char "); break;
-			case (is_BYTE): fprintf(dest, "byte "); break;
+			case (is_BYTE): fprintf(dest, "int "); break;
 			case (is_SHORT): fprintf(dest, "short "); break;
 			case (is_INT): fprintf(dest, "int "); break;
 			case (is_LONG): fprintf(dest, "long "); break;

@@ -27,7 +27,7 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 void translateCastExpression(is_CastExpression* cExp, environmentList *environment, bool isArgument);
 void translateUnaryExpression(is_UnaryExpression* uE, environmentList *environment);
 void translateBasicElement(is_BasicElement* bE, environmentList *environment);
-void translateMethodCall(is_MethodCall* mC, environmentList *environment);
+int translateMethodCall(is_MethodCall* mC, environmentList *environment);
 void translatePassParameters(is_MethodCall* mC, environmentList *environment);
 void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environment);
 void translateForInit(is_ForInit* fI, environmentList *environment);

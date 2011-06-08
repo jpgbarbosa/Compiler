@@ -745,16 +745,34 @@ void showSystemOutPrintln(is_SystemOutPrintln* p, bool nextLine, bool isTabs)
 			printTabs();
 		
 		is_Expressions_list* aux;
+		is_PrintExpressions_list* exps;
 		
-		/* Prints the literal of the print. */
-		printf("System.out.println(%s, ", p->literal);
-		for (aux = p->argumentsList; aux != NULL; aux = aux->next)
+		/* It's a C style printf. */
+		if (p->printExps == NULL)
 		{
-			showExpression(aux->exp, false, false);
-			if (aux->next != NULL)
-				printf(", ");
+			/* Prints the literal of the print. */
+			printf("System.out.println(%s, ", p->literal);
+			for (aux = p->argumentsList; aux != NULL; aux = aux->next)
+			{
+				showExpression(aux->exp, false, false);
+				if (aux->next != NULL)
+					printf(", ");
+			}
+			printf(");");
 		}
-		printf(");");	
+		/* It's a Java style println. */
+		else
+		{
+			/* Prints the literal of the print. */
+			printf("System.out.println( ");
+			for (exps = p->printExps; exps != NULL; exps = exps->next)
+			{
+				showBasicElement(exps->bE, false, false);
+				if (exps->next != NULL)
+					printf(" + ");
+			}
+			printf(");");
+		}	
 			
 		if (nextLine)
 			printf("\n");

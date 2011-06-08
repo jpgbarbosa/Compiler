@@ -676,8 +676,9 @@ is_BasicElement* insert_BasicElement_TRUE(char* literal, int line)
 {
 	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
 	bE->disc_d = is_TRUE;
-	strcpy(bE->data_BasicElement.name, literal);
 	bE->line = line;
+	
+	
 	
 	return bE;
 }
@@ -685,8 +686,7 @@ is_BasicElement* insert_BasicElement_TRUE(char* literal, int line)
 is_BasicElement* insert_BasicElement_FALSE(char* literal, int line)
 {
 	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
-	bE->disc_d = is_METHOD_CALL;
-	strcpy(bE->data_BasicElement.name, literal);
+	bE->disc_d = is_FALSE;
 	bE->line = line;
 	
 	return bE;

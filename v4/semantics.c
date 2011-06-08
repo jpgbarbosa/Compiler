@@ -761,6 +761,7 @@ tableBasicTypes checkSystemOutPrintln(is_SystemOutPrintln* p, environmentList *e
 	/* Before starting, saves the environemnt of this object. */
 	p->env = environment;
 	is_Expressions_list* aux;
+	is_PrintExpressions_list* exps;
 	
 	/* This is in the C style printf. */
 	if (p->printExps == NULL)
@@ -831,6 +832,12 @@ tableBasicTypes checkSystemOutPrintln(is_SystemOutPrintln* p, environmentList *e
 			printf("Line %d: Too many arguments for the print line.\n", p->line);
 			errorCount++;
 		}
+	}
+	/* There might be some method calls and therefore, we need to save them. */
+	else
+	{
+		for (exps = p->printExps; exps != NULL; exps = exps->next)
+			checkBasicElement(exps->bE, environment);
 	}
 
 	

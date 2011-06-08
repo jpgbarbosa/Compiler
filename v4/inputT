@@ -5,10 +5,19 @@ public class gcdRrec{
 	public static int main(String [] args)
 	{
 		int a = 2;
-		System.out.println("Wonderful %d!\n", a);
-
+		System.out.println(recursive(2));
+		System.out.println(a);
+		
 		return 0;
-	}	
+	}
+
+	
+	public static double recursive(int a)
+	{
+		return 2.0;
+	
+	}
+	
 
 }
 
