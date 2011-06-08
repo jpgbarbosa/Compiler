@@ -6,13 +6,13 @@ public class gcdRrec{
 	{
 	 
 		
-		int i = 4;
+		int i = 2;
 		
 		switch(i)
 		{
-			case 1: {System.out.println("First"); break;}
-			case 2: {System.out.println("Second"); break;}
-			default: {System.out.println("Third"); break;}
+			case 1: System.out.println("First"); break;
+			case 2: System.out.println("Second"); break;
+			default: System.out.println("Third"); break;
 		}
 		
 		System.out.println("End");

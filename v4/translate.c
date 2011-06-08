@@ -22,8 +22,9 @@ int tempCounter = 0;
 /* Now the counters for the instructions. */
 int ifCounter = 0;
 int cycleCounter = 0;
+/* For the switch. */
 int switchCounter = 0;
-int labCounter = 0;
+int nextLabel = 0;
 
 int tSwitch;
 
@@ -552,14 +553,15 @@ int translateLabeledStatement(is_LabeledStatement* lS, environmentList *environm
 			break;
 
 		case (d_CASE):
+			fprintf(dest, "NEXTLABEL%d: ;\n", nextLabel++);
 			tempIf = translateConditionalExpression(lS->data_LabeledStatement.exp,environment,false);
 			temp = ifCounter++;
-			fprintf(dest, "if (temp%d!=temp%d) goto ELSE%d;\n", tSwitch, tempIf,temp);
+			fprintf(dest, "if (temp%d != temp%d) goto NEXTLABEL%d;\n", tSwitch, tempIf,nextLabel);
 			translateLocalVariableDeclarationsOrStatements(lS->lvdos, environment);
-			fprintf(dest, "ELSE%d: ;\n",temp);
 			break;
 
 		case (d_DEFAULT): 
+			fprintf(dest, "NEXTLABEL%d: ;\n", nextLabel++);
 			translateLocalVariableDeclarationsOrStatements(lS->lvdos, environment);
 			break;
 	}
@@ -607,7 +609,8 @@ int translateSelectionStatement(is_SelectionStatement* sS, environmentList *envi
 			currentCycle = tempSw;
 			translateBlock(sS->block, sS->env);
 			currentCycle = oldIt;
-			fprintf(dest, "ENDCYCLE%d: ;\n",tempSw);
+
+			fprintf(dest, "NEXTLABEL%d: ; ENDCYCLE%d: ;\n", nextLabel, tempSw);
 
 			break;
 	}
