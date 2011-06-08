@@ -76,6 +76,7 @@ typedef struct _a31 is_JumpStatement;
 typedef struct _a32 is_SelectionStatement;
 typedef struct _a33 is_ForInit;
 typedef struct _a34 is_SystemOutPrintln;
+typedef struct _a35 is_PrintExpressions_list;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 typedef enum {is_ID, is_LITERAL, is_METHOD_CALL, is_TRUE, is_FALSE, is_INTEGER, is_FLOATPOINT, is_PRINTLN} disc_BasicElement;
@@ -127,8 +128,19 @@ struct _a34{
 	char literal[MAX_SIZE];
 	is_Expressions_list *argumentsList; /* The list of arguments is a list of expressions. */
 	environmentList *env;
+	/* We consider a C style println like System.out.println("Hello World! Here's %s!", name); .
+	 * The Java style would be a concatenation of expressions that will result in a single string.
+	 * Therefore, if it's C style, it will have this field to null.
+	 */
+	is_PrintExpressions_list* printExps;
 	int line;	
 } /* is_SystemOutPrintln */;
+
+struct _a35{
+	is_BasicElement *bE;
+	is_PrintExpressions_list *next;
+	
+} /*is_PrintExpressions_list*/;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 

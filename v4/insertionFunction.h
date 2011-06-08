@@ -65,3 +65,5 @@ is_RelationalExpression* insert_RelationalExpression(is_RelationalOp op, is_Arit
 is_ConditionalExpression* insert_ConditionalExpression(is_ConditionalType type, is_RelationalExpression *rExpression, is_Expression *firstExp, is_Expression *secondExp, int line);
 is_AssignmentExpression* insert_AssignmentExpression(char *id, is_AssignmentOp assOp, is_Expression* expression, int line);
 is_ConditionalExpression* insert_ConditionalExpressionMultiple(is_ConditionalType type, is_RelationalExpression *rExpression, is_ConditionalExpression* cExpression, int line);
+is_PrintExpressions_list* insert_PrintExpressions_list(is_PrintExpressions_list* list, is_BasicElement* bE);
+is_SystemOutPrintln* insert_SystemOutPrintlnJavaStyle(is_PrintExpressions_list* list, int line);

@@ -583,9 +583,41 @@ is_SystemOutPrintln* insert_SystemOutPrintln(char *literal, is_Expressions_list*
 	is_SystemOutPrintln* p = malloc(sizeof(is_SystemOutPrintln));
 	p->argumentsList = list;
 	p->line = line;
+	p->printExps = NULL;
 	strcpy(p->literal, literal);
 	
 	return p;
+}
+
+is_SystemOutPrintln* insert_SystemOutPrintlnJavaStyle(is_PrintExpressions_list* list, int line)
+{
+	is_SystemOutPrintln* p = malloc(sizeof(is_SystemOutPrintln));
+	p->argumentsList = NULL;
+	p->line = line;
+	p->printExps = list;
+	
+	return p;
+}
+
+is_PrintExpressions_list* insert_PrintExpressions_list(is_PrintExpressions_list* list, is_BasicElement* bE)
+{
+
+	/* Creates a new node on the list and fills it with the correct information. */
+	is_PrintExpressions_list* el = malloc(sizeof(is_PrintExpressions_list));
+	el->bE = bE;
+	
+	/* It's an empty list, so this will be the first element. */
+	if(list == NULL)
+		return el;
+
+	/* Else, we have to find the tail of the list and add this node in that position. */
+	is_PrintExpressions_list* aux;
+			
+	for(aux = list; aux->next != NULL; aux = aux->next);
+		aux->next = el;
+	
+	/* Returns the head of the list. */
+	return list;
 }
 
 is_UnaryExpression* insert_UnaryExpression(is_UnaryOp op, is_BasicElement* element, int line)

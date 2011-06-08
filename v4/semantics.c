@@ -756,12 +756,82 @@ tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 
 tableBasicTypes checkSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environment)
 {
+	int i, len, counter;
+	
 	/* Before starting, saves the environemnt of this object. */
 	p->env = environment;
-	
 	is_Expressions_list* aux;
 	
-	//TODO: Correct this!
+	/* This is in the C style printf. */
+	if (p->printExps == NULL)
+	{
+		counter = 0;
+		aux = p->argumentsList;
+		
+		len = strlen(p->literal);
+		/* We only need to look to the penultimate position for the % characters. */
+		for (i = 0; i < len - 1; i++)
+		{
+			/* This is a control caracter. */
+			if (p->literal[i] == '%')
+			{
+				/* We have more control caracters than arguments. */
+				if (aux == NULL)
+				{
+					printf("Line %d: Too few arguments for the print line.\n", p->line);
+					errorCount++;
+					return s_VOID;
+				}
+				
+				/* Else, we need to check whether the type of the expression
+				 * and the control caracter are accordingly. 
+				 */
+				if (p->literal[i + 1] == 'd')
+				{
+					if (checkExpression(aux->exp, environment) != s_INT)
+					{
+						printf("Line %d: In the print line call, argument number %d mismatches the control caracter type.\n", p->line, counter);
+						errorCount++;
+					}
+				}
+				else if (p->literal[i + 1] == 's')
+				{
+					if (checkExpression(aux->exp, environment) != s_STRING)
+					{
+						printf("Line %d: In the print line call, argument number %d mismatches the control caracter type.\n", p->line, counter);
+						errorCount++;
+					}
+				}
+				else if (i < len - 2 && p->literal[i + 1] == 'l' && p->literal[i + 2] == 'f')
+				{
+					if (checkExpression(aux->exp, environment) != s_DOUBLE)
+					{
+						printf("Line %d: In the print line call, argument number %d mismatches the control caracter type.\n", p->line, counter);
+						errorCount++;
+					}
+				}
+				else
+				{
+					printf("Line %d: In the print line call, unknown type of caracter control number %d.\n", p->line, counter);
+					errorCount++;
+				}
+					
+				/* Increases the counter so we can keep track of the argument number
+				 * we are at the moment.
+				 */	
+				counter++;
+				aux = aux->next;
+			}
+			
+		}
+		
+		/* We still have more arguments, but no more control caracters. */
+		if (aux != NULL)
+		{
+			printf("Line %d: Too many arguments for the print line.\n", p->line);
+			errorCount++;
+		}
+	}
 
 	
 	/* If everything's ok, we have to return s_VOID, because it's a print call. */

@@ -163,7 +163,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 109 "pJava.y"
+#line 110 "pJava.y"
 
 	int i;
 	double d;
@@ -202,11 +202,12 @@ typedef union YYSTYPE
 	is_RelationalExpression* _relationalExpression;
 	is_ConditionalExpression* _conditionalExpression;
 	is_AssignmentExpression* _assignmentExpression;
+	is_PrintExpressions_list* _printExpressions_list;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 210 "y.tab.h"
+#line 211 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

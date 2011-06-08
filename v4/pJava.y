@@ -87,6 +87,7 @@ is_ProgramFile* myProgram;
 %type <_expression> Expression;
 %type <_conditionalExpression> ConditionalExpression;
 %type <_assignmentExpression> AssignmentExpression;
+%type <_printExpressions_list> PrintExpressions
 
 /* Priorities */
 %right ASS_MUL ASS_DIV ASS_ADD ASS_SUB ASS_XOR ASS_MOD ASS_SHL ASS_SHR
@@ -144,6 +145,7 @@ is_ProgramFile* myProgram;
 	is_RelationalExpression* _relationalExpression;
 	is_ConditionalExpression* _conditionalExpression;
 	is_AssignmentExpression* _assignmentExpression;
+	is_PrintExpressions_list* _printExpressions_list;
 }
 
 
@@ -324,7 +326,12 @@ MethodCall
 SystemOutPrintln
 	/* List of arguments. */
 	: PRINTLN '(' LITERAL ',' Expressions ')'		{$$ = insert_SystemOutPrintln($3, $5, line_no);}
-	| PRINTLN '(' LITERAL ')'				{$$ = insert_SystemOutPrintln($3, NULL, line_no);}
+	| PRINTLN '(' PrintExpressions ')'				{$$ = insert_SystemOutPrintlnJavaStyle($3, line_no);}
+	;
+	
+PrintExpressions
+	: BasicElement							{$$ = insert_PrintExpressions_list(NULL, $1);}
+	| PrintExpressions '+' BasicElement		{$$ = insert_PrintExpressions_list($1, $3);}
 	;
 
 UnaryExpression
