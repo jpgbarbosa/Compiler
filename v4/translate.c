@@ -252,13 +252,16 @@ void translateParametersIntoLocals(is_MethodDeclaration* mD)
 			//TODO: Confirm this.
 			case(is_VOID): break;
 			//TODO: We are limiting strings to 1024 characters.
-			case(is_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			case(is_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n", parCounter); strcpy(typeInString, "(char*)"); break;
 			//TODO: Confirm this.
 			case(is_STRING_ARRAY): break;
 		}
 		
-		fprintf(dest, "(*(%s sp->locals[%d])) = (*(%s sp->parent->outgoing[%d]));\n", typeInString, parCounter, typeInString, parCounter);
-		
+		if (aux->parameter->typeSpecifier->typeName->type != is_STRING)
+			fprintf(dest, "(*(%s sp->locals[%d])) = (*(%s sp->parent->outgoing[%d]));\n", typeInString, parCounter, typeInString, parCounter);
+		else
+			fprintf(dest, "strcpy((%s sp->locals[%d]),(%s sp->parent->outgoing[%d]));\n", typeInString, parCounter, typeInString, parCounter);
+			
 		parCounter++;
 	}
 }
@@ -814,7 +817,16 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 					case(is_STRING_ARRAY): break;
 				}
 				
-				fprintf(dest, "(*(%s sp->parent->returnValue)) = temp%d;\n", typeInString, tOne);
+				if (jS->data_JumpStatement.exp->primType != is_STRING)
+					fprintf(dest, "(*(%s sp->parent->returnValue)) = temp%d;\n", typeInString, tOne);
+				/* We are returning a string. */
+				else
+				{
+					if (tOne >= 0)
+						fprintf(dest, "strcpy((%s sp->parent->returnValue),  temp%d);\n", typeInString, tOne);
+					else
+						fprintf(dest, "strcpy((%s sp->parent->returnValue),  ((char *) sp->locals[%d]));\n", typeInString, -tOne - 1);
+				}
 			}
 			
 			/* Goes directly to the epilogue of current method. */
@@ -1011,10 +1023,19 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 	}
 	else
 	{
-		fprintf(dest, "temp%d[1024]; strcpy(temp%d, temp%d);\n", tempC, tempC, tOne);
+		if (tOne >= 0)
+			fprintf(dest, "temp%d[1024]; strcpy(temp%d, temp%d);\n", tempC, tempC, tOne);
+		else
+			fprintf(dest, "temp%d[1024]; strcpy(temp%d, ((char*) sp->locals[%d]));\n", tempC, tempC, -tOne - 1);
+			
 		/* Make sure we are not printing garbage. */
 		if (aExp->secondAE != NULL)
-			fprintf(dest, "strcat(temp%d, temp%d);\n", tempC, tTwo);
+		{
+			if (tTwo >= 0)
+				fprintf(dest, "strcat(temp%d, temp%d);\n", tempC, tTwo);
+			else
+				fprintf(dest, "strcat(temp%d, ((char*) sp->locals[%d]));\n", tempC, -tTwo -1);
+		}
 	}
 
 	
@@ -1109,7 +1130,7 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 				//TODO: Confirm this.
 				case (s_VOID): break;
 				//TODO: Confirm this.
-				case (s_STRING): fprintf(dest, "strcpy((*(char*) "); strcpy(globalType, "strcpy(*(char*) ");break;
+				case (s_STRING): fprintf(dest, ", ((char*) "); strcpy(globalType, "*(char*) ");break;
 				//TODO: Confirm this.
 				case (s_STRING_ARRAY): break;
 				/* We shouldn't get here. */
@@ -1117,7 +1138,7 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 			}
 
 			/* Print the variable name, meaning its offset in locals of the sp. */
-			fprintf(dest, " sp->locals[%d])", offset);
+			fprintf(dest, " sp->locals[%d]))", offset);
 			
 			break;
 			
@@ -1203,7 +1224,7 @@ int translateMethodCall(is_MethodCall* mC, environmentList *environment)
 		else
 		{
 			int tOne = tempCounter++;
-			fprintf(dest, "%s temp%d[1024];\n strcpy(temp%d, *((%s*) sp->returnValue))", mType, tOne, tOne, mType);
+			fprintf(dest, "%s temp%d[1024];\nstrcpy(temp%d, ((%s*) sp->returnValue))", mType, tOne, tOne, mType);
 		}
 	}
 	
@@ -1243,7 +1264,10 @@ void translatePassParameters(is_MethodCall* mC, environmentList *environment)
 			case(is_STRING_ARRAY): break;
 		}
 		
-		fprintf(dest, "(*(%s sp->outgoing[%d])) = temp%d;\n", typeInString, parCounter, tOne);
+		if (aux->exp->primType != is_STRING)
+			fprintf(dest, "(*(%s sp->outgoing[%d])) = temp%d;\n", typeInString, parCounter, tOne);
+		else
+			fprintf(dest, "strcpy((%s sp->outgoing[%d]), temp%d);\n", typeInString, parCounter, tOne);
 		
 		parCounter++;
 	}

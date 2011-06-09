@@ -14,19 +14,28 @@ int g0;
 /*Main Block */
 sp = (frame*)malloc(sizeof(frame));
 /*Main's body.*/
-char temp0[1024]; temp0[0] = '\0';0;
-int temp2 = 6;
-sp->outgoing[0] = (int*) malloc(sizeof(int));
-(*((int*) sp->outgoing[0])) = temp2;
+sp->locals[1] = (char*) malloc(sizeof(char)*1024);
+char temp0[1024]; strcpy(temp0, "First");
+strcpy(((char*) sp->locals[1]), temp0);
+char temp1[1024]; strcpy(temp1, "Dell ");
+char temp2[1024]; strcpy(temp2, "With!");
+char temp3[1024]; strcpy(temp3, temp1);
+strcat(temp3, temp2);
+strcpy((char*) sp->locals[1], temp3);
+char temp4[1024]; temp4[0] = '\0';0;
+char temp6[1024]; strcpy(temp6, "Fuck");
+sp->outgoing[0] = (char*) malloc(sizeof(char)*1024);
+strcpy(((char*) sp->outgoing[0]), temp6);
 _ra = 0;
 goto factorial;
 return0: ;
-int  temp3 = *((int *) sp->returnValue);
-char temp1[256];
-sprintf(temp1, "%d", temp3);
-strcat(temp0, temp1);
-printf("%s\n", temp0);
-int temp4 = 0;
+char  temp7[1024];
+strcpy(temp7, ((char *) sp->returnValue));
+char temp5[256];
+sprintf(temp5, "%s", temp7);
+strcat(temp4, temp5);
+printf("%s\n", temp4);
+int temp8 = 0;
 goto EPILOGUE_main;
 
 /*METHOD: factorial */
@@ -37,33 +46,16 @@ fp = sp;
 sp = (frame*)malloc(sizeof(frame));
 sp->parent = fp;
 sp->return_address = _ra;
-sp->locals[0] = (int*) malloc(sizeof(int));
-(*((int*) sp->locals[0])) = (*((int*) sp->parent->outgoing[0]));
+sp->locals[0] = (char*) malloc(sizeof(char)*1024);
+strcpy(((char*) sp->locals[0]),((char*) sp->parent->outgoing[0]));
 
 /*Method's body.*/
-int temp5 = (*(int*)  sp->locals[0]);
-int temp6 = 1;
-int temp7 = (*(int*)  sp->locals[0]) > temp6;
-if (!temp7) goto ELSE0;
-int temp8 = 0;
-int temp9 = (*(int*)  sp->locals[0]);
-int temp10 = 1;
-int temp11 = (*(int*)  sp->locals[0]) - temp10;
-sp->outgoing[0] = (int*) malloc(sizeof(int));
-(*((int*) sp->outgoing[0])) = temp11;
-_ra = 1;
-goto factorial;
-return1: ;
-int  temp12 = *((int *) sp->returnValue);
-int temp13 = (*(int*)  sp->locals[0]);
-int temp14 = temp12 * (*(int*)  sp->locals[0]);
-sp->parent->returnValue = (int*) malloc(sizeof(int));
-(*((int*) sp->parent->returnValue)) = temp14;
-goto EPILOGUE_factorial;
-ELSE0: ;
-int temp15 = 1;
-sp->parent->returnValue = (int*) malloc(sizeof(int));
-(*((int*) sp->parent->returnValue)) = temp15;
+char temp9[1024]; strcpy(temp9, ((char*)  sp->locals[0]));
+char temp10[1024]; strcpy(temp10, " Yeah!");
+char temp11[1024]; strcpy(temp11, ((char*) sp->locals[0]));
+strcat(temp11, temp10);
+sp->parent->returnValue = (char*) malloc(sizeof(char)*1024);
+strcpy(((char*) sp->parent->returnValue),  temp11);
 goto EPILOGUE_factorial;
 
 /*Epilogue*/
@@ -78,7 +70,6 @@ factorialskip:
 goto exit;
 redirector:
 if( _ra == 0 ) goto return0;
-if( _ra == 1 ) goto return1;
 EPILOGUE_main: ;
 exit:
 ;

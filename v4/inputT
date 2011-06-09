@@ -4,16 +4,16 @@ public class gcdRrec{
 	
 	public static int main(String [] args)
 	{
-		System.out.println(factorial(6));
+		String a = "First";
+		a = "Dell " + "With!";
+		System.out.println(factorial("Fuck"));
 		
 		return 0;
 	}
 	
-	public static int factorial (int a)
+	public static String factorial (String a)
 	{
-		if (a > 1)
-			return factorial(a-1)*a;
-		return 1;
+		return a + " Yeah!";
 	
 	}
 	
