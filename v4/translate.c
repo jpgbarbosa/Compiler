@@ -416,12 +416,13 @@ int translateConditionalExpression(is_ConditionalExpression* cExp, environmentLi
 	/* Variables to save the numbers of the temporary variables coming
 	 * from each branch.
 	 */
-	int tOne, tTwo;
+	int tOne, tTwo, tThree, tFour, tempIf;
+	char mType[15];
 	 
 	switch(cExp->type)
 	{
 		case (is_UNARY):
-			translateRelationalExpression(cExp->rExpression, environment, isArgument);
+			tFour = translateRelationalExpression(cExp->rExpression, environment, isArgument);
 			break;
 		case (is_UNARY_NOT):
 			fprintf(dest, "! (");
@@ -429,13 +430,51 @@ int translateConditionalExpression(is_ConditionalExpression* cExp, environmentLi
 			fprintf(dest, ")");
 			break;
 		case (is_TRINARY):
-			//TODO: We have to translate this into an if!
-			/*showRelationalExpression(cExp->rExpression, false, false);
-			printf(" ? ");
-			showExpression(cExp->firstExp, false, false);
-			printf(" : ");
-			showExpression(cExp->secondExp, nextLine, isTabs);*/
-			break;
+			tOne = translateRelationalExpression(cExp->rExpression, environment, isArgument);
+			
+			/* Saves the current if counter. */
+			tempIf = ifCounter++;
+			/* The variable that will hold the outcome. */
+			tFour = tempCounter++;
+			
+			/* Gets the returning type of this trinary operator. */
+			switch(cExp->primType)
+			{
+				/* Now, we have to print the right type. */
+				case (is_BOOLEAN): strcpy(mType, "int "); break;
+				case (is_CHAR): strcpy(mType, "char "); break;
+				case (is_BYTE): strcpy(mType, "int "); break;
+				case (is_SHORT): strcpy(mType, "short "); break;
+				case (is_INT): strcpy(mType, "int "); break;
+				case (is_LONG): strcpy(mType, "long "); break;
+				case (is_FLOAT): strcpy(mType, "float "); break;
+				case (is_DOUBLE): strcpy(mType, "double "); break;
+				//TODO: Confirm this.
+				case (is_VOID): break;
+				//TODO: Confirm this.
+				case (is_STRING): strcpy(mType, "char* "); break;
+				//TODO: Confirm this.
+				case (is_STRING_ARRAY): break;
+			}
+			
+			fprintf(dest, "%s temp%d;\n", mType, tFour);
+			
+			fprintf(dest, "if (!temp%d) goto ELSE%d;\n", tOne, tempIf);
+			
+			/* Save the number of the if counter. */
+			tTwo = translateExpression(cExp->firstExp, environment, isArgument);
+			fprintf(dest, "temp%d = temp%d;\n", tFour, tTwo);
+			
+			fprintf(dest, "goto ENDIF%d;\n", tempIf);
+			fprintf(dest, "ELSE%d: ;\n", tempIf);
+			tThree = translateExpression(cExp->secondExp, environment, isArgument);
+			fprintf(dest, "temp%d = temp%d;\n", tFour, tThree);
+			
+			fprintf(dest, "ENDIF%d: ;\n", tempIf);	
+			
+			/* Returns the appropriate temporary variable. */
+			return tFour;
+			
 		case (is_OP_AND):
 			tOne = translateRelationalExpression(cExp->rExpression, environment, isArgument);
 			tTwo = translateConditionalExpression(cExp->next, environment, isArgument);

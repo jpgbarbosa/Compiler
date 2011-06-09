@@ -4,29 +4,18 @@ public class gcdRrec{
 	
 	public static int main(String [] args)
 	{
-	 
-		
-		int i = 2;
-		
-		switch(i)
-		{
-			case 1: System.out.println("First"); System.out.println("First"); break;
-			case 2: System.out.println("Second"); System.out.println("Second"); break;
-			default: System.out.println("Third"); System.out.println("Third"); break;
-		}
-		
-		System.out.println("End");
+		System.out.println(trinary(3));
 		
 		return 0;
 	}
-
 	
-	public static double recursive(int a)
+	public static int trinary(int a)
 	{
-		return 2.0;
-	
+		int b = a > 2 ? 1 : 0;
+		
+		return b;
+		
 	}
-	
 
 }
 

@@ -467,6 +467,7 @@ struct _a28{
 	is_Expression *firstExp;
 	is_Expression *secondExp;
 	environmentList *env;
+	is_PrimitiveType primType;
 	int line;
 	
 } /*is_ConditionalExpression*/;

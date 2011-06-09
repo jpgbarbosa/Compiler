@@ -296,13 +296,19 @@ tableBasicTypes checkConditionalExpression(is_ConditionalExpression* cExp, envir
 	/* If we get here, it must have been a is_TRINARY. */
 	
 	/* In the trinary operator, the returning types are different. */
-	if (typeOne != typeTwo && cExp->type == is_TRINARY)
+	if (cExp->type == is_TRINARY)
 	{
-		//TODO: Maybe print the types.
-		printf("Line %d: The returning values of the trinary operator are inconsistent.\n", cExp->line);
-		errorCount++;
-		/* It will go as an error. */	
-		return s_VOID;
+		if (typeOne != typeTwo)
+		{
+			//TODO: Maybe print the types.
+			printf("Line %d: The returning values of the trinary operator are inconsistent.\n", cExp->line);
+			errorCount++;
+			/* It will go as an error. */	
+			return s_VOID;
+		}
+		/* We save the type of this trinary operation. */
+		cExp->primType = enumInvConverter(typeOne);
+		
 	}
 	else if (typeOne != typeTwo)
 	{
