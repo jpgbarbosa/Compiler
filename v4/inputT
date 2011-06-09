@@ -4,14 +4,17 @@ public class gcdRrec{
 	
 	public static int main(String [] args)
 	{
-		String a = "Hello\n";
-		
-		a = "Hello " + "World!";
-		
-		System.out.println(a);
+		System.out.println(factorial(10));
 		
 		return 0;
 	}
+	
+	public static int factorial (int a)
+	{
+		return a > 1 ? a*factorial (a-1) : 1;
+	
+	}
+	
 
 }
 
