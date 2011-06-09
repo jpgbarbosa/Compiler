@@ -4,17 +4,13 @@ public class gcdRrec{
 	
 	public static int main(String [] args)
 	{
-		System.out.println(trinary(3));
+		String a = "Hello\n";
+		
+		a = "Hello " + "World!";
+		
+		System.out.println(a);
 		
 		return 0;
-	}
-	
-	public static int trinary(int a)
-	{
-		int b = a > 2 ? 1 : 0;
-		
-		return b;
-		
 	}
 
 }

@@ -1,7 +1,7 @@
 public class gcdRrec{
 	static int a, b;
 
-	public static void main(String[] args) {
+	public static int main(String[] args) {
 		int a, b, c = 5;
 		double s = 1.0;
 		int gcd = 5;
@@ -18,30 +18,31 @@ public class gcdRrec{
 		a = 315;
 		b = 1932;
 		
-		System.out.println("Hello", 1);
-
-		for (int i = 0; i < 5; i++)
-			i = 2;
-			
+		
+		
+		int i;	
 		switch (a == 2)
 		{
 			case (a < 4):
 				a = 2;
 				i = 2;
 				break;
-			case 2: return;
+			case 2: return 0;
 		}
 		
 		do{
-			a = 5;
-			a = 2;
+			a += 5;
+			a += 2;
+			i++;
 		}while (i < 5);
 		
 		while (i < 5)
-			continue;
+		{
+			i += 10;
+		}
 		
-		for (a = 0; a < 2; a++){
-			int c;			
+		int k;
+		for (k = 0; k < 2; k++){		
 			b = 2 +2 + c*4;
 			c = 1 * 5 + a - 8;
 			a = (int) 5.0;
@@ -57,11 +58,13 @@ public class gcdRrec{
 		a = (a++);
 		
 		double temp = gcd(1, 2);
-		gcd(1, 2, 3);
+		gcd(1, 2);
 		
-		a = gcd(1,2);
+		a = gcd(3,6);
 		
-		gmds();
+		System.out.println(a);
+		
+		return 0;
 	}
 	
 	public static int gcd(int a, int b) {

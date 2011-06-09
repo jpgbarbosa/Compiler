@@ -7,6 +7,9 @@
 #include "semantics.h"
 #include "translate.h"
 
+/* We assume that strings won't be larger than 1024 characters */
+#define MAX_STRING_SIZE 1024
+
 extern progEnv *pEnv;
 /* This variable is used to track the current active method. Its value
  * will be used when we execute a return, to jump directly to the method
@@ -243,8 +246,8 @@ void translateParametersIntoLocals(is_MethodDeclaration* mD)
 			case(is_DOUBLE): fprintf(dest, "sp->locals[%d] = (double*) malloc(sizeof(double));\n", parCounter); strcpy(typeInString, "(int*)"); break;
 			//TODO: Confirm this.
 			case(is_VOID): break;
-			//TODO: We are limiting strings to 255 characters.
-			case(is_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*256);\n", parCounter); strcpy(typeInString, "(int*)"); break;
+			//TODO: We are limiting strings to 1024 characters.
+			case(is_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n", parCounter); strcpy(typeInString, "(int*)"); break;
 			//TODO: Confirm this.
 			case(is_STRING_ARRAY): break;
 		}
@@ -343,8 +346,8 @@ void translateVariablesDeclarator(is_VariablesDeclarator* vD, is_TypeSpecifier *
 		case(is_DOUBLE): fprintf(dest, "sp->locals[%d] = (double*) malloc(sizeof(double));\n", offset); strcpy(typeInString, "(double*)"); break;
 		//TODO: Confirm this.
 		case(is_VOID): break;
-		//TODO: We are limiting strings to 255 characters.
-		case(is_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*256);\n", offset); strcpy(typeInString, "(char*)"); break;
+		//TODO: We are limiting strings to 1024 characters.
+		case(is_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n", offset); strcpy(typeInString, "(char*)"); break;
 		//TODO: Confirm this.
 		case(is_STRING_ARRAY): break;
 	}
@@ -353,7 +356,11 @@ void translateVariablesDeclarator(is_VariablesDeclarator* vD, is_TypeSpecifier *
 	if (vD->expression != NULL)
 	{
 		tOne = translateExpression(vD->expression, environment, false);
-		fprintf(dest, "(*(%s sp->locals[%d])) = temp%d;\n", typeInString, offset, tOne);
+		/* We have to deal differently with strings and all the other types. */
+		if (tS->typeName->type != is_STRING)
+			fprintf(dest, "(*(%s sp->locals[%d])) = temp%d;\n", typeInString, offset, tOne);
+		else
+			fprintf(dest, "strcpy((%s sp->locals[%d]), temp%d);\n", typeInString, offset, tOne);
 	}
 		
 }
@@ -559,20 +566,16 @@ int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList
 				fprintf(dest, " >>= ");
 				break;
 		}
-		fprintf(dest, "temp%d", tOne);
+		fprintf(dest, "temp%d;\n", tOne);
 	}
 	
 	/* If it's a string, we are using strcpy, so we need to properly close
 	 * the parenthesis.
 	 */
-	else if (search->type != s_STRING)
+	else if (search->type == s_STRING)
 	{
-		fprintf(dest, "temp%d", tOne);
-		translateExpression(aExp->expression, environment, isArgument);
-		fprintf(dest, ")\n");
+		fprintf(dest, "temp%d);\n", tOne);
 	}
-	
-	fprintf(dest, ";\n");
 	
 	/* This value shouldn't be used anywhere. */
 	return -1;
@@ -800,8 +803,8 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 					case(is_DOUBLE): fprintf(dest, "sp->parent->returnValue = (double*) malloc(sizeof(double));\n"); strcpy(typeInString, "(double*)"); break;
 					//TODO: Confirm this.
 					case(is_VOID): break;
-					//TODO: We are limiting strings to 255 characters.
-					case(is_STRING): fprintf(dest, "sp->parent->returnValue = (char*) malloc(sizeof(char)*256);\n"); strcpy(typeInString, "(char*)"); break;
+					//TODO: We are limiting strings to 1024 characters.
+					case(is_STRING): fprintf(dest, "sp->parent->returnValue = (char*) malloc(sizeof(char)*1024);\n"); strcpy(typeInString, "(char*)"); break;
 					//TODO: Confirm this.
 					case(is_STRING_ARRAY): break;
 				}
@@ -899,7 +902,13 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 			{
 				/* Print the type of the temporary variable. */
 				translateTypeSpecifier(aExp->primType, false);
-				fprintf(dest, "temp%d = ", tempCounter++);
+				if (aExp->primType != is_STRING)
+					fprintf(dest, "temp%d = ", tempCounter++);
+				else
+				{
+					int tempC = tempCounter++;
+					fprintf(dest, "temp%d[1024]; strcpy(temp%d", tempC, tempC);
+				}
 				translateCastExpression(aExp->cExpression, environment, isArgument);
 				fprintf(dest, ";\n");
 			}
@@ -934,44 +943,58 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 	 * two arithmetic expressions.
 	 */
 	translateTypeSpecifier(aExp->primType, false);
-	fprintf(dest, "temp%d = temp%d", tempCounter++, tOne);
 	
-	/* Prints the correct operator. */
-	switch(aExp->op)
+	int tempC = tempCounter++;
+	
+	if (aExp->primType != is_STRING)
 	{
-		case (is_PLUS):
-			fprintf(dest, " + ");
-			break;
-		case (is_MINUS):
-			fprintf(dest, " - ");
-			break;
-		case (is_SLASH):
-			fprintf(dest, " / ");
-			break;
-		case (is_TIMES):
-			fprintf(dest, " * ");
-			break;
-		case (is_MODULO):
-			fprintf(dest, " %c ", tempChar);
-			break;
-		case (is_OP_SHL):
-			fprintf(dest, " << ");
-			break;
-		case (is_OP_SHR):
-			fprintf(dest, " >> ");
-			break;
-		case (is_PARENTHESIS):
-			fprintf(dest, ";\n");
-			break;
-		case (is_AE_NONE):
-			fprintf(dest, ";\n");
-			break;
-			
+		fprintf(dest, "temp%d = temp%d", tempC, tOne);
+		
+		/* Prints the correct operator. */
+		switch(aExp->op)
+		{
+			case (is_PLUS):
+				fprintf(dest, " + ");
+				break;
+			case (is_MINUS):
+				fprintf(dest, " - ");
+				break;
+			case (is_SLASH):
+				fprintf(dest, " / ");
+				break;
+			case (is_TIMES):
+				fprintf(dest, " * ");
+				break;
+			case (is_MODULO):
+				fprintf(dest, " %c ", tempChar);
+				break;
+			case (is_OP_SHL):
+				fprintf(dest, " << ");
+				break;
+			case (is_OP_SHR):
+				fprintf(dest, " >> ");
+				break;
+			case (is_PARENTHESIS):
+				fprintf(dest, ";\n");
+				break;
+			case (is_AE_NONE):
+				fprintf(dest, ";\n");
+				break;
+				
+		}
+		
+		/* Make sure we are not printing garbage. */
+		if (aExp->secondAE != NULL)
+			fprintf(dest, "temp%d;\n", tTwo);
 	}
-	
-	/* Make sure we are not printing garbage. */
-	if (aExp->secondAE != NULL)
-		fprintf(dest, "temp%d;\n", tTwo);
+	else
+	{
+		fprintf(dest, "temp%d[1024]; strcpy(temp%d, temp%d);\n", tempC, tempC, tOne);
+		/* Make sure we are not printing garbage. */
+		if (aExp->secondAE != NULL)
+			fprintf(dest, "strcat(temp%d, temp%d);\n", tempC, tTwo);
+	}
+
 	
 	return tempCounter - 1;
 }
@@ -981,9 +1004,9 @@ void translateCastExpression(is_CastExpression* cExp, environmentList *environme
 	/* Prints the cast type if applicable. */
 	if (cExp->castType != NULL)
 	{
-		printf(" ( ");
-		translateTypeSpecifier(cExp->castType->typeName->type, true);
-		printf(") ");
+		fprintf(dest, " ( ");
+		translateTypeSpecifier(cExp->castType->typeName->type, false);
+		fprintf(dest, ") ");
 	}
 	
 	switch(cExp->disc_d)
@@ -1062,7 +1085,7 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 				//TODO: Confirm this.
 				case (s_VOID): break;
 				//TODO: Confirm this.
-				case (s_STRING): fprintf(dest, "(*(char*) "); break;
+				case (s_STRING): fprintf(dest, "strcpy((*(char*) "); break;
 				//TODO: Confirm this.
 				case (s_STRING_ARRAY): break;
 				/* We shouldn't get here. */
@@ -1075,7 +1098,7 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 			break;
 			
 		case (is_LITERAL):
-			fprintf(dest, "\"%s\"", bE->data_BasicElement.name);
+			fprintf(dest, ", %s)", bE->data_BasicElement.name);
 			break;
 		case (is_TRUE):
 			fprintf(dest, "1");
@@ -1144,13 +1167,20 @@ int translateMethodCall(is_MethodCall* mC, environmentList *environment)
 			case(is_FLOAT): strcpy(mType, "float "); break;
 			case(is_DOUBLE): strcpy(mType, "double "); break;
 			//TODO: We are limiting strings to 255 characters.
-			case(is_STRING): strcpy(mType, "char * "); break;
+			case(is_STRING): strcpy(mType, "char "); break;
 			//TODO: Confirm this.
 			case(is_STRING_ARRAY): break;
 			/* Shouldn't get here. */
 			default: break;
 		}
-		fprintf(dest, "%s temp%d = *((%s*) sp->returnValue)", mType, tempCounter++, mType);
+		
+		if (element->type != is_STRING)
+			fprintf(dest, "%s temp%d = *((%s*) sp->returnValue)", mType, tempCounter++, mType);
+		else
+		{
+			int tOne = tempCounter++;
+			fprintf(dest, "%s temp%d[1024];\n strcpy(temp%d, *((%s*) sp->returnValue))", mType, tOne, tOne, mType);
+		}
 	}
 	
 	returnCounter++;
@@ -1183,8 +1213,8 @@ void translatePassParameters(is_MethodCall* mC, environmentList *environment)
 			case(is_DOUBLE): fprintf(dest, "sp->outgoing[%d] = (double*) malloc(sizeof(double));\n", parCounter); strcpy(typeInString, "(double*)"); break;
 			//TODO: Confirm this.
 			case(is_VOID): break;
-			//TODO: We are limiting strings to 255 characters.
-			case(is_STRING): fprintf(dest, "sp->outgoing[%d] = (char*) malloc(sizeof(char)*256);\n", parCounter); strcpy(typeInString, "(char*)"); break;
+			//TODO: We are limiting strings to 1024 characters.
+			case(is_STRING): fprintf(dest, "sp->outgoing[%d] = (char*) malloc(sizeof(char)*1024);\n", parCounter); strcpy(typeInString, "(char*)"); break;
 			//TODO: Confirm this.
 			case(is_STRING_ARRAY): break;
 		}
@@ -1226,7 +1256,7 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 	{
 		/* We are assuming that strings won't be larger than 1024 characters. */
 		helpTemp = tempCounter++;
-		fprintf(dest, "char temp%d[1025]; temp%d[0] = '\\0';", helpTemp, helpTemp);
+		fprintf(dest, "char temp%d[1024]; temp%d[0] = '\\0';", helpTemp, helpTemp);
 		
 		/* Now, prints all the arguments. */
 		for (exps = p->printExps; exps != NULL; exps = exps->next)
@@ -1260,7 +1290,7 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 						case(is_FLOAT): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; strcpy(mType, "float* "); break;
 						case(is_DOUBLE): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; strcpy(mType, "double* "); break;
 						//TODO: We are limiting strings to 255 characters.
-						case(is_STRING): strTemp[0] = '%'; strTemp[1] = 's'; strTemp[2] = '\0'; strcpy(mType, "char** "); break;
+						case(is_STRING): strTemp[0] = '%'; strTemp[1] = 's'; strTemp[2] = '\0'; strcpy(mType, "char* "); break;
 						//TODO: Confirm this.
 						case(is_STRING_ARRAY): break;
 						/* Shouldn't get here. */
@@ -1269,7 +1299,11 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 					
 					/* Prints the value of this identifier. */
 					tTwo = tempCounter++;
-					fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%s\", *((%s) sp->locals[%d]));\n", tTwo, tTwo, strTemp, mType, offset);
+					if (search->type != is_STRING)
+						fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%s\", *((%s) sp->locals[%d]));\n", tTwo, tTwo, strTemp, mType, offset);
+					else
+						fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%s\", ((%s) sp->locals[%d]));\n", tTwo, tTwo, strTemp, mType, offset);
+					
 					fprintf(dest, "strcat(temp%d, temp%d);\n", helpTemp, tTwo);
 					
 					break;
@@ -1363,8 +1397,8 @@ void translateTypeSpecifier(is_PrimitiveType type, bool isPointer)
 			case (is_FLOAT): fprintf(dest, "float *"); break;
 			case (is_DOUBLE): fprintf(dest, "double *"); break;
 			case (is_VOID): fprintf(dest, "void *"); break;
-			case (is_STRING): fprintf(dest, "char **"); break;
-			case (is_STRING_ARRAY): fprintf(dest, "char ***"); break;
+			case (is_STRING): fprintf(dest, "char *"); break;
+			case (is_STRING_ARRAY): break;
 		}
 	}
 	else
@@ -1381,8 +1415,8 @@ void translateTypeSpecifier(is_PrimitiveType type, bool isPointer)
 			case (is_FLOAT): fprintf(dest, "float "); break;
 			case (is_DOUBLE): fprintf(dest, "double "); break;
 			case (is_VOID): fprintf(dest, "void "); break;
-			case (is_STRING): fprintf(dest, "char *"); break;
-			case (is_STRING_ARRAY): fprintf(dest, "char **"); break;
+			case (is_STRING): fprintf(dest, "char "); break;
+			case (is_STRING_ARRAY): break;
 		}
 
 	}
