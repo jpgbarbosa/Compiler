@@ -1,0 +1,79 @@
+public class gcdRrec{
+	static int a, b;
+
+	public static void main(String[] args) {
+		int a, b, c = 5;
+		double s = 1.0;
+		int i;
+		
+		s = 1;
+		
+		a = (2 + 2);
+		
+		/* We have an error for:
+		 * a = (gcd() + 2) + 2;
+		 */
+		a = gcd(1, 2);
+		
+		a = 315;
+		b = 1932;
+		
+		System.out.println("Hello", 1);
+
+		for (i = 0; i < 5; i++)
+			i = 2;
+			
+		switch (a == 2)
+		{
+			case (a < 4):
+				a = 2;
+				i = 2;
+				break;
+			case 2: return;
+		}
+		
+		do{
+			a = 5;
+			a = 2;
+		}while (i < 5);
+		
+		while (i < 5)
+			continue;
+		
+		for (a = 0; a < 2; a++){
+			int c;			
+			b = 2 +2 + c*4;
+			c = 1 * 5 + a - 8;
+			a = (int) 5.0;
+			a >>= 5;
+			b = c << 5;
+		}
+
+		if (a == 2 && b > 4){
+			a = 2;
+			a = b;
+		}
+			
+		a = (a++);
+		
+		double temp = gcd(1, 2);
+		gcd(1, 2, 3);
+		
+		a = gcd(1,2);
+		
+		gmds();
+	}
+	
+	public static int gcd(int a, int b) {
+		if (  a == b || b == 0)
+			return a;
+		else if (   a ==    0  )
+			return b;
+		else if (a > b)
+			return gcd(a % b, b);
+		else /* b < a W*/
+			return gcd(a, b % a);
+	}
+
+}
+

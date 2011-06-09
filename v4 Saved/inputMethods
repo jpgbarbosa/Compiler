@@ -1,0 +1,15 @@
+public class gcdRrec{
+
+	public static int method(boolean x){
+	}
+
+	public static int method(int x){
+	}
+	/* ola */
+	public static void main(String[] args) {
+			/* ola */
+	}
+	/* ola */
+
+}
+

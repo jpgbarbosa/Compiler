@@ -23,9 +23,9 @@ int translateSelectionStatement(is_SelectionStatement* sS, environmentList *envi
 int translateIterationStatement(is_IterationStatement* iS, environmentList *environment);
 void translateJumpStatement(is_JumpStatement* jS, environmentList *environment);
 int translateRelationalExpression(is_RelationalExpression* rExp, environmentList *environment, bool isArgument);
-int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment, bool isArgument);
-int translateCastExpression(is_CastExpression* cExp, environmentList *environment, bool isArgument);
-int translateUnaryExpression(is_UnaryExpression* uE, environmentList *environment);
+int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment, bool isArgument, bool isID);
+void translateCastExpression(is_CastExpression* cExp, environmentList *environment, bool isArgument);
+void translateUnaryExpression(is_UnaryExpression* uE, environmentList *environment);
 void translateBasicElement(is_BasicElement* bE, environmentList *environment);
 int translateMethodCall(is_MethodCall* mC, environmentList *environment);
 void translatePassParameters(is_MethodCall* mC, environmentList *environment);

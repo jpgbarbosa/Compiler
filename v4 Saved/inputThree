@@ -1,0 +1,18 @@
+public class gcdRrec{
+	static int a, b;
+
+	public static void main(String[] args) {
+
+		method();
+	}
+	
+	public static int method(int a) {
+		return 5;
+	}
+	
+	public static int method2(int a) {
+		
+	}
+
+}
+

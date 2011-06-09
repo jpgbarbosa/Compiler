@@ -10,11 +10,6 @@
 /* We assume that strings won't be larger than 1024 characters */
 #define MAX_STRING_SIZE 1024
 
-/* For when we are using a identifier, we need to know the
- * type of the identifier.
- */
-char globalType[30];
-
 extern progEnv *pEnv;
 /* This variable is used to track the current active method. Its value
  * will be used when we execute a return, to jump directly to the method
@@ -838,7 +833,7 @@ int translateRelationalExpression(is_RelationalExpression* rExp, environmentList
 	 */
 	int tOne, tTwo;
 	/* First, find the outcome of the first arithmetic expression. */
-	tOne = translateArithmeticExpression(rExp->aExpression, environment, isArgument);
+	tOne = translateArithmeticExpression(rExp->aExpression, environment, isArgument, false);
 		
 	/* We have another expression, meaning that we also have an operator
 	 * in between.
@@ -846,13 +841,8 @@ int translateRelationalExpression(is_RelationalExpression* rExp, environmentList
 	if (rExp->next != NULL)
 	{
 		tTwo = translateRelationalExpression(rExp->next, environment, isArgument);
-		/* We are not using an ID. */
-		if (tOne >= 0)
-			fprintf(dest, "int temp%d = temp%d", tempCounter++, tOne);
-		/* It's an ID, so we won't use temporary variables. */
-		else
-			fprintf(dest, "int temp%d = (%s sp->locals[%d])", tempCounter++, globalType, -tOne - 1);
-			
+		fprintf(dest, "int temp%d = temp%d", tempCounter++, tOne);
+		
 		/* Prints the correct operator. */
 		switch(rExp->op)
 		{
@@ -893,23 +883,37 @@ int translateRelationalExpression(is_RelationalExpression* rExp, environmentList
 	return tempCounter - 1;
 }
 
-int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment, bool isArgument)
+int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList *environment, bool isArgument, bool isID)
 {
 	/* We have to use otherwise we will have troubles in the printf. */
 	char tempChar = '%';
-	int outcome;
+	bool isFirstID = false, isSecondID = false;
+	int tempC;
 	
 	/* This is a cast expression and consequently, we have to stop the 
 	 * recursive calls.
 	 */
 	if (aExp->cExpression != NULL)
 	{
+		if (is_ID)
+			{
+					printf("Good\n");
+			}
+			
 		if (!isArgument)
 		{
+			if (is_ID)
+			{
+				fprintf(dest, "IS ID!!!   ");
+				translateCastExpression(aExp->cExpression, environment, isArgument);
+				fprintf(dest, ";\n");
+				
+				return -1;
+			}
 			/* If the type of the expression isn't void, we have to
 			 * attribute the value of the expression to some variable.
 			 */
-			if (aExp->primType != is_VOID)
+			else if (aExp->primType != is_VOID)
 			{
 				/* Print the type of the temporary variable. */
 				translateTypeSpecifier(aExp->primType, false);
@@ -920,7 +924,7 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 					int tempC = tempCounter++;
 					fprintf(dest, "temp%d[1024]; strcpy(temp%d", tempC, tempC);
 				}
-				outcome = translateCastExpression(aExp->cExpression, environment, isArgument);
+				translateCastExpression(aExp->cExpression, environment, isArgument);
 				fprintf(dest, ";\n");
 			}
 			/* It's void, so we won't be assigning the outcome to any variable. */
@@ -932,40 +936,64 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 		}
 		else
 		{
-			outcome = translateCastExpression(aExp->cExpression, environment, isArgument);
+			translateCastExpression(aExp->cExpression, environment, isArgument);
 		}
-		
-		if (outcome < 0)
-			return outcome;
 		return tempCounter - 1;
 	} 
 	 
 	/* Saves the values of the temporary expressions. */
 	int tOne, tTwo; 
 	 
+	/* We have to verify in this arithmetic expression is going to be translated into an ID.
+	 * If yes, than we have to print directly the value from the locals, without passing by
+	 * a temporary variable. Otherwise, we will have troubles at some recursive functions.
+	 */
+	 if (aExp->firstAE != NULL && aExp->firstAE->cExpression != NULL 
+			&& aExp->firstAE->cExpression->disc_d == d_UnaryExpression
+				&& aExp->firstAE->cExpression->data_CastExpression.unaryExpression->element->disc_d == is_ID)
+	 {
+		 printf("Good\n");
+		isFirstID = true;
+	 }
+	 /* The same for the second expression. */
+	 if (aExp->secondAE != NULL && aExp->secondAE->cExpression != NULL 
+			&& aExp->secondAE->cExpression->disc_d == d_UnaryExpression
+				&& aExp->secondAE->cExpression->data_CastExpression.unaryExpression->element->disc_d == is_ID)
+	 {
+		isSecondID = true;
+	 }
+	 
 	/* If there are more arithmetic expressions on the chain, we have to
 	 * print them.
 	 */
-	if (aExp->firstAE != NULL)
-		tOne = translateArithmeticExpression(aExp->firstAE, environment, isArgument);
+	if (aExp->firstAE != NULL && !isFirstID)
+		tOne = translateArithmeticExpression(aExp->firstAE, environment, isArgument, isFirstID);
+	else if (aExp->firstAE != NULL && isFirstID)
+	{
+		tempC = tempCounter++;
+		translateTypeSpecifier(aExp->primType, false);
+		fprintf(dest, "temp%d = ", tempC);
+		tOne = translateArithmeticExpression(aExp->firstAE, environment, isArgument, isFirstID);
+	}
 	
 	/* Same as above. */
-	if (aExp->secondAE != NULL)
-		tTwo = translateArithmeticExpression(aExp->secondAE, environment, isArgument);
+	if (aExp->secondAE != NULL && !isSecondID)
+		tTwo = translateArithmeticExpression(aExp->secondAE, environment, isArgument, isSecondID);
 		
 	/* Now, create another temporary variable to save the joint of the
 	 * two arithmetic expressions.
 	 */
 	translateTypeSpecifier(aExp->primType, false);
 	
-	int tempC = tempCounter++;
+	
 	
 	if (aExp->primType != is_STRING)
 	{
-		if (tOne >= 0)
+		if (!isFirstID)
+		{
+			tempC = tempCounter++;
 			fprintf(dest, "temp%d = temp%d", tempC, tOne);
-		else
-			fprintf(dest, "temp%d = (%s sp->locals[%d])", tempC, globalType, -tOne - 1);
+		}
 		
 		/* Prints the correct operator. */
 		switch(aExp->op)
@@ -1001,13 +1029,10 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 		}
 		
 		/* Make sure we are not printing garbage. */
-		if (aExp->secondAE != NULL)
-		{
-			if (tTwo >= 0)
-				fprintf(dest, "temp%d;\n", tTwo);
-			else
-				fprintf(dest, "(%s sp->locals[%d]);\n", globalType, -tTwo - 1);
-		}
+		if (aExp->secondAE != NULL && !isSecondID)
+			fprintf(dest, "temp%d;\n", tTwo);
+		else if (aExp->secondAE != NULL && isSecondID)
+			translateArithmeticExpression(aExp->secondAE, environment, isArgument, isSecondID);
 	}
 	else
 	{
@@ -1021,7 +1046,7 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 	return tempCounter - 1;
 }
 
-int translateCastExpression(is_CastExpression* cExp, environmentList *environment, bool isArgument)
+void translateCastExpression(is_CastExpression* cExp, environmentList *environment, bool isArgument)
 {
 	/* Prints the cast type if applicable. */
 	if (cExp->castType != NULL)
@@ -1034,17 +1059,18 @@ int translateCastExpression(is_CastExpression* cExp, environmentList *environmen
 	switch(cExp->disc_d)
 	{
 		case (d_UnaryExpression):
-			return translateUnaryExpression(cExp->data_CastExpression.unaryExpression, environment);
+			translateUnaryExpression(cExp->data_CastExpression.unaryExpression, environment);
+			break;
 		case (d_AssignmentExpression):
-			return translateAssignmentExpression(cExp->data_CastExpression.assignmentExpression, environment, isArgument);
+			translateAssignmentExpression(cExp->data_CastExpression.assignmentExpression, environment, isArgument);
+			break;
 		case (d_ConditionalExpression):
-			return translateConditionalExpression(cExp->data_CastExpression.conditionalExpression, environment, isArgument);
+			translateConditionalExpression(cExp->data_CastExpression.conditionalExpression, environment, isArgument);
+			break;
 	}
-	
-	return 0;
 }
 
-int translateUnaryExpression(is_UnaryExpression* uE, environmentList *environment)
+void translateUnaryExpression(is_UnaryExpression* uE, environmentList *environment)
 {	
 	switch(uE->op)
 	{
@@ -1073,10 +1099,7 @@ int translateUnaryExpression(is_UnaryExpression* uE, environmentList *environmen
 			break;
 	}
 	
-	if (uE->element->disc_d == is_ID)
-		return -(searchSymbolLocal(uE->element->data_BasicElement.name, environment)->offset + 1);
-	else
-		return 0;
+	return;
 }
 
 
@@ -1098,18 +1121,18 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 			switch (search->type)
 			{
 				/* Now, we have to print the right type. */
-				case (s_BOOLEAN): fprintf(dest, "(*(int*) "); strcpy(globalType, "*(int*) "); break;
-				case (s_CHAR): fprintf(dest, "(*(char*) "); strcpy(globalType, "*(char*) ");break;
-				case (s_BYTE): fprintf(dest, "(*(int*) "); strcpy(globalType, "*(int*) ");break;
-				case (s_SHORT): fprintf(dest, "(*(short*) "); strcpy(globalType, "*(short*) ");break;
-				case (s_INT): fprintf(dest, "(*(int*) "); strcpy(globalType, "*(int*) ");break;
-				case (s_LONG): fprintf(dest, "(*(long*) "); strcpy(globalType, "*(long*) ");break;
-				case (s_FLOAT): fprintf(dest, "(*(float*) "); strcpy(globalType, "*(float*) ");break;
-				case (s_DOUBLE): fprintf(dest, "(*(double*) "); strcpy(globalType, "*(double*) ");break;
+				case (s_BOOLEAN): fprintf(dest, "(*(int*) "); break;
+				case (s_CHAR): fprintf(dest, "(*(char*) "); break;
+				case (s_BYTE): fprintf(dest, "(*(int*) "); break;
+				case (s_SHORT): fprintf(dest, "(*(short*) "); break;
+				case (s_INT): fprintf(dest, "(*(int*) "); break;
+				case (s_LONG): fprintf(dest, "(*(long*) "); break;
+				case (s_FLOAT): fprintf(dest, "(*(float*) "); break;
+				case (s_DOUBLE): fprintf(dest, "(*(double*) "); break;
 				//TODO: Confirm this.
 				case (s_VOID): break;
 				//TODO: Confirm this.
-				case (s_STRING): fprintf(dest, "strcpy((*(char*) "); strcpy(globalType, "strcpy(*(char*) ");break;
+				case (s_STRING): fprintf(dest, "strcpy((*(char*) "); break;
 				//TODO: Confirm this.
 				case (s_STRING_ARRAY): break;
 				/* We shouldn't get here. */
