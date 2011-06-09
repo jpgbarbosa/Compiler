@@ -1,20 +1,12 @@
 public class gcdRrec{
 	
-	static int aL;
+	static String aL = "Hello World";
 	
 	public static int main(String [] args)
 	{
-		String a = "First";
-		a = "Dell " + "With!";
-		System.out.println(factorial("Fuck"));
+		System.out.println(aL);
 		
 		return 0;
-	}
-	
-	public static String factorial (String a)
-	{
-		return a + " Yeah!";
-	
 	}
 	
 

@@ -156,6 +156,10 @@ void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, 
 		printf("Line %d: There's already a symbol with that name ('%s')!\n", vD->line, vD->id);
 		errorCount++;
 	}
+	else if (isGlobal)
+	{
+		new->exp = vD->expression;
+	}
 	
 	/* It is initialiazed. */
 	if (vD->expression != NULL)

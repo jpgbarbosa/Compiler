@@ -10,37 +10,6 @@ typedef struct _t1 tableElement;
 typedef struct _t4 environmentList;
 typedef struct _t5 progEnv;
 
-struct _t1
-{
-	char name[256];
-	tableBasicTypes type;
-	tableElement* next;
-	/* Only for variables. */
-	
-	bool isMethod;
-	int offset;
-	/* Only for methods. We limit the number of parameters to 32. */
-	tableBasicTypes parameters[32];
-	int noParameters;
-
-} /* tableElement */;
-
-
-struct _t4{
-	tableElement *locals;
-	environmentList *parent;
-	/* Only for methods. */
-	char name[256];
-	tableBasicTypes returnType;
-	environmentList *next;
-} /* environmentList */;
-
-struct _t5{
-	environmentList* globalTable;
-	environmentList* methods;
-} /* progEnv */;
-
-
 #define MAX_SIZE 256
 typedef struct _a1 is_AssignmentExpression;
 typedef struct _a2 is_Typename;
@@ -77,6 +46,38 @@ typedef struct _a32 is_SelectionStatement;
 typedef struct _a33 is_ForInit;
 typedef struct _a34 is_SystemOutPrintln;
 typedef struct _a35 is_PrintExpressions_list;
+
+struct _t1
+{
+	char name[256];
+	tableBasicTypes type;
+	tableElement* next;
+	/* Only for variables global. */
+	is_Expression *exp;
+	bool isMethod;
+	int offset;
+	/* Only for methods. We limit the number of parameters to 32. */
+	tableBasicTypes parameters[32];
+	int noParameters;
+
+} /* tableElement */;
+
+
+struct _t4{
+	tableElement *locals;
+	environmentList *parent;
+	/* Only for methods. */
+	char name[256];
+	tableBasicTypes returnType;
+	environmentList *next;
+} /* environmentList */;
+
+struct _t5{
+	environmentList* globalTable;
+	environmentList* methods;
+} /* progEnv */;
+
+
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 typedef enum {is_ID, is_LITERAL, is_METHOD_CALL, is_TRUE, is_FALSE, is_INTEGER, is_FLOATPOINT, is_PRINTLN} disc_BasicElement;

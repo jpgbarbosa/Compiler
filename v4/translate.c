@@ -55,7 +55,6 @@ void translateProgramFile(is_ProgramFile* pF)
 	
 	/* Now, we have to call some functions to start writing the final code. */
 	translateHeader();
-	translateGlobalVariables();
 	/* We start by translating the method main and then only the other methods.
 	 * We have to make a special step for the main method because we are not
 	 * assuring that the user places the method at the top of all others.
@@ -165,6 +164,9 @@ void translateMain(is_MethodDeclaration* mainDecl)
 	fprintf(dest, "\n/*Main Block */\n");
 	fprintf(dest, "sp = (frame*)malloc(sizeof(frame));\n");
 
+	/* The global variables. */
+	translateGlobalVariables();
+	
 	/* Now, goes for the rest of the main... */
 	fprintf(dest, "/*Main's body.*/\n");
 	translateBlock(mainDecl->block, eL);
@@ -251,7 +253,7 @@ void translateParametersIntoLocals(is_MethodDeclaration* mD)
 			case(is_DOUBLE): fprintf(dest, "sp->locals[%d] = (double*) malloc(sizeof(double));\n", parCounter); strcpy(typeInString, "(int*)"); break;
 			//TODO: Confirm this.
 			case(is_VOID): break;
-			//TODO: We are limiting strings to 1024 characters.
+			/* We are limiting strings to 1024 characters. */
 			case(is_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n", parCounter); strcpy(typeInString, "(char*)"); break;
 			//TODO: Confirm this.
 			case(is_STRING_ARRAY): break;
@@ -268,30 +270,38 @@ void translateParametersIntoLocals(is_MethodDeclaration* mD)
 
 void translateGlobalVariablesDeclarator(tableElement* element, bool isGlobal)
 {
-	/* This is used to distinguish local from global variables. */
-	char varScope[2];
-	int offset = element->offset;
-	
-	if (isGlobal)
-		varScope[0] = 'g';
-	else
-		varScope[0] = 'l';
-	varScope[1] = '\0';
+	int offset = element->offset, tOne;
+	char typeInString[25];
 		
 	/* Declaration of variables according to their type. */
 	switch(element->type)
 	{
-		case s_BOOLEAN:	fprintf(dest, "int %s%d;\n", varScope, offset); break;
-		case s_CHAR:	fprintf(dest, "char %s%d;\n", varScope, offset); break;
-		case s_SHORT:	fprintf(dest, "short %s%d;\n", varScope, offset); break;
-		case s_INT:		fprintf(dest, "int %s%d;\n", varScope, offset); break;
-		case s_LONG:	fprintf(dest, "long %s%d;\n", varScope, offset); break;
-		case s_FLOAT:	fprintf(dest, "float %s%d;\n", varScope, offset); break;
-		case s_DOUBLE:	fprintf(dest, "double %s%d;\n", varScope, offset); break;
-		case s_VOID:	fprintf(dest, "void %s%d;\n", varScope, offset); break;
-		
-		//TODO: There are still Strings and string arrays!
+		case(s_BOOLEAN): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
+		case(s_CHAR): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char));\n", offset); strcpy(typeInString, "(char*)"); break;
+		case(s_BYTE): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
+		case(s_SHORT): fprintf(dest, "sp->locals[%d] = (short*) malloc(sizeof(short));\n", offset); strcpy(typeInString, "(short*)"); break;
+		case(s_INT): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
+		case(s_LONG): fprintf(dest, "sp->locals[%d] = (long*) malloc(sizeof(long));\n", offset); strcpy(typeInString, "(long*)"); break;
+		case(s_FLOAT): fprintf(dest, "sp->locals[%d] = (float*) malloc(sizeof(float));\n", offset); strcpy(typeInString, "(float*)"); break;
+		case(s_DOUBLE): fprintf(dest, "sp->locals[%d] = (double*) malloc(sizeof(double));\n", offset); strcpy(typeInString, "(double*)"); break;
+		//TODO: Confirm this.
+		case(s_VOID): break;
+		/* We are limiting strings to 1024 characters. */
+		case(s_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n", offset); strcpy(typeInString, "(char*)"); break;
+		//TODO: Confirm this.
+		case(s_STRING_ARRAY): break;
 		default:break;
+	}
+	
+	/* If it is initialized, we have to take action. */
+	if (element->exp != NULL)
+	{
+		tOne = translateExpression(element->exp, pEnv->globalTable, false);
+		/* We have to deal differently with strings and all the other types. */
+		if (element->type != s_STRING)
+			fprintf(dest, "(*(%s sp->locals[%d])) = temp%d;\n", typeInString, offset, tOne);
+		else
+			fprintf(dest, "strcpy((%s sp->locals[%d]), temp%d);\n", typeInString, offset, tOne);
 	}
 
 	return;
@@ -354,7 +364,7 @@ void translateVariablesDeclarator(is_VariablesDeclarator* vD, is_TypeSpecifier *
 		case(is_DOUBLE): fprintf(dest, "sp->locals[%d] = (double*) malloc(sizeof(double));\n", offset); strcpy(typeInString, "(double*)"); break;
 		//TODO: Confirm this.
 		case(is_VOID): break;
-		//TODO: We are limiting strings to 1024 characters.
+		/* We are limiting strings to 1024 characters. */
 		case(is_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n", offset); strcpy(typeInString, "(char*)"); break;
 		//TODO: Confirm this.
 		case(is_STRING_ARRAY): break;
@@ -1379,7 +1389,6 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 							case(is_LONG): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; break;
 							case(is_FLOAT): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; break;
 							case(is_DOUBLE): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; break;
-							//TODO: We are limiting strings to 255 characters.
 							case(is_STRING): strTemp[0] = '%'; strTemp[1] = 's'; strTemp[2] = '\0'; break;
 							//TODO: Confirm this.
 							case(is_STRING_ARRAY): break;
