@@ -849,35 +849,17 @@ int translateRelationalExpression(is_RelationalExpression* rExp, environmentList
 		/* Prints the correct operator. */
 		switch(rExp->op)
 		{
-			case (is_OP_GREATER):
-				fprintf(dest, " > ");
-				break;
-			case (is_OP_LESS):
-				fprintf(dest, " < ");
-				break;
-			case (is_OP_LESS_EQUAL):
-				fprintf(dest, " <= ");
-				break;
-			case (is_OP_GREATER_EQUAL):
-				fprintf(dest, " >= ");
-				break;
-			case (is_OP_EQUAL):
-				fprintf(dest, " == ");
-				break;
-			case (is_OP_DIFFERENT):
-				fprintf(dest, " != ");
-				break;
-			case (is_OP_SAND):
-				fprintf(dest, " & ");
-				break;
-			case (is_OP_SXOR):
-				fprintf(dest, " ^ ");
-				break;
-			case (is_OP_SOR):
-				fprintf(dest, " | ");
-				break;
-			case (is_RE_NONE):
-				break;
+			case (is_OP_GREATER): 		fprintf(dest, " > "); break;
+			case (is_OP_LESS):			fprintf(dest, " < "); break;
+			case (is_OP_LESS_EQUAL):	fprintf(dest, " <= "); break;
+			case (is_OP_GREATER_EQUAL):	fprintf(dest, " >= "); break;
+			case (is_OP_EQUAL):			fprintf(dest, " == "); break;
+			case (is_OP_DIFFERENT):		fprintf(dest, " != "); break;
+			case (is_OP_SAND):			fprintf(dest, " & "); break;
+			case (is_OP_SXOR):			fprintf(dest, " ^ "); break;
+			case (is_OP_SOR):			fprintf(dest, " | "); break;
+			/* Goes for is_RE_NONE or any mistake. */
+			default: break;
 		}
 		
 		fprintf(dest, "temp%d;\n", tTwo);
@@ -924,12 +906,11 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 			}
 		}
 		else
-		{
 			outcome = translateCastExpression(aExp->cExpression, environment, isArgument);
-		}
 		
 		if (outcome < 0)
 			return outcome;
+			
 		return tempCounter - 1;
 	} 
 	 
@@ -963,15 +944,15 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 		/* Prints the correct operator. */
 		switch(aExp->op)
 		{
-			case (is_PLUS): fprintf(dest, " + "); break;
-			case (is_MINUS): fprintf(dest, " - "); break;
-			case (is_SLASH): fprintf(dest, " / "); break;
-			case (is_TIMES): fprintf(dest, " * "); break;
-			case (is_MODULO): fprintf(dest, " %c ", tempChar); break;
-			case (is_OP_SHL): fprintf(dest, " << "); break;
-			case (is_OP_SHR): fprintf(dest, " >> "); break;
-			case (is_PARENTHESIS): fprintf(dest, ";\n"); break;
-			case (is_AE_NONE): fprintf(dest, ";\n"); break;	
+			case (is_PLUS): 		fprintf(dest, " + "); break;
+			case (is_MINUS):	 	fprintf(dest, " - "); break;
+			case (is_SLASH): 		fprintf(dest, " / "); break;
+			case (is_TIMES): 		fprintf(dest, " * "); break;
+			case (is_MODULO): 		fprintf(dest, " %c ", tempChar); break;
+			case (is_OP_SHL): 		fprintf(dest, " << "); break;
+			case (is_OP_SHR): 		fprintf(dest, " >> "); break;
+			case (is_PARENTHESIS): 	fprintf(dest, ";\n"); break;
+			case (is_AE_NONE): 		fprintf(dest, ";\n"); break;	
 		}
 		
 		/* Make sure we are not printing garbage. */
