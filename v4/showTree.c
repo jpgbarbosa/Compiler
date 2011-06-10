@@ -348,15 +348,10 @@ void showLabeledStatement(is_LabeledStatement* lS)
 {
 	switch(lS->disc_d)
 	{
-		case (d_ID):
-			printTabs();
-			printf("%s : ", lS->data_LabeledStatement.id);
-			showLocalVariableDeclarationsOrStatements(lS->lvdos);
-			break;
 		case (d_CASE):
 			printTabs();
 			printf("case (");
-			showConditionalExpression(lS->data_LabeledStatement.exp, false, false);
+			showConditionalExpression(lS->exp, false, false);
 			printf("):\n");
 			noTabs++;
 			showLocalVariableDeclarationsOrStatements(lS->lvdos);

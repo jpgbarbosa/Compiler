@@ -327,24 +327,13 @@ is_Statement* insert_Statement_Block(is_Block* block)
 
 /* - - - - - - is_LabeledStatement - - - - - - */
 
-is_LabeledStatement* insert_LabeledStatement_ID(char *id, is_LocalVariableDeclarationsOrStatements *lvdos, int line)
-{
-	is_LabeledStatement* lS = malloc(sizeof(is_LabeledStatement));
-	lS->disc_d = d_ID;
-	lS->lvdos = lvdos;
-	lS->line = line;
-	strcpy(lS->data_LabeledStatement.id, id);
-	
-	return lS;
-}
-
 is_LabeledStatement* insert_LabeledStatement_CASE(is_LocalVariableDeclarationsOrStatements *lvdos, is_ConditionalExpression* exp, int line)
 {
 	is_LabeledStatement* lS = malloc(sizeof(is_LabeledStatement));
 	lS->disc_d = d_CASE;
 	lS->lvdos = lvdos;
 	lS->line = line;
-	lS->data_LabeledStatement.exp = exp;
+	lS->exp = exp;
 	
 	return lS;
 }

@@ -589,15 +589,9 @@ int translateLabeledStatement(is_LabeledStatement* lS, environmentList *environm
 
 	switch(lS->disc_d)
 	{
-		case (d_ID):
-			//TODO: do we have goto's? I cant find them so I didnt test it. if we wont have goto's this case is useless.
-			fprintf(dest, "%s:\n", lS->data_LabeledStatement.id);			
-			translateConditionalExpression(lS->data_LabeledStatement.exp,environment,false);
-			break;
-
 		case (d_CASE):
 			fprintf(dest, "NEXTLABEL%d: ;\n", nextLabel++);
-			tempIf = translateConditionalExpression(lS->data_LabeledStatement.exp,environment,false);
+			tempIf = translateConditionalExpression(lS->exp,environment,false);
 			temp = ifCounter++;
 			fprintf(dest, "if (temp%d != temp%d) goto NEXTLABEL%d;\n", tSwitch, tempIf,nextLabel);
 			translateLocalVariableDeclarationsOrStatements(lS->lvdos, environment);

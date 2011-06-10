@@ -297,16 +297,13 @@ struct _a33{
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {d_ID, d_CASE, d_DEFAULT} disc_LabeledStatement;
+typedef enum {d_CASE, d_DEFAULT} disc_LabeledStatement;
 
 struct _a30{
 	disc_LabeledStatement disc_d;
 	is_LocalVariableDeclarationsOrStatements *lvdos;
-	/* We might or not use these depending on value of the above enumeration. */
-	union{
-		char id[MAX_SIZE];
-		is_ConditionalExpression *exp;
-	}data_LabeledStatement;
+	/* We might or not use this depending on value of the above enumeration. */
+	is_ConditionalExpression *exp;
 	environmentList *env;
 	int line;
 } /*is_LabeledStatement */;

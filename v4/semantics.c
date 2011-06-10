@@ -371,13 +371,8 @@ void checkLabeledStatement(is_LabeledStatement* lS, environmentList *environment
 	
 	switch(lS->disc_d)
 	{
-		case (d_ID):
-			//This it not a declaration.
-			//HERE
-			checkLocalVariableDeclarationsOrStatements(lS->lvdos, newEnv);
-			break;
 		case (d_CASE):
-			checkConditionalExpression(lS->data_LabeledStatement.exp, newEnv);
+			checkConditionalExpression(lS->exp, newEnv);
 			checkLocalVariableDeclarationsOrStatements(lS->lvdos, newEnv);
 			break;
 		case (d_DEFAULT):

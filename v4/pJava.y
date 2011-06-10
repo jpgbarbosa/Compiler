@@ -275,8 +275,7 @@ Statement
 	;
 
 LabeledStatement
-	: ID ':' LocalVariableDeclarationOrStatement				{$$ = insert_LabeledStatement_ID($1, $3, line_no);}
-	| CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement	{$$ = insert_LabeledStatement_CASE($4, $2, line_no);}
+	: CASE ConditionalExpression ':' LocalVariableDeclarationOrStatement	{$$ = insert_LabeledStatement_CASE($4, $2, line_no);}
 	| CASE '(' ConditionalExpression ')' ':' LocalVariableDeclarationOrStatement	{$$ = insert_LabeledStatement_CASE($6, $3, line_no);}
 	| DEFAULT ':' LocalVariableDeclarationOrStatement			{$$ = insert_LabeledStatement_DEFAULT($3, line_no);}
 	;
