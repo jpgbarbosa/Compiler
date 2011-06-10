@@ -41,9 +41,7 @@ is_Expression* insert_Expression_ConditionalExpression(is_ConditionalExpression 
 is_Expression* insert_Expression_AssignmentExpression(is_AssignmentExpression *aExpression, int line);
 is_Expression* insert_Expression_Expression(is_Expression *expression, int line);
 is_JumpStatement* insert_JumpStatement_BREAK(int line);
-is_JumpStatement* insert_JumpStatement_BREAK_ID(char* id, int line);
 is_JumpStatement* insert_JumpStatement_CONTINUE(int line);
-is_JumpStatement* insert_JumpStatement_CONTINUE_ID(char* id, int line);
 is_JumpStatement* insert_JumpStatement_RETURN(int line);
 is_JumpStatement* insert_JumpStatement_RETURN_EXP(is_Expression* exp, int line);
 is_MethodCall* insert_MethodCall(char *id, is_Expressions_list* list, int line);

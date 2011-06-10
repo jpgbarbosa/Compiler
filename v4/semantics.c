@@ -487,16 +487,8 @@ void checkJumpStatement(is_JumpStatement* jS, environmentList *environment)
 
 	switch(jS->disc_d)
 	{
-		case (is_BREAK_ID):
-			//This is not a declaration
-			//HERE
-			break;
-		case (is_CONTINUE_ID):
-			//This is not a declaration
-			//HERE
-			break;
 		case (is_RETURN_EXP):
-			bType = checkExpression(jS->data_JumpStatement.exp, newEnv);
+			bType = checkExpression(jS->exp, newEnv);
 			if (bType != enumConverter(methodReturnType))
 			{
 				printf("Line %d: Return expression isn't according to the return type of the method.\n", jS->line);

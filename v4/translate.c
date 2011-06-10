@@ -769,18 +769,11 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 		case (is_BREAK):
 			fprintf(dest, "goto ENDCYCLE%d;\n", currentCycle);
 			break;
-		case (is_BREAK_ID):
-			fprintf(dest, "goto ENDCYCLE%d;\n", currentCycle);
-			break;
-		case (is_CONTINUE_ID):
-			//This is not a declaration
-			//HERE
-			break;
 		case (is_CONTINUE):
 			fprintf(dest, "goto INCRCYCLE%d;\n", currentCycle);
 			break;
 		case (is_RETURN_EXP):
-			tOne = translateExpression(jS->data_JumpStatement.exp, jS->env, false);
+			tOne = translateExpression(jS->exp, jS->env, false);
 			
 			/* We will only save the return address if we aren't at the
 			 * main method.
@@ -788,7 +781,7 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 			if (strcmp(currentMethod, "main"))
 			{		
 				/* First, print the type of the variable. */
-				switch(jS->data_JumpStatement.exp->primType)
+				switch(jS->exp->primType)
 				{
 					case(is_BOOLEAN): strcpy(typeInString, "int"); break;
 					case(is_CHAR): strcpy(typeInString, "char "); break;
@@ -802,7 +795,7 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 					default: break;
 				}
 				
-				if (jS->data_JumpStatement.exp->primType != is_STRING)
+				if (jS->exp->primType != is_STRING)
 					fprintf(dest, "sp->parent->returnValue = (%s *) malloc(sizeof(%s));\n"
 								"(*((%s *) sp->parent->returnValue)) = temp%d;\n", typeInString, typeInString, typeInString, tOne);
 				/* We are returning a string. */

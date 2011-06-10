@@ -313,15 +313,12 @@ struct _a30{
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {is_BREAK, is_BREAK_ID, is_CONTINUE, is_CONTINUE_ID, is_RETURN, is_RETURN_EXP} disc_JumpStatement;
+typedef enum {is_BREAK, is_CONTINUE, is_RETURN, is_RETURN_EXP} disc_JumpStatement;
 
 struct _a31{
 	disc_JumpStatement disc_d;
-	/* Both may not be used. */
-	union{
-		char id[MAX_SIZE];
-		is_Expression *exp;
-	}data_JumpStatement;
+	/* May not be used. */
+	is_Expression *exp;
 	environmentList *env;
 	int line;
 } /*is_JumpStatement. */;

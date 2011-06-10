@@ -518,30 +518,10 @@ is_JumpStatement* insert_JumpStatement_BREAK(int line)
 	return jS;
 }
 
-is_JumpStatement* insert_JumpStatement_BREAK_ID(char *id, int line)
-{
-	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
-	jS->disc_d = is_BREAK_ID;
-	strcpy(jS->data_JumpStatement.id, id);
-	jS->line = line;
-	
-	return jS;
-}
-
 is_JumpStatement* insert_JumpStatement_CONTINUE(int line)
 {
 	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
 	jS->disc_d = is_CONTINUE;
-	jS->line = line;
-	
-	return jS;
-}
-
-is_JumpStatement* insert_JumpStatement_CONTINUE_ID(char *id, int line)
-{
-	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
-	jS->disc_d = is_CONTINUE_ID;
-	strcpy(jS->data_JumpStatement.id,id);
 	jS->line = line;
 	
 	return jS;
@@ -560,7 +540,7 @@ is_JumpStatement* insert_JumpStatement_RETURN_EXP(is_Expression* exp, int line)
 {
 	is_JumpStatement* jS = malloc(sizeof(is_JumpStatement));
 	jS->disc_d = is_RETURN_EXP;
-	jS->data_JumpStatement.exp = exp;
+	jS->exp = exp;
 	jS->line = line;
 	
 	return jS;

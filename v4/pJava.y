@@ -313,9 +313,7 @@ Expressions
 	;
 
 JumpStatement
-	: BREAK    ID         ';'		{$$ = insert_JumpStatement_BREAK_ID($2,line_no);}
-	| BREAK               ';'		{$$ = insert_JumpStatement_BREAK(line_no);}
-	| CONTINUE ID 	      ';'		{$$ = insert_JumpStatement_CONTINUE_ID($2,line_no);}
+	: BREAK               ';'		{$$ = insert_JumpStatement_BREAK(line_no);}
 	| CONTINUE            ';'		{$$ = insert_JumpStatement_CONTINUE(line_no);}
 	| RETURN   Expression ';'		{hasReturn = true; $$ = insert_JumpStatement_RETURN_EXP($2,line_no);}
 	| RETURN              ';'		{hasReturn = true; $$ = insert_JumpStatement_RETURN(line_no);}

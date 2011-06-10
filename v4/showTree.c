@@ -491,21 +491,15 @@ void showJumpStatement(is_JumpStatement* jS)
 		case (is_BREAK):
 			printf("break;\n");
 			break;
-		case (is_BREAK_ID):
-			printf("break %s;\n", jS->data_JumpStatement.id);
-			break;
 		case (is_CONTINUE):
 			printf("continue;\n");
-			break;
-		case (is_CONTINUE_ID):
-			printf("continue %s;\n", jS->data_JumpStatement.id);
 			break;
 		case (is_RETURN):
 			printf("return;\n");
 			break;
 		case (is_RETURN_EXP):
 			printf("return ");
-			showExpression(jS->data_JumpStatement.exp, false, false);
+			showExpression(jS->exp, false, false);
 			printf(";\n");
 			break;
 	}
