@@ -708,8 +708,11 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 			tempIt = cycleCounter++;
 			fprintf(dest, "CYCLE%d: ;\n", tempIt);
 			/* The conditional expressions that keep the cycle alive. */
-			tOne = translateExpression(iS->exp, iS->env, false);
-			fprintf(dest, "if (!temp%d) goto ENDCYCLE%d;\n", tOne, tempIt);
+			if (iS->exp != NULL)
+			{
+				tOne = translateExpression(iS->exp, iS->env, false);
+				fprintf(dest, "if (!temp%d) goto ENDCYCLE%d;\n", tOne, tempIt);
+			}
 			/* Then, execute whatever code it has to execute. */
 			oldIt = currentCycle;
 			currentCycle = tempIt;
@@ -719,7 +722,8 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 			fprintf(dest, "INCRCYCLE%d: ;\n", tempIt);
 			/* The incrementation expressions at the end of the cycle. */
 			for(aux = iS->forIncr; aux != NULL; aux = aux->next)
-				translateExpression(aux->exp, iS->env, false);
+				if (aux->exp != NULL)
+					translateExpression(aux->exp, iS->env, false);
 				
 			/* Another iteration on the cycle. */	
 			fprintf(dest, "goto CYCLE%d;\n"

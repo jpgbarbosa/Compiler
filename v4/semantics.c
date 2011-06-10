@@ -397,7 +397,6 @@ void checkSelectionStatement(is_SelectionStatement* sS, environmentList *environ
 			break;
 		case (is_SWITCH):
 			checkExpression(sS->exp, newEnv);
-			//TODO Block here
 			checkBlock(sS->block, newEnv);
 			break;
 	}
@@ -425,10 +424,12 @@ void checkIterationStatement(is_IterationStatement* iS, environmentList *environ
 			break;
 		case (is_FOR):
 			checkForInit(iS->forInit, newEnv);
-			checkExpression(iS->exp, newEnv);
+			if (iS->exp != NULL)
+				checkExpression(iS->exp, newEnv);
 			/* The incrementation expressions. */
 			for(aux = iS->forIncr; aux != NULL; aux = aux->next)
-				checkExpression(aux->exp, newEnv);
+				if (aux->exp != NULL)
+					checkExpression(aux->exp, newEnv);
 
 			checkStatement(iS->statement, newEnv);
 			break;
@@ -437,11 +438,14 @@ void checkIterationStatement(is_IterationStatement* iS, environmentList *environ
 
 void checkForInit(is_ForInit* fI, environmentList *environment)
 {
-	/* Before starting, saves the environemnt of this object. */
-	fI->env = environment;
-	
+	/* Make sure we have something to analyze. It could be simply
+	 * an empty statement.
+	 */
 	if (fI != NULL)
 	{
+		/* Before starting, saves the environemnt of this object. */
+		fI->env = environment;
+	
 		/* It's a list of expressions. */
 		if (fI->list != NULL)
 		{

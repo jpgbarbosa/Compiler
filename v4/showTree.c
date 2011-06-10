@@ -417,16 +417,18 @@ void showIterationStatement(is_IterationStatement* iS)
 			printTabs();
 			printf("for ( ");
 			showForInit(iS->forInit);
-			showExpression(iS->exp, false, false);
+			if (iS->exp != NULL)
+				showExpression(iS->exp, false, false);
 			printf("; ");
 			/* The incrementation expressions. */
 			for(aux = iS->forIncr; aux != NULL; aux = aux->next)
-			{
-				showExpression(aux->exp, false, false);
-				/* We aren't yet at the last element. */
-				if (aux->next != NULL)
-					printf(", ");
-			}
+				if (aux->exp != NULL)
+				{
+					showExpression(aux->exp, false, false);
+					/* We aren't yet at the last element. */
+					if (aux->next != NULL)
+						printf(", ");
+				}
 			printf(" )\n");
 			showStatement(iS->statement, true, false, false);
 			printf("\n");
@@ -438,30 +440,30 @@ void showIterationStatement(is_IterationStatement* iS)
 
 void showForInit(is_ForInit* fI)
 {
-		if (fI != NULL)
+	if (fI != NULL)
+	{
+		/* It's a list of expressions. */
+		if (fI->list != NULL)
 		{
-			/* It's a list of expressions. */
-			if (fI->list != NULL)
+			/* And now the list of parameters. */
+			is_Expressions_list* aux;
+			
+			for(aux = fI->list; aux != NULL; aux = aux->next)
 			{
-				/* And now the list of parameters. */
-				is_Expressions_list* aux;
-				
-				for(aux = fI->list; aux != NULL; aux = aux->next)
-				{
-					showExpression(aux->exp, false, false);
-					/* We aren't yet at the last element. */
-					if (aux->next != NULL)
-						printf(", ");
-				}
+				showExpression(aux->exp, false, false);
+				/* We aren't yet at the last element. */
+				if (aux->next != NULL)
+					printf(", ");
 			}
-			/* It's a declaration statement. */
-			else
-				showLocalVariableDeclarationStatement(fI->lvds);
 		}
-		
-		printf(" ;");
-		
-		return;
+		/* It's a declaration statement. */
+		else
+			showLocalVariableDeclarationStatement(fI->lvds);
+	}
+	
+	printf(" ;");
+	
+	return;
 }
 
 void showJumpStatement(is_JumpStatement* jS)

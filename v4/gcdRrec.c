@@ -70,6 +70,14 @@ int temp22 = (*(int*)  sp->locals[1])++;
 goto CYCLE0;
 ENDCYCLE0: ;
 int temp23 = 0;
+(*(int*) sp->locals[1] ) = temp23;
+CYCLE2: ;
+char temp24[1024]; temp24[0] = '\0';strcat(temp24, "Hello!");
+printf("%s\n", temp24);
+INCRCYCLE2: ;
+goto CYCLE2;
+ENDCYCLE2: ;
+int temp25 = 0;
 goto EPILOGUE_main;
 
 /*METHOD: factorial */
@@ -84,31 +92,31 @@ sp->locals[0] = (int *) malloc(sizeof(int ));
 (*((int *) sp->locals[0])) = (*((int *) sp->parent->outgoing[0]));
 
 /*Method's body.*/
-int temp24 = (*(int*)  sp->locals[0]);
-int temp25 = 1;
-int temp26 = (*(int*)  sp->locals[0]) > temp25;
-int  temp27;
-if (!temp26) goto ELSE1;
-int temp28 = (*(int*)  sp->locals[0]);
-int temp29 = 0;
+int temp26 = (*(int*)  sp->locals[0]);
+int temp27 = 1;
+int temp28 = (*(int*)  sp->locals[0]) > temp27;
+int  temp29;
+if (!temp28) goto ELSE1;
 int temp30 = (*(int*)  sp->locals[0]);
-int temp31 = 1;
-int temp32 = (*(int*)  sp->locals[0]) - temp31;
+int temp31 = 0;
+int temp32 = (*(int*)  sp->locals[0]);
+int temp33 = 1;
+int temp34 = (*(int*)  sp->locals[0]) - temp33;
 sp->outgoing[0] = (int  *) malloc(sizeof(int ));
-(*((int  *) sp->outgoing[0])) = temp32;
+(*((int  *) sp->outgoing[0])) = temp34;
 _ra = 1;
 goto factorial;
 return1: ;
-int  temp33 = *((int *) sp->returnValue);
-int temp34 = (*(int*)  sp->locals[0]) * temp33;
-temp27 = temp34;
+int  temp35 = *((int *) sp->returnValue);
+int temp36 = (*(int*)  sp->locals[0]) * temp35;
+temp29 = temp36;
 goto ENDIF1;
 ELSE1: ;
-int temp35 = 1;
-temp27 = temp35;
+int temp37 = 1;
+temp29 = temp37;
 ENDIF1: ;
 sp->parent->returnValue = (int  *) malloc(sizeof(int ));
-(*((int  *) sp->parent->returnValue)) = temp27;
+(*((int  *) sp->parent->returnValue)) = temp29;
 goto EPILOGUE_factorial;
 
 /*Epilogue*/
