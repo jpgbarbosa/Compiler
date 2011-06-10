@@ -29,7 +29,6 @@ tableElement *insertSymbol(char *str, int offset, tableBasicTypes t, environment
 		/* Look for an element and verifies if it already exists. */
 		for(aux = environment->locals; aux; previous = aux, aux = aux->next)
 			if(strcmp(aux->name, str) == 0)
-			{
 				/* We may have a method and a variable with the same name,
 				 * so we ought to distinguish this case.
 				 */
@@ -39,7 +38,6 @@ tableElement *insertSymbol(char *str, int offset, tableBasicTypes t, environment
 					free(newSymbol);
 					return NULL;
 				}
-			}
 		
 		/* Adds the element to the end of the list. */
 		previous->next=newSymbol;
@@ -82,12 +80,10 @@ tableElement *searchSymbolLocal(char *str, environmentList *environment)
 	environmentList *currentEnv;
 	
 	for (currentEnv = environment; currentEnv; currentEnv = currentEnv->parent)
-	{
 		for(aux = currentEnv->locals; aux; aux = aux->next)
 			/* We are only looking for variables with this name, not methods. */
 			if(strcmp(aux->name, str) == 0 && !aux->isMethod)
 				return aux;
-	}
 	
 	/* If we didn't find it at the scope of the method, we will look at the
 	 * global scope.
@@ -114,15 +110,9 @@ tableElement *searchMethodCall(is_MethodCall *mD)
 	tableElement *aux;
 	
 	for(aux = pEnv->globalTable->locals; aux; aux = aux->next)
-	{
 		/* We have found the name of the method. */
 		if(aux->isMethod && strcmp(aux->name, mD->id) == 0)
-		{
-			/* TODO: Methods can have the same name, but different parameters. */
-			
 			return aux;
-		}
-	}
 	
 	return NULL;
 }
@@ -158,15 +148,11 @@ bool searchInMethodScope(char *str, environmentList *environment)
 	environmentList *currentEnv;
 	
 	for (currentEnv = environment; currentEnv; currentEnv = currentEnv->parent)
-	{
 		for(aux = currentEnv->locals; aux; aux = aux->next)
 			/* We have found a conflict. */
 			if(strcmp(aux->name, str) == 0 && !aux->isMethod)
 				return true;
-	}
 	
 	/* We didn't find any conflits inside the method scope. */
 	return false;
 }
-
-

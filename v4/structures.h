@@ -3,6 +3,9 @@
 
 #include <stdbool.h>
 
+#define MAX_SIZE 256
+#define MAX_PARAMETERS 32
+
 typedef enum {s_BOOLEAN, s_CHAR, s_BYTE, s_SHORT, s_INT, s_LONG, s_FLOAT, s_DOUBLE, s_VOID,
 				s_STRING, s_STRING_ARRAY, s_METHOD} tableBasicTypes;
 
@@ -10,7 +13,6 @@ typedef struct _t1 tableElement;
 typedef struct _t4 environmentList;
 typedef struct _t5 progEnv;
 
-#define MAX_SIZE 256
 typedef struct _a1 is_AssignmentExpression;
 typedef struct _a2 is_Typename;
 typedef struct _a3 is_TypeSpecifier;
@@ -49,7 +51,7 @@ typedef struct _a35 is_PrintExpressions_list;
 
 struct _t1
 {
-	char name[256];
+	char name[MAX_SIZE];
 	tableBasicTypes type;
 	tableElement* next;
 	/* Only for variables global. */
@@ -57,7 +59,7 @@ struct _t1
 	bool isMethod;
 	int offset;
 	/* Only for methods. We limit the number of parameters to 32. */
-	tableBasicTypes parameters[32];
+	tableBasicTypes parameters[MAX_PARAMETERS];
 	int noParameters;
 
 } /* tableElement */;
@@ -67,7 +69,7 @@ struct _t4{
 	tableElement *locals;
 	environmentList *parent;
 	/* Only for methods. */
-	char name[256];
+	char name[MAX_SIZE];
 	tableBasicTypes returnType;
 	environmentList *next;
 } /* environmentList */;
@@ -337,7 +339,7 @@ struct _a32{
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-typedef enum {d_LabeledStatement, d_StatementExpression, d_SelectionStatement, d_IterationStatement, d_JumpStatement, d_StatementBlock} disc_Statement;
+typedef enum {d_LabeledStatement, d_StatementExpression, d_SelectionStatement, d_IterationStatement, d_JumpStatement, d_StatementBlock, d_EmptyStatement} disc_Statement;
 struct _a19{
 	disc_Statement disc_d;
 	union{

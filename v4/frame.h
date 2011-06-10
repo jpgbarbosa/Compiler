@@ -1,4 +1,5 @@
-typedef struct _f1{
+typedef struct _f1
+{
 	/* Frame pointer: environemnt of the calling method. */
 	struct _f1* parent;
 	/* Address space for local variables. */
@@ -10,4 +11,4 @@ typedef struct _f1{
 	/* Code address in the calling method. */
 	int return_address;
 
-}frame;
+} frame;

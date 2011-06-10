@@ -51,6 +51,7 @@ void showFieldDeclaration(is_FieldDeclaration* fD)
 			showMethodDeclaration(fD->data_FieldDeclaration.u_methodDeclaration);
 			break;
 	}
+	
 	return;
 }
 
@@ -119,6 +120,7 @@ void showVariablesDeclarator(is_VariablesDeclarator* vD)
 		printf(" = ");
 		showExpression(vD->expression, false, false);
 	}
+	
 	return;
 }
 
@@ -134,16 +136,16 @@ void showTypename(is_Typename* tn)
 	/* Show the type of the variable. */
 	switch(tn->type)
 	{
-		case (is_BOOLEAN): printf("bool "); break;
-		case (is_CHAR): printf("char "); break;
-		case (is_BYTE): printf("byte "); break;
-		case (is_SHORT): printf("short "); break;
-		case (is_INT): printf("int "); break;
-		case (is_LONG): printf("long "); break;
-		case (is_FLOAT): printf("float "); break;
-		case (is_DOUBLE): printf("double "); break;
-		case (is_VOID): printf("void "); break;
-		case (is_STRING): printf("char * "); break;
+		case (is_BOOLEAN): 		printf("bool "); break;
+		case (is_CHAR): 		printf("char "); break;
+		case (is_BYTE): 		printf("byte "); break;
+		case (is_SHORT): 		printf("short "); break;
+		case (is_INT): 			printf("int "); break;
+		case (is_LONG): 		printf("long "); break;
+		case (is_FLOAT): 		printf("float "); break;
+		case (is_DOUBLE): 		printf("double "); break;
+		case (is_VOID): 		printf("void "); break;
+		case (is_STRING): 		printf("char * "); break;
 		case (is_STRING_ARRAY): printf("char ** "); break;
 	}
 	
@@ -181,6 +183,7 @@ void showLocalVariableDeclarationsOrStatements(is_LocalVariableDeclarationsOrSta
 			showStatement(lvdos->data_LocalVariableDeclarationsOrStatements.u_statement, false, false, false);
 			break;
 	}
+	
 	return;
 }
 
@@ -230,6 +233,11 @@ void showStatement(is_Statement* s, bool isToTab, bool isElseIf, bool isDoWhile)
 			break;
 		case (d_StatementBlock):
 			showBlock(s->data_Statement.block, isDoWhile);
+			break;
+		/* It's an empty statement ( ';' ), so we won't be showing
+		 * nothing at all as it is useless.
+		 */
+		case (d_EmptyStatement):
 			break;
 	}
 	
@@ -298,9 +306,7 @@ void showConditionalExpression(is_ConditionalExpression* cExp, bool nextLine, bo
 }
 
 void showAssignmentExpression(is_AssignmentExpression* aExp, bool nextLine, bool isTabs)
-{
-	char tempChar = '%';
-			
+{			
 	/* Shows the identification. */
 	if (isTabs)
 		printTabs();
@@ -310,33 +316,15 @@ void showAssignmentExpression(is_AssignmentExpression* aExp, bool nextLine, bool
 	
 	switch(aExp->assOp)
 	{
-		case (is_ASSIGN):
-			printf(" = ");
-			break;
-		case (is_ASS_MUL):
-			printf(" *= ");
-			break;
-		case (is_ASS_DIV):
-			printf(" /= ");
-			break;
-		case (is_ASS_ADD):
-			printf(" += ");
-			break;
-		case (is_ASS_SUB):
-			printf(" -= ");
-			break;
-		case (is_ASS_XOR):
-			printf(" ^= ");
-			break;
-		case (is_ASS_MOD):
-			printf(" %c= ", tempChar);
-			break;
-		case (is_ASS_SHL):
-			printf(" <<= ");
-			break;
-		case (is_ASS_SHR):
-			printf(" >>= ");
-			break;
+		case (is_ASSIGN): 	printf(" = "); break;
+		case (is_ASS_MUL):	printf(" *= "); break;
+		case (is_ASS_DIV):	printf(" /= "); break;
+		case (is_ASS_ADD):	printf(" += "); break;
+		case (is_ASS_SUB):	printf(" -= "); break;
+		case (is_ASS_XOR):	printf(" ^= "); break;
+		case (is_ASS_MOD):	printf(" %%= "); break;
+		case (is_ASS_SHL):	printf(" <<= "); break;
+		case (is_ASS_SHR):	printf(" >>= "); break;
 	}
 	
 	showExpression(aExp->expression, nextLine, isTabs);
@@ -468,9 +456,7 @@ void showForInit(is_ForInit* fI)
 			}
 			/* It's a declaration statement. */
 			else
-			{
 				showLocalVariableDeclarationStatement(fI->lvds);
-			}
 		}
 		
 		printf(" ;");
@@ -483,15 +469,9 @@ void showJumpStatement(is_JumpStatement* jS)
 	printTabs();
 	switch(jS->disc_d)
 	{
-		case (is_BREAK):
-			printf("break;\n");
-			break;
-		case (is_CONTINUE):
-			printf("continue;\n");
-			break;
-		case (is_RETURN):
-			printf("return;\n");
-			break;
+		case (is_BREAK):	printf("break;\n"); break;
+		case (is_CONTINUE):	printf("continue;\n"); break;
+		case (is_RETURN):	printf("return;\n"); break;
 		case (is_RETURN_EXP):
 			printf("return ");
 			showExpression(jS->exp, false, false);
@@ -509,35 +489,16 @@ void showRelationalExpression(is_RelationalExpression* rExp, bool nextLine, bool
 	/* Prints the correct operator. */
 	switch(rExp->op)
 	{
-		case (is_OP_GREATER):
-			printf(" > ");
-			break;
-		case (is_OP_LESS):
-			printf(" < ");
-			break;
-		case (is_OP_LESS_EQUAL):
-			printf(" <= ");
-			break;
-		case (is_OP_GREATER_EQUAL):
-			printf(" >= ");
-			break;
-		case (is_OP_EQUAL):
-			printf(" == ");
-			break;
-		case (is_OP_DIFFERENT):
-			printf(" != ");
-			break;
-		case (is_OP_SAND):
-			printf(" & ");
-			break;
-		case (is_OP_SXOR):
-			printf(" ^ ");
-			break;
-		case (is_OP_SOR):
-			printf(" | ");
-			break;
-		case (is_RE_NONE):
-			break;
+		case (is_OP_GREATER):		printf(" > "); break;
+		case (is_OP_LESS):			printf(" < "); break;
+		case (is_OP_LESS_EQUAL):	printf(" <= "); break;
+		case (is_OP_GREATER_EQUAL):	printf(" >= "); break;
+		case (is_OP_EQUAL):			printf(" == "); break;
+		case (is_OP_DIFFERENT):		printf(" != "); break;
+		case (is_OP_SAND):			printf(" & "); break;
+		case (is_OP_SXOR):			printf(" ^ "); break;
+		case (is_OP_SOR):			printf(" | "); break;
+		case (is_RE_NONE):			break;
 	}
 	
 	/* If there are more relational expressions on the chain, we have to
@@ -550,10 +511,7 @@ void showRelationalExpression(is_RelationalExpression* rExp, bool nextLine, bool
 }
 
 void showArithmeticExpression(is_ArithmeticExpression* aExp, bool nextLine, bool isTabs)
-{
-	/* We have to use otherwise we will have troubles in the printf. */
-	char tempChar = '%';
-	
+{	
 	/* This is a cast expression and consequently, we have to stop the 
 	 * recursive calls.
 	 */
@@ -573,34 +531,19 @@ void showArithmeticExpression(is_ArithmeticExpression* aExp, bool nextLine, bool
 	/* Prints the correct operator. */
 	switch(aExp->op)
 	{
-		case (is_PLUS):
-			printf(" + ");
-			break;
-		case (is_MINUS):
-			printf(" - ");
-			break;
-		case (is_SLASH):
-			printf(" / ");
-			break;
-		case (is_TIMES):
-			printf(" * ");
-			break;
-		case (is_MODULO):
-			printf(" %c ", tempChar);
-			break;
-		case (is_OP_SHL):
-			printf(" << ");
-			break;
-		case (is_OP_SHR):
-			printf(" >> ");
-			break;
+		case (is_PLUS):		printf(" + "); break;
+		case (is_MINUS):	printf(" - "); break;
+		case (is_SLASH):	printf(" / "); break;
+		case (is_TIMES):	printf(" * "); break;
+		case (is_MODULO):	printf(" %% "); break;
+		case (is_OP_SHL):	printf(" << "); break;
+		case (is_OP_SHR):	printf(" >> "); break;
 		case (is_PARENTHESIS):
 			printf("(");
 			showArithmeticExpression(aExp->firstAE, nextLine, isTabs);
 			printf(")");
 			break;
-		case (is_AE_NONE):
-			break;
+		case (is_AE_NONE):	break;
 	}
 	
 	/* Same as above. */
@@ -675,33 +618,15 @@ void showBasicElement(is_BasicElement* bE, bool nextLine, bool isTabs)
 			
 	switch(bE->disc_d)
 	{
-		case (is_ID):
-			printf("%s", bE->data_BasicElement.name);
-			break;
-		case (is_LITERAL):
-			printf("%s", bE->data_BasicElement.name);
-			break;
-		case (is_TRUE):
-			printf("1");
-			break;
-		case (is_FALSE):
-			printf("0");
-			break;
-		case (is_INTEGER):
-			printf("%d", bE->data_BasicElement.i);
-			break;
-		case (is_FLOATPOINT):
-			printf("%lf", bE->data_BasicElement.d);
-			break;
-		case (is_METHOD_CALL):
-			showMethodCall(bE->data_BasicElement.methodCall, nextLine, isTabs);
-			break;
-		case (is_PRINTLN):
-			showSystemOutPrintln(bE->data_BasicElement.print, nextLine, isTabs);
-			break;
-		case (is_ARGS):
-			printf("argv[%d] ", bE->data_BasicElement.i);
-			break;
+		case (is_ID):			printf("%s", bE->data_BasicElement.name); break;
+		case (is_LITERAL):		printf("%s", bE->data_BasicElement.name); break;
+		case (is_TRUE):			printf("1"); break;
+		case (is_FALSE):		printf("0"); break;
+		case (is_INTEGER):		printf("%d", bE->data_BasicElement.i); break;
+		case (is_FLOATPOINT):	printf("%lf", bE->data_BasicElement.d); break;
+		case (is_METHOD_CALL):	showMethodCall(bE->data_BasicElement.methodCall, nextLine, isTabs); break;
+		case (is_PRINTLN):		showSystemOutPrintln(bE->data_BasicElement.print, nextLine, isTabs); break;
+		case (is_ARGS):			printf("argv[%d] ", bE->data_BasicElement.i); break;
 	}
 	
 	if (nextLine && bE->disc_d != is_METHOD_CALL)

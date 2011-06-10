@@ -51,7 +51,6 @@ int checkProgramFile(is_ProgramFile* pF)
 		checkFieldDeclaration(aux->fieldDeclaration);
 		
 	return errorCount;
-		
 }
 
 void checkFieldDeclaration(is_FieldDeclaration* fD)
@@ -96,7 +95,6 @@ void checkMethodDeclaration(is_MethodDeclaration* mD)
 	localOffset = 0;
 	
 	methodReturnType = mD->typeSpecifier->typeName->type;
-	
 	
 	checkMethodDeclarator(mD->methodDeclarator, environment);
 	
@@ -157,9 +155,7 @@ void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, 
 		errorCount++;
 	}
 	else if (isGlobal)
-	{
 		new->exp = vD->expression;
-	}
 	
 	/* It is initialiazed. */
 	if (vD->expression != NULL)
@@ -167,7 +163,6 @@ void checkVariablesDeclarator(is_VariablesDeclarator* vD, tableBasicTypes type, 
 		tableBasicTypes typeExp = checkExpression(vD->expression, environment);
 		if (!compatibilityChecker(type, typeExp))
 		{
-			//TODO: Maybe print the types.
 			printf("Line %d: Incompatible types in initialization of '%s'.\n", vD->line, vD->id);
 			errorCount++;
 		}
@@ -236,6 +231,8 @@ void checkStatement(is_Statement* s, environmentList *environment)
 		case (d_StatementBlock):
 			checkBlock(s->data_Statement.block, environment);
 			break;
+		/* It's an useless empty statement. */
+		case (d_EmptyStatement):	break;
 	}
 
 	/* Before leaving, saves the environemnt of this object. */
@@ -246,6 +243,9 @@ tableBasicTypes checkExpression(is_Expression* exp, environmentList *environment
 {	
 	/* Before starting, saves the environemnt of this object. */
 	exp->env = environment;
+	/* This variable is used to save the type of the expression in the
+	 * strucutre.
+	 */
 	tableBasicTypes temp;
 	
 	switch(exp->disc_d)
@@ -304,7 +304,6 @@ tableBasicTypes checkConditionalExpression(is_ConditionalExpression* cExp, envir
 	{
 		if (typeOne != typeTwo)
 		{
-			//TODO: Maybe print the types.
 			printf("Line %d: The returning values of the trinary operator are inconsistent.\n", cExp->line);
 			errorCount++;
 			/* It will go as an error. */	
@@ -316,7 +315,6 @@ tableBasicTypes checkConditionalExpression(is_ConditionalExpression* cExp, envir
 	}
 	else if (typeOne != typeTwo)
 	{
-		//TODO: Maybe print the types.
 		printf("Line %d: Conditional expressions should be booleans.\n", cExp->line);
 		errorCount++;
 		/* It will go as an error. */	
@@ -348,7 +346,6 @@ tableBasicTypes checkAssignmentExpression(is_AssignmentExpression* aExp, environ
 	/* The type of the variable and the type of the expression are different. */
 	if (!compatibilityChecker(search->type, type))
 	{
-		//TODO: Maybe print the types.
 		//printf("%d and %d (s_INT %d and s_DOUBLE %d and s_VOID %d)\n", search->type, type, s_INT, s_DOUBLE, s_VOID);
 		printf("Line %d: Incompatible types in assignment.\n", aExp->line);
 		errorCount++;
@@ -363,7 +360,6 @@ tableBasicTypes checkAssignmentExpression(is_AssignmentExpression* aExp, environ
 
 void checkLabeledStatement(is_LabeledStatement* lS, environmentList *environment)
 {
-	
 	environmentList *newEnv = createNewEnvironment(environment);
 	
 	/* Before starting, saves the environemnt of this object. */
@@ -379,8 +375,6 @@ void checkLabeledStatement(is_LabeledStatement* lS, environmentList *environment
 			checkLocalVariableDeclarationsOrStatements(lS->lvdos, newEnv);
 			break;
 	}
-	
-	
 }
 
 void checkSelectionStatement(is_SelectionStatement* sS, environmentList *environment)
@@ -407,13 +401,10 @@ void checkSelectionStatement(is_SelectionStatement* sS, environmentList *environ
 			checkBlock(sS->block, newEnv);
 			break;
 	}
-	
-	
 }
 
 void checkIterationStatement(is_IterationStatement* iS, environmentList *environment)
 {
-	
 	environmentList *newEnv = createNewEnvironment(environment);
 	is_Expressions_list* aux;
 	
@@ -442,8 +433,6 @@ void checkIterationStatement(is_IterationStatement* iS, environmentList *environ
 			checkStatement(iS->statement, newEnv);
 			break;
 	}
-	
-	
 }
 
 void checkForInit(is_ForInit* fI, environmentList *environment)
@@ -464,12 +453,8 @@ void checkForInit(is_ForInit* fI, environmentList *environment)
 		}
 		/* It's a declaration statement. */
 		else
-		{
 			checkLocalVariableDeclarationStatement(fI->lvds, environment);
-		}
 	}
-	
-	
 }
 
 void checkJumpStatement(is_JumpStatement* jS, environmentList *environment)
@@ -497,11 +482,8 @@ void checkJumpStatement(is_JumpStatement* jS, environmentList *environment)
 				errorCount++;
 			}
 			break;
-		default:
-			break;
+		default:	break;
 	}
-
-	
 }
 
 tableBasicTypes checkRelationalExpression(is_RelationalExpression* rExp, environmentList *environment)
@@ -556,6 +538,7 @@ tableBasicTypes checkArithmeticExpression(is_ArithmeticExpression* aExp, environ
 		
 		temp = checkCastExpression(aExp->cExpression, environment);
 		aExp->primType = enumInvConverter(temp);
+		
 		return temp;
 	} 
 	
@@ -600,7 +583,6 @@ tableBasicTypes checkArithmeticExpression(is_ArithmeticExpression* aExp, environ
 
 tableBasicTypes checkCastExpression(is_CastExpression* cExp, environmentList *environment)
 {
-
 	tableBasicTypes type = s_VOID;
 	
 	/* Before starting, saves the environemnt of this object. */
@@ -661,7 +643,6 @@ tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environm
 	switch(bE->disc_d)
 	{
 		case (is_ID):
-			//HERE
 			/* Looks for this symbol in the table. */
 			search = searchSymbolLocal(bE->data_BasicElement.name, environment);
 			if (search == NULL)
@@ -674,23 +655,15 @@ tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environm
 
 			/* We return the type of the ID. */
 			return search->type;
-		case (is_LITERAL):
-			return s_STRING;
+		case (is_LITERAL):		return s_STRING;
 		/* In C, both true and false can be considered integers. */
-		case (is_TRUE):
-			return s_INT;
-		case (is_FALSE):
-			return s_INT;
-		case (is_INTEGER):
-			return s_INT;
-		case (is_FLOATPOINT):
-			return s_DOUBLE;
-		case (is_METHOD_CALL):
-			return checkMethodCall(bE->data_BasicElement.methodCall, environment);
-		case (is_PRINTLN):
-			return checkSystemOutPrintln(bE->data_BasicElement.print, environment);
-		case (is_ARGS):
-			return s_STRING;
+		case (is_TRUE):			return s_INT;
+		case (is_FALSE):		return s_INT;
+		case (is_INTEGER):		return s_INT;
+		case (is_FLOATPOINT):	return s_DOUBLE;
+		case (is_METHOD_CALL):	return checkMethodCall(bE->data_BasicElement.methodCall, environment);
+		case (is_PRINTLN):		return checkSystemOutPrintln(bE->data_BasicElement.print, environment);
+		case (is_ARGS):			return s_STRING;
 	}
 	
 	/* We shouldn't get here. */
@@ -717,7 +690,6 @@ tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 	
 	/* Now, we have to check the parameters. */
 	for (aux = mC->argumentsList; aux != NULL && parCounter < element->noParameters; aux = aux->next)
-	{
 		/* If one of the parameters of the function mismatches the type given,
 		 * we immediately return with an error.
 		 */
@@ -729,7 +701,6 @@ tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 			return s_VOID;
 		}
 		parCounter++;
-	}
 	
 	/* The method call has too many arguments. */
 	if (aux != NULL)
@@ -750,7 +721,6 @@ tableBasicTypes checkMethodCall(is_MethodCall* mC, environmentList *environment)
 	
 	/* If everything's ok, we return the type of the method. */
 	return element->type;
-				
 }
 
 tableBasicTypes checkSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environment)
@@ -821,9 +791,10 @@ tableBasicTypes checkSystemOutPrintln(is_SystemOutPrintln* p, environmentList *e
 				 */	
 				counter++;
 				aux = aux->next;
-			}
+				
+			} /* if (p->literal[i] == '%') */
 			
-		}
+		} /* for (i = 0; i < len - 1; i++) */
 		
 		/* We still have more arguments, but no more control caracters. */
 		if (aux != NULL)
@@ -834,10 +805,8 @@ tableBasicTypes checkSystemOutPrintln(is_SystemOutPrintln* p, environmentList *e
 	}
 	/* There might be some method calls and therefore, we need to save them. */
 	else
-	{
 		for (exps = p->printExps; exps != NULL; exps = exps->next)
 			checkBasicElement(exps->bE, environment);
-	}
 
 	
 	/* If everything's ok, we have to return s_VOID, because it's a print call. */
@@ -863,7 +832,7 @@ tableBasicTypes enumConverter(is_PrimitiveType type)
 		
 	}
 	
-	//TODO: WATCHOUT FOR THE DEFAULT!
+	/*  WATCHOUT FOR THE DEFAULT! */
 	return s_VOID;
 	
 }
@@ -883,13 +852,9 @@ is_PrimitiveType enumInvConverter(tableBasicTypes type)
 		case s_VOID:			return is_VOID;
 		case s_STRING:			return is_STRING;
 		case s_STRING_ARRAY:	return is_STRING_ARRAY;
-		//TODO: Watchout for the default!
-		default:				return is_VOID;
-	}
-	
-	//TODO: WATCHOUT FOR THE DEFAULT!
-	return s_VOID;
-	
+		/* WATCHOUT FOR THE DEFAULT! */
+		default:				return s_VOID;
+	}	
 }
 
 tableBasicTypes convertTypes(tableBasicTypes typeOne, tableBasicTypes typeTwo)
@@ -943,7 +908,7 @@ tableBasicTypes convertTypes(tableBasicTypes typeOne, tableBasicTypes typeTwo)
 /* Checks if we can assign the assigningExp to the assigned. */
 bool compatibilityChecker(tableBasicTypes assigned, tableBasicTypes assigningExp)
 {
-	/* TODO WARNING: We aren't considering is_STRING_ARRAYs. */
+	/* WARNING: We aren't considering is_STRING_ARRAYs. */
 	
 	/* Automatically converts a type. */
 	/* From floats to double. */

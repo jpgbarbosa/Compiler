@@ -401,6 +401,8 @@ void translateStatement(is_Statement* s, environmentList *environment)
 		case (d_StatementBlock):
 			translateBlock(s->data_Statement.block, environment);
 			break;
+		case (d_EmptyStatement):
+			break;
 	}
 
 	return;
@@ -681,9 +683,9 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 			currentCycle = tempIt;
 			translateStatement(iS->statement, iS->env);
 			currentCycle = oldIt;
-			fprintf(dest, "INCRCYCLE%d: ;\n", tempIt);
-			fprintf(dest, "goto CYCLE%d;\n", tempIt);
-			fprintf(dest, "ENDCYCLE%d: ;\n", tempIt);
+			fprintf(dest, "INCRCYCLE%d: ;\n"
+						  "goto CYCLE%d;\n"
+						  "ENDCYCLE%d: ;\n", tempIt, tempIt, tempIt);
 			break;
 		case (is_DO):
 			tempIt = cycleCounter++;
@@ -694,9 +696,9 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 			currentCycle = oldIt;
 			tOne = translateExpression(iS->exp, iS->env, false);
 			fprintf(dest, "if (!temp%d) goto ENDCYCLE%d;\n", tOne, tempIt);
-			fprintf(dest, "INCRCYCLE%d: ;\n", tempIt);
-			fprintf(dest, "goto CYCLE%d;\n", tempIt);
-			fprintf(dest, "ENDCYCLE%d: ;\n", tempIt);
+			fprintf(dest, "INCRCYCLE%d: ;\n"
+						  "goto CYCLE%d;\n"
+						  "ENDCYCLE%d: ;\n", tempIt, tempIt, tempIt);
 			break;
 		case (is_FOR):
 			/* We initiate everything out of the for cycle. Then, it's
@@ -720,9 +722,9 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 				translateExpression(aux->exp, iS->env, false);
 				
 			/* Another iteration on the cycle. */	
-			fprintf(dest, "goto CYCLE%d;\n", tempIt);
+			fprintf(dest, "goto CYCLE%d;\n"
 			/* The end of the cycle. */	
-			fprintf(dest, "ENDCYCLE%d: ;\n", tempIt);
+						  "ENDCYCLE%d: ;\n", tempIt, tempIt);
 			break;
 	}
 	
@@ -732,22 +734,18 @@ int translateIterationStatement(is_IterationStatement* iS, environmentList *envi
 void translateForInit(is_ForInit* fI, environmentList *environment)
 {
 	
+	is_Expressions_list* aux;
+	
 	if (fI != NULL)
 	{
 		/* It's a list of expressions. */
 		if (fI->list != NULL)
-		{
 			/* And now the list of parameters. */
-			is_Expressions_list* aux;
-			
 			for(aux = fI->list; aux != NULL; aux = aux->next)
 				translateExpression(aux->exp, environment, false);
-		}
 		/* It's a declaration statement. */
 		else
-		{
 			translateLocalVariableDeclarationStatement(fI->lvds, environment);
-		}
 	}
 	
 	return;

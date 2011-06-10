@@ -162,6 +162,10 @@ is_MethodDeclarator* insert_MethodDeclarator(char *id, is_Parameters_list* list,
 	/* Inserts the method in the list of global symbols. */
 	tableElement *sym = insertSymbol(mD->id, -1, s_METHOD, pEnv->globalTable, NULL, true);
 	
+	/* We already do some semantic analysys at this stage. Otherwise, as Java
+	 * allows method without previous declaration, we wouldn't know if it
+	 * was a valid method call or not.
+	 */
 	if (sym == NULL)
 		printf("Line %d: There's already a symbol with that name ('%s')!\n", mD->line, mD->id);
 	else
@@ -190,7 +194,7 @@ is_Parameters_list* insert_Parameters_list(is_Parameters_list* list, is_Paramete
 	is_Parameters_list* aux;
 			
 	for(aux = list; aux->next != NULL; aux = aux->next);
-	aux->next = pl;
+		aux->next = pl;
 	
 	/* Returns the head of the list. */
 	return list;
@@ -204,7 +208,6 @@ is_Parameter* insert_Parameter(char *id, is_TypeSpecifier* typeS, int line)
 	p->line = line;
 	
 	return p;
-	
 }
 
 is_Block* insert_Block(is_LocalVariableDeclarationsOrStatements_list* list)
@@ -229,7 +232,7 @@ is_LocalVariableDeclarationsOrStatements_list* insert_LocalVariableDeclarationsO
 	is_LocalVariableDeclarationsOrStatements_list* aux;
 			
 	for(aux = list; aux->next != NULL; aux = aux->next);
-	aux->next = ll;
+		aux->next = ll;
 	
 	/* Returns the head of the list. */
 	return list;
@@ -325,6 +328,14 @@ is_Statement* insert_Statement_Block(is_Block* block)
 	return statement;
 }
 
+is_Statement* insert_EmptyStatement()
+{
+	is_Statement* statement = malloc(sizeof(is_Statement));
+	statement->disc_d = d_EmptyStatement;
+	
+	return statement;
+}
+
 /* - - - - - - is_LabeledStatement - - - - - - */
 
 is_LabeledStatement* insert_LabeledStatement_CASE(is_LocalVariableDeclarationsOrStatements *lvdos, is_ConditionalExpression* exp, int line)
@@ -360,7 +371,6 @@ is_SelectionStatement* insert_SelectionStatement_IF(is_Expression* exp, is_State
 	sS->line = line;
 	
 	return sS;
-	
 }
 
 is_SelectionStatement* insert_SelectionStatement_IFELSE(is_Expression* exp, is_Statement* stat, is_Statement* statTwo, int line)
@@ -372,8 +382,7 @@ is_SelectionStatement* insert_SelectionStatement_IFELSE(is_Expression* exp, is_S
 	sS->statSecond = statTwo;
 	sS->line = line;
 	
-	return sS;
-	
+	return sS;	
 }
 
 is_SelectionStatement* insert_SelectionStatement_SWITCH(is_Expression* exp, is_Block* block, int line)
@@ -385,7 +394,6 @@ is_SelectionStatement* insert_SelectionStatement_SWITCH(is_Expression* exp, is_B
 	sS->line = line;
 	
 	return sS;
-	
 }
 
 /* - - - - - - is_IterationStatement - - - - - */
@@ -399,7 +407,6 @@ is_IterationStatement* insert_IterationStatement_WHILE(is_Expression* exp, is_St
 	iS->line = line;
 	
 	return iS;
-	
 }
 
 is_IterationStatement* insert_IterationStatement_DO(is_Expression* exp, is_Statement* stat,int line)
@@ -411,7 +418,6 @@ is_IterationStatement* insert_IterationStatement_DO(is_Expression* exp, is_State
 	iS->line = line;
 	
 	return iS;
-	
 }
 
 is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Statement* stat,is_ForInit *forInit, is_Expressions_list *forIncr,int line)
@@ -426,7 +432,6 @@ is_IterationStatement* insert_IterationStatement_FOR(is_Expression* exp, is_Stat
 	iS->forIncr = forIncr;
 	
 	return iS;
-	
 }
 
 is_ForInit* insert_ForInit(is_Expressions_list* list, is_LocalVariableDeclarationStatement* lvds)
@@ -436,7 +441,6 @@ is_ForInit* insert_ForInit(is_Expressions_list* list, is_LocalVariableDeclaratio
 	fI->lvds = lvds;
 	
 	return fI;
-	
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - */
@@ -455,7 +459,7 @@ is_Expressions_list* insert_Expressions_list(is_Expressions_list* list, is_Expre
 	is_Expressions_list* aux;
 			
 	for(aux = list; aux->next != NULL; aux = aux->next);
-	aux->next = el;
+		aux->next = el;
 	
 	/* Returns the head of the list. */
 	return list;
@@ -471,7 +475,6 @@ is_Expression* insert_Expression_ConditionalExpression(is_ConditionalExpression 
 	exp->line = line;
 	
 	return exp;
-	
 }
 
 is_Expression* insert_Expression_AssignmentExpression(is_AssignmentExpression *aExpression, int line)
@@ -482,7 +485,6 @@ is_Expression* insert_Expression_AssignmentExpression(is_AssignmentExpression *a
 	exp->line = line;
 	
 	return exp;
-	
 }
 
 is_Expression* insert_Expression_Expression(is_Expression *expression, int line)
@@ -493,7 +495,6 @@ is_Expression* insert_Expression_Expression(is_Expression *expression, int line)
 	exp->line = line;
 	
 	return exp;
-	
 }
 
 /* - - - - - - - is_JumpStatement - - - - - -  */
@@ -646,8 +647,6 @@ is_BasicElement* insert_BasicElement_TRUE(char* literal, int line)
 	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
 	bE->disc_d = is_TRUE;
 	bE->line = line;
-	
-	
 	
 	return bE;
 }

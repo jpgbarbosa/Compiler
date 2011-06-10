@@ -26,6 +26,7 @@ is_Statement* insert_Statement_SelectionStatement(is_SelectionStatement* selecti
 is_Statement* insert_Statement_IterationStatement(is_IterationStatement* iteration);
 is_Statement* insert_Statement_JumpStatement(is_JumpStatement* jump);
 is_Statement* insert_Statement_Block(is_Block* block);
+is_Statement* insert_EmptyStatement();
 is_LabeledStatement* insert_LabeledStatement_CASE(is_LocalVariableDeclarationsOrStatements *lvdos, is_ConditionalExpression* exp, int line);
 is_LabeledStatement* insert_LabeledStatement_DEFAULT(is_LocalVariableDeclarationsOrStatements *lvdos, int line);
 is_SelectionStatement* insert_SelectionStatement_IF(is_Expression* exp, is_Statement* stat, int line);
