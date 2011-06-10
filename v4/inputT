@@ -4,9 +4,27 @@ public class gcdRrec{
 	
 	public static int main(String [] args)
 	{
-		System.out.println(args[1]);
+		System.out.println(args[1] + factorial(6));
+		System.out.println(aL);
+		
+		int i = 2;
+		int k;
+		
+		for (i = 2; i < 5; i++)
+		{
+			for (k = 0; k < 5; k++)
+				System.out.println(k);
+			if (i == 3)
+				break;
+		}
+			
 		
 		return 0;
+	}
+	
+	public static int factorial (int a)
+	{
+		return a > 1 ? a*factorial(a-1) : 1;
 	}
 	
 

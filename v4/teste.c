@@ -3,9 +3,8 @@
 
 int main()
 {
-	short a = 2;
+	char str[10];
 	
-	printf("%d\n", a);
-	
-	return 0;
+	printf("There\n"
+			"Hello\n");
 }

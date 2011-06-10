@@ -7,8 +7,7 @@
 #include "semantics.h"
 #include "translate.h"
 
-/* We assume that strings won't be larger than 1024 characters */
-#define MAX_STRING_SIZE 1024
+/* WARNING: We assume that strings won't be larger than 1024 characters */
 
 /* For when we are using a identifier, we need to know the
  * type of the identifier.
@@ -21,6 +20,9 @@ extern progEnv *pEnv;
  * epilogue.
  */
 char currentMethod[256];
+/* The same, but for cycles. currentCycle is very useful when we want
+ * to link a jump statement (like return or a break) to a certain cycle.
+ */
 int currentCycle;
 
 int returnCounter = 0;
@@ -31,10 +33,9 @@ int tempCounter = 0;
 int ifCounter = 0;
 int cycleCounter = 0;
 /* For the switch. */
+int tSwitch = 0;
 int switchCounter = 0;
 int nextLabel = 0;
-
-int tSwitch;
 
 /* The file where we will be writing our compiler output. */
 FILE* dest;
@@ -45,12 +46,7 @@ void translateProgramFile(is_ProgramFile* pF)
 	 * We will be adding to the final the extension '.c' 
 	 */
 	char fileName[258];
-	int len;
-	sprintf(fileName, "%s", pF->classHeader->id);
-	len = strlen(fileName);
-	fileName [len] = '.';
-	fileName [len + 1] = 'c';
-	fileName [len + 2] = '\0';
+	sprintf(fileName, "%s.c", pF->classHeader->id);
 	dest = fopen(fileName, "w");
 	
 	/* Now, we have to call some functions to start writing the final code. */
@@ -62,22 +58,18 @@ void translateProgramFile(is_ProgramFile* pF)
 	is_FieldDeclaration_list* aux;
 	
 	for(aux = pF->fieldDeclarations; aux != NULL; aux = aux->next)
-	{
 		/* We have found the main method, we can stop afterwards. */
 		if (aux->fieldDeclaration->disc_d == d_methodDeclaration && !strcmp("main", aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration->methodDeclarator->id))
 		{
 			translateMain(aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration);
 			break;
 		}
-	}
 	
 	/* And finally, all the other methods. */
 	for(aux = pF->fieldDeclarations; aux != NULL; aux = aux->next)
-	{
 		/* Now translates all the other methods. */
 		if (aux->fieldDeclaration->disc_d == d_methodDeclaration && strcmp("main", aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration->methodDeclarator->id))
 			translateMethodDeclaration(aux->fieldDeclaration->data_FieldDeclaration.u_methodDeclaration);
-	}
 	
 	/* Concludes with the footer. */
 	translateFooter();
@@ -86,8 +78,7 @@ void translateProgramFile(is_ProgramFile* pF)
 	/* Closes the output file. */
 	fclose(dest);
 	
-	return;
-		
+	return;	
 }
 
 void translateHeader()
@@ -229,7 +220,6 @@ void translateMethodDeclaration(is_MethodDeclaration* mD)
 	fprintf(dest, "%sskip:\n", mD->methodDeclarator->id);
 	
 	return; 
-	
 }
 
 void translateParametersIntoLocals(is_MethodDeclaration* mD)
@@ -243,27 +233,26 @@ void translateParametersIntoLocals(is_MethodDeclaration* mD)
 		/* First, print the type of the variable. */
 		switch(aux->parameter->typeSpecifier->typeName->type)
 		{
-			case(is_BOOLEAN): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
-			case(is_CHAR): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char));\n", parCounter); strcpy(typeInString, "(int*)"); break;
-			case(is_BYTE): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
-			case(is_SHORT): fprintf(dest, "sp->locals[%d] = (short*) malloc(sizeof(short));\n", parCounter); strcpy(typeInString, "(int*)"); break;
-			case(is_INT): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
-			case(is_LONG): fprintf(dest, "sp->locals[%d] = (long*) malloc(sizeof(long));\n", parCounter); strcpy(typeInString, "(int*)"); break;
-			case(is_FLOAT): fprintf(dest, "sp->locals[%d] = (float*) malloc(sizeof(float));\n", parCounter); strcpy(typeInString, "(int*)"); break;
-			case(is_DOUBLE): fprintf(dest, "sp->locals[%d] = (double*) malloc(sizeof(double));\n", parCounter); strcpy(typeInString, "(int*)"); break;
-			//TODO: Confirm this.
-			case(is_VOID): break;
-			/* We are limiting strings to 1024 characters. */
-			case(is_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n", parCounter); strcpy(typeInString, "(char*)"); break;
-			//TODO: Confirm this.
-			case(is_STRING_ARRAY): break;
+			case(is_BOOLEAN): 	strcpy(typeInString, "int "); break;
+			case(is_CHAR): 		strcpy(typeInString, "char "); break;
+			case(is_BYTE): 		strcpy(typeInString, "int "); break;
+			case(is_SHORT): 	strcpy(typeInString, "int "); break;
+			case(is_INT): 		strcpy(typeInString, "int "); break;
+			case(is_LONG): 		strcpy(typeInString, "long "); break;
+			case(is_FLOAT): 	strcpy(typeInString, "float "); break;
+			case(is_DOUBLE): 	strcpy(typeInString, "double "); break;
+			/* Goes for is_VOID, is_STRING and is_STRING_ARRAY. */
+			default: break;
 		}
 		
 		if (aux->parameter->typeSpecifier->typeName->type != is_STRING)
-			fprintf(dest, "(*(%s sp->locals[%d])) = (*(%s sp->parent->outgoing[%d]));\n", typeInString, parCounter, typeInString, parCounter);
+			fprintf(dest, "sp->locals[%d] = (%s*) malloc(sizeof(%s));\n"
+					"(*((%s*) sp->locals[%d])) = (*((%s*) sp->parent->outgoing[%d]));\n", parCounter, typeInString, typeInString, typeInString, parCounter, typeInString, parCounter);
 		else
-			fprintf(dest, "strcpy((%s sp->locals[%d]),(%s sp->parent->outgoing[%d]));\n", typeInString, parCounter, typeInString, parCounter);
-			
+			fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n"
+					"strcpy(((char *) sp->locals[%d]),((char *) sp->parent->outgoing[%d]));\n", parCounter, parCounter, parCounter);
+		
+		/* Increments the current parameter. */	
 		parCounter++;
 	}
 }
@@ -276,22 +265,25 @@ void translateGlobalVariablesDeclarator(tableElement* element, bool isGlobal)
 	/* Declaration of variables according to their type. */
 	switch(element->type)
 	{
-		case(s_BOOLEAN): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
-		case(s_CHAR): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char));\n", offset); strcpy(typeInString, "(char*)"); break;
-		case(s_BYTE): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
-		case(s_SHORT): fprintf(dest, "sp->locals[%d] = (short*) malloc(sizeof(short));\n", offset); strcpy(typeInString, "(short*)"); break;
-		case(s_INT): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
-		case(s_LONG): fprintf(dest, "sp->locals[%d] = (long*) malloc(sizeof(long));\n", offset); strcpy(typeInString, "(long*)"); break;
-		case(s_FLOAT): fprintf(dest, "sp->locals[%d] = (float*) malloc(sizeof(float));\n", offset); strcpy(typeInString, "(float*)"); break;
-		case(s_DOUBLE): fprintf(dest, "sp->locals[%d] = (double*) malloc(sizeof(double));\n", offset); strcpy(typeInString, "(double*)"); break;
-		//TODO: Confirm this.
-		case(s_VOID): break;
-		/* We are limiting strings to 1024 characters. */
-		case(s_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n", offset); strcpy(typeInString, "(char*)"); break;
-		//TODO: Confirm this.
-		case(s_STRING_ARRAY): break;
+		case(s_BOOLEAN): 	strcpy(typeInString, "int "); break;
+		case(s_CHAR): 		strcpy(typeInString, "char "); break;
+		case(s_BYTE): 		strcpy(typeInString, "int "); break;
+		case(s_SHORT): 		strcpy(typeInString, "short "); break;
+		case(s_INT): 		strcpy(typeInString, "int "); break;
+		case(s_LONG): 		strcpy(typeInString, "long "); break;
+		case(s_FLOAT): 		strcpy(typeInString, "float "); break;
+		case(s_DOUBLE): 	strcpy(typeInString, "double "); break;
+		/* Goes for s_VOID, s_STRING and s_STRING_ARRAY. */
 		default:break;
 	}
+	
+	/* Different action between a string and all the other types. */
+	if (element->type != s_STRING)
+		fprintf(dest, "sp->locals[%d] = (%s*) malloc(sizeof(%s));\n", offset, typeInString, typeInString);
+	else
+		/* We are limiting strings to 1024 characters. */
+		fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n", offset);
+		
 	
 	/* If it is initialized, we have to take action. */
 	if (element->exp != NULL)
@@ -299,9 +291,9 @@ void translateGlobalVariablesDeclarator(tableElement* element, bool isGlobal)
 		tOne = translateExpression(element->exp, pEnv->globalTable, false);
 		/* We have to deal differently with strings and all the other types. */
 		if (element->type != s_STRING)
-			fprintf(dest, "(*(%s sp->locals[%d])) = temp%d;\n", typeInString, offset, tOne);
+			fprintf(dest, "(*((%s*) sp->locals[%d])) = temp%d;\n", typeInString, offset, tOne);
 		else
-			fprintf(dest, "strcpy((%s sp->locals[%d]), temp%d);\n", typeInString, offset, tOne);
+			fprintf(dest, "strcpy(((char*) sp->locals[%d]), temp%d);\n", offset, tOne);
 	}
 
 	return;
@@ -343,42 +335,45 @@ void translateLocalVariableDeclarationStatement(is_LocalVariableDeclarationState
 
 void translateVariablesDeclarator(is_VariablesDeclarator* vD, is_TypeSpecifier *tS, environmentList *environment)
 {
-	int offset;
+	int offset, tOne;
 	char typeInString[15];
 	/* Looks for the tableElement corresponding to this variable. */
 	tableElement* t = searchSymbolLocal(vD->id, environment);
-	int tOne;
-	
+
+	/* Find the offset of this symbol. */
 	offset = t->offset;
 	
 	/* First, print the type of the variable. */
 	switch(tS->typeName->type)
 	{
-		case(is_BOOLEAN): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
-		case(is_CHAR): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char));\n", offset); strcpy(typeInString, "(char*)"); break;
-		case(is_BYTE): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
-		case(is_SHORT): fprintf(dest, "sp->locals[%d] = (short*) malloc(sizeof(short));\n", offset); strcpy(typeInString, "(short*)"); break;
-		case(is_INT): fprintf(dest, "sp->locals[%d] = (int*) malloc(sizeof(int));\n", offset); strcpy(typeInString, "(int*)"); break;
-		case(is_LONG): fprintf(dest, "sp->locals[%d] = (long*) malloc(sizeof(long));\n", offset); strcpy(typeInString, "(long*)"); break;
-		case(is_FLOAT): fprintf(dest, "sp->locals[%d] = (float*) malloc(sizeof(float));\n", offset); strcpy(typeInString, "(float*)"); break;
-		case(is_DOUBLE): fprintf(dest, "sp->locals[%d] = (double*) malloc(sizeof(double));\n", offset); strcpy(typeInString, "(double*)"); break;
-		//TODO: Confirm this.
-		case(is_VOID): break;
-		/* We are limiting strings to 1024 characters. */
-		case(is_STRING): fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n", offset); strcpy(typeInString, "(char*)"); break;
-		//TODO: Confirm this.
-		case(is_STRING_ARRAY): break;
+		case(is_BOOLEAN): 	strcpy(typeInString, "int "); break;
+		case(is_CHAR): 		strcpy(typeInString, "char "); break;
+		case(is_BYTE): 		strcpy(typeInString, "int "); break;
+		case(is_SHORT): 	strcpy(typeInString, "short "); break;
+		case(is_INT): 		strcpy(typeInString, "int "); break;
+		case(is_LONG): 		strcpy(typeInString, "long "); break;
+		case(is_FLOAT): 	strcpy(typeInString, "float "); break;
+		case(is_DOUBLE): 	strcpy(typeInString, "double "); break;
+		/* Goes for s_VOID, s_STRING and s_STRING_ARRAY. */
+		default:break;
 	}
+	
+	if (tS->typeName->type != is_STRING)
+		fprintf(dest, "sp->locals[%d] = (%s*) malloc(sizeof(%s));\n", offset, typeInString, typeInString);
+	else
+		/* We are limiting strings to 1024 characters. */
+		fprintf(dest, "sp->locals[%d] = (char*) malloc(sizeof(char)*1024);\n", offset);
 	
 	/* If it is initialized, we have to take action. */
 	if (vD->expression != NULL)
 	{
 		tOne = translateExpression(vD->expression, environment, false);
+		
 		/* We have to deal differently with strings and all the other types. */
 		if (tS->typeName->type != is_STRING)
-			fprintf(dest, "(*(%s sp->locals[%d])) = temp%d;\n", typeInString, offset, tOne);
+			fprintf(dest, "(*((%s*) sp->locals[%d])) = temp%d;\n", typeInString, offset, tOne);
 		else
-			fprintf(dest, "strcpy((%s sp->locals[%d]), temp%d);\n", typeInString, offset, tOne);
+			fprintf(dest, "strcpy(((char *) sp->locals[%d]), temp%d);\n", offset, tOne);
 	}
 		
 }
@@ -408,7 +403,6 @@ void translateStatement(is_Statement* s, environmentList *environment)
 			break;
 	}
 
-	/* Should never get here. */
 	return;
 }
 
@@ -466,34 +460,42 @@ int translateConditionalExpression(is_ConditionalExpression* cExp, environmentLi
 			switch(cExp->primType)
 			{
 				/* Now, we have to print the right type. */
-				case (is_BOOLEAN): strcpy(mType, "int "); break;
-				case (is_CHAR): strcpy(mType, "char "); break;
-				case (is_BYTE): strcpy(mType, "int "); break;
-				case (is_SHORT): strcpy(mType, "short "); break;
-				case (is_INT): strcpy(mType, "int "); break;
-				case (is_LONG): strcpy(mType, "long "); break;
-				case (is_FLOAT): strcpy(mType, "float "); break;
-				case (is_DOUBLE): strcpy(mType, "double "); break;
-				//TODO: Confirm this.
-				case (is_VOID): break;
-				//TODO: Confirm this.
-				case (is_STRING): strcpy(mType, "char* "); break;
-				//TODO: Confirm this.
-				case (is_STRING_ARRAY): break;
+				case (is_BOOLEAN): 	strcpy(mType, "int "); break;
+				case (is_CHAR): 	strcpy(mType, "char "); break;
+				case (is_BYTE): 	strcpy(mType, "int "); break;
+				case (is_SHORT): 	strcpy(mType, "short "); break;
+				case (is_INT): 		strcpy(mType, "int "); break;
+				case (is_LONG): 	strcpy(mType, "long "); break;
+				case (is_FLOAT): 	strcpy(mType, "float "); break;
+				case (is_DOUBLE): 	strcpy(mType, "double "); break;
+				/* Goes for is_VOID, is_STRING and is_STRING_ARRAY. */
+				default: break;
 			}
 			
-			fprintf(dest, "%s temp%d;\n", mType, tFour);
+			if (cExp->primType != is_STRING)
+				fprintf(dest, "%s temp%d;\n", mType, tFour);
+			else
+				fprintf(dest, "char temp%d[1024];\n", tFour);
 			
 			fprintf(dest, "if (!temp%d) goto ELSE%d;\n", tOne, tempIf);
 			
 			/* Save the number of the if counter. */
 			tTwo = translateExpression(cExp->firstExp, environment, isArgument);
-			fprintf(dest, "temp%d = temp%d;\n", tFour, tTwo);
+			
+			/* Different actions upon string or any other type. */
+			if (cExp->primType != is_STRING)
+				fprintf(dest, "temp%d = temp%d;\n", tFour, tTwo);
+			else
+				fprintf(dest, "strcpy(temp%d, temp%d);\n", tFour, tTwo);
 			
 			fprintf(dest, "goto ENDIF%d;\n", tempIf);
 			fprintf(dest, "ELSE%d: ;\n", tempIf);
 			tThree = translateExpression(cExp->secondExp, environment, isArgument);
-			fprintf(dest, "temp%d = temp%d;\n", tFour, tThree);
+						/* Different actions upon string or any other type. */
+			if (cExp->primType != is_STRING)
+				fprintf(dest, "temp%d = temp%d;\n", tFour, tThree);
+			else
+				fprintf(dest, "strcpy(temp%d, temp%d);\n", tFour, tThree);
 			
 			fprintf(dest, "ENDIF%d: ;\n", tempIf);	
 			
@@ -503,11 +505,17 @@ int translateConditionalExpression(is_ConditionalExpression* cExp, environmentLi
 		case (is_OP_AND):
 			tOne = translateRelationalExpression(cExp->rExpression, environment, isArgument);
 			tTwo = translateConditionalExpression(cExp->next, environment, isArgument);
+			/* We know for sure that the outcome will be a boolean, which
+			 * is translated in C into an integer.
+			 */
 			fprintf(dest, "int temp%d = temp%d && temp%d;\n", tempCounter++, tOne, tTwo);
 			break;
 		case (is_OP_OR):
 			tOne = translateRelationalExpression(cExp->rExpression, environment, isArgument);
 			tTwo = translateConditionalExpression(cExp->next, environment, isArgument);
+			/* We know for sure that the outcome will be a boolean, which
+			 * is translated in C into an integer.
+			 */
 			fprintf(dest, "int temp%d = temp%d || temp%d;\n", tempCounter++, tOne, tTwo);
 			break;
 	}
@@ -521,6 +529,7 @@ int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList
 	/* We are sure that we will find there an element. */
 	tableElement *search = searchSymbolLocal(aExp->id, environment);
 	
+	/* Looks for the offset of this symbol. */
 	offset = search->offset;
 	
 	/* First, we have to store the outcome of the the expression
@@ -531,59 +540,35 @@ int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList
 	/* Then, print the type of the variable and save in the locals. */
 	switch(search->type)
 	{
-		case (s_BOOLEAN): fprintf(dest, "(*(int*) sp->locals[%d] )", offset); break;
-		case (s_CHAR): fprintf(dest, "(*(char*) sp->locals[%d] )", offset); break;
-		case (s_BYTE): fprintf(dest, "(*(int*) sp->locals[%d] )", offset); break;
-		case (s_SHORT): fprintf(dest, "(*(short*) sp->locals[%d] )", offset); break;
-		case (s_INT): fprintf(dest, "(*(int*) sp->locals[%d] )", offset); break;
-		case (s_LONG): fprintf(dest, "(*(long*) sp->locals[%d] )", offset); break;
-		case (s_FLOAT): fprintf(dest, "(*(float*) sp->locals[%d] )", offset); break;
-		case (s_DOUBLE): fprintf(dest, "(*(double*) sp->locals[%d] )", offset); break;
-		//TODO: Confirm this.
-		case (s_VOID): break;
-		//TODO: We are limiting strings to 255 characters.
-		case (s_STRING): fprintf(dest, "strcpy((char*) sp->locals[%d], ", offset); break;
-		//TODO: Confirm this.
-		case (s_STRING_ARRAY): break;
-		/* We shouldn't get here. */
-		case (s_METHOD): break;
+		case (s_BOOLEAN): 	fprintf(dest, "(*(int*) sp->locals[%d] )", offset); break;
+		case (s_CHAR): 		fprintf(dest, "(*(char*) sp->locals[%d] )", offset); break;
+		case (s_BYTE): 		fprintf(dest, "(*(int*) sp->locals[%d] )", offset); break;
+		case (s_SHORT): 	fprintf(dest, "(*(short*) sp->locals[%d] )", offset); break;
+		case (s_INT): 		fprintf(dest, "(*(int*) sp->locals[%d] )", offset); break;
+		case (s_LONG): 		fprintf(dest, "(*(long*) sp->locals[%d] )", offset); break;
+		case (s_FLOAT): 	fprintf(dest, "(*(float*) sp->locals[%d] )", offset); break;
+		case (s_DOUBLE): 	fprintf(dest, "(*(double*) sp->locals[%d] )", offset); break;
+		/* Goes for s_VOID, s_STRING, s_STRING_ARRAY and s_METHOD. */
+		default: break;
 	}
 	
 	/* Now, we have to translate the assignment expression. */
 	/* If it's not a string, we simply have to print the expression. */
-	if (search->type != s_STRING && search->type != s_STRING_ARRAY)
+	if (search->type != s_STRING)
 	{
-		char tempChar = '%';
 		switch(aExp->assOp)
 		{
-			case (is_ASSIGN):
-				fprintf(dest, " = ");
-				break;
-			case (is_ASS_MUL):
-				fprintf(dest, " *= ");
-				break;
-			case (is_ASS_DIV):
-				fprintf(dest, " /= ");
-				break;
-			case (is_ASS_ADD):
-				fprintf(dest, " += ");
-				break;
-			case (is_ASS_SUB):
-				fprintf(dest, " -= ");
-				break;
-			case (is_ASS_XOR):
-				fprintf(dest, " ^= ");
-				break;
-			case (is_ASS_MOD):
-				fprintf(dest, " %c= ", tempChar);
-				break;
-			case (is_ASS_SHL):
-				fprintf(dest, " <<= ");
-				break;
-			case (is_ASS_SHR):
-				fprintf(dest, " >>= ");
-				break;
+			case (is_ASSIGN): 	fprintf(dest, " = "); break;
+			case (is_ASS_MUL):	fprintf(dest, " *= "); break;
+			case (is_ASS_DIV):	fprintf(dest, " /= "); break;
+			case (is_ASS_ADD):	fprintf(dest, " += "); break;
+			case (is_ASS_SUB):	fprintf(dest, " -= "); break;
+			case (is_ASS_XOR):	fprintf(dest, " ^= "); break;
+			case (is_ASS_MOD):	fprintf(dest, " %%= "); break;
+			case (is_ASS_SHL):	fprintf(dest, " <<= "); break;
+			case (is_ASS_SHR):	fprintf(dest, " >>= "); break;
 		}
+		
 		fprintf(dest, "temp%d;\n", tOne);
 	}
 	
@@ -591,9 +576,7 @@ int translateAssignmentExpression(is_AssignmentExpression* aExp, environmentList
 	 * the parenthesis.
 	 */
 	else if (search->type == s_STRING)
-	{
-		fprintf(dest, "temp%d);\n", tOne);
-	}
+		fprintf(dest, "strcpy((char*) sp->locals[%d], temp%d);\n", offset, tOne);
 	
 	/* This value shouldn't be used anywhere. */
 	return -1;
@@ -626,9 +609,6 @@ int translateLabeledStatement(is_LabeledStatement* lS, environmentList *environm
 			break;
 	}
 
-	
-
-	
 	return 0;
 }
 
@@ -675,9 +655,7 @@ int translateSelectionStatement(is_SelectionStatement* sS, environmentList *envi
 			break;
 	}
 	
-	//TODO: Is it necessary?
 	return 0;
-	
 }
 
 int translateIterationStatement(is_IterationStatement* iS, environmentList *environment)
@@ -789,7 +767,8 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 	switch(jS->disc_d)
 	{
 		case (is_BREAK):
-			
+			fprintf(dest, "goto ENDCYCLE%d;\n", currentCycle);
+			break;
 		case (is_BREAK_ID):
 			fprintf(dest, "goto ENDCYCLE%d;\n", currentCycle);
 			break;
@@ -811,31 +790,30 @@ void translateJumpStatement(is_JumpStatement* jS, environmentList *environment)
 				/* First, print the type of the variable. */
 				switch(jS->data_JumpStatement.exp->primType)
 				{
-					case(is_BOOLEAN): fprintf(dest, "sp->parent->returnValue = (int*) malloc(sizeof(int));\n"); strcpy(typeInString, "(int*)"); break;
-					case(is_CHAR): fprintf(dest, "sp->parent->returnValue = (char*) malloc(sizeof(char));\n"); strcpy(typeInString, "(char*)"); break;
-					case(is_BYTE): fprintf(dest, "sp->parent->returnValue = (int*) malloc(sizeof(int));\n"); strcpy(typeInString, "(int*)"); break;
-					case(is_SHORT): fprintf(dest, "sp->parent->returnValue = (short*) malloc(sizeof(short));\n"); strcpy(typeInString, "(short*)"); break;
-					case(is_INT): fprintf(dest, "sp->parent->returnValue = (int*) malloc(sizeof(int));\n"); strcpy(typeInString, "(int*)"); break;
-					case(is_LONG): fprintf(dest, "sp->parent->returnValue = (long*) malloc(sizeof(long));\n"); strcpy(typeInString, "(long*)"); break;
-					case(is_FLOAT): fprintf(dest, "sp->parent->returnValue = (float*) malloc(sizeof(float));\n"); strcpy(typeInString, "(float*)"); break;
-					case(is_DOUBLE): fprintf(dest, "sp->parent->returnValue = (double*) malloc(sizeof(double));\n"); strcpy(typeInString, "(double*)"); break;
-					//TODO: Confirm this.
-					case(is_VOID): break;
-					//TODO: We are limiting strings to 1024 characters.
-					case(is_STRING): fprintf(dest, "sp->parent->returnValue = (char*) malloc(sizeof(char)*1024);\n"); strcpy(typeInString, "(char*)"); break;
-					//TODO: Confirm this.
-					case(is_STRING_ARRAY): break;
+					case(is_BOOLEAN): strcpy(typeInString, "int"); break;
+					case(is_CHAR): strcpy(typeInString, "char "); break;
+					case(is_BYTE): strcpy(typeInString, "int "); break;
+					case(is_SHORT): strcpy(typeInString, "short "); break;
+					case(is_INT): strcpy(typeInString, "int "); break;
+					case(is_LONG): strcpy(typeInString, "long "); break;
+					case(is_FLOAT): strcpy(typeInString, "float "); break;
+					case(is_DOUBLE): strcpy(typeInString, "double "); break;
+					/* Goes for is_VOID, is_STRING and is_STRING_ARRAY. */
+					default: break;
 				}
 				
 				if (jS->data_JumpStatement.exp->primType != is_STRING)
-					fprintf(dest, "(*(%s sp->parent->returnValue)) = temp%d;\n", typeInString, tOne);
+					fprintf(dest, "sp->parent->returnValue = (%s *) malloc(sizeof(%s));\n"
+								"(*((%s *) sp->parent->returnValue)) = temp%d;\n", typeInString, typeInString, typeInString, tOne);
 				/* We are returning a string. */
 				else
 				{
+					fprintf(dest, "sp->parent->returnValue = (char*) malloc(sizeof(char)*1024);\n");
+					/* We are limiting strings to 1024 characters. */
 					if (tOne >= 0)
-						fprintf(dest, "strcpy((%s sp->parent->returnValue),  temp%d);\n", typeInString, tOne);
+						fprintf(dest, "strcpy(((char *) sp->parent->returnValue),  temp%d);\n", tOne);
 					else
-						fprintf(dest, "strcpy((%s sp->parent->returnValue),  ((char *) sp->locals[%d]));\n", typeInString, -tOne - 1);
+						fprintf(dest, "strcpy(((char *) sp->parent->returnValue),  ((char *) sp->locals[%d]));\n", -tOne - 1);
 				}
 			}
 			
@@ -992,34 +970,15 @@ int translateArithmeticExpression(is_ArithmeticExpression* aExp, environmentList
 		/* Prints the correct operator. */
 		switch(aExp->op)
 		{
-			case (is_PLUS):
-				fprintf(dest, " + ");
-				break;
-			case (is_MINUS):
-				fprintf(dest, " - ");
-				break;
-			case (is_SLASH):
-				fprintf(dest, " / ");
-				break;
-			case (is_TIMES):
-				fprintf(dest, " * ");
-				break;
-			case (is_MODULO):
-				fprintf(dest, " %c ", tempChar);
-				break;
-			case (is_OP_SHL):
-				fprintf(dest, " << ");
-				break;
-			case (is_OP_SHR):
-				fprintf(dest, " >> ");
-				break;
-			case (is_PARENTHESIS):
-				fprintf(dest, ";\n");
-				break;
-			case (is_AE_NONE):
-				fprintf(dest, ";\n");
-				break;
-				
+			case (is_PLUS): fprintf(dest, " + "); break;
+			case (is_MINUS): fprintf(dest, " - "); break;
+			case (is_SLASH): fprintf(dest, " / "); break;
+			case (is_TIMES): fprintf(dest, " * "); break;
+			case (is_MODULO): fprintf(dest, " %c ", tempChar); break;
+			case (is_OP_SHL): fprintf(dest, " << "); break;
+			case (is_OP_SHR): fprintf(dest, " >> "); break;
+			case (is_PARENTHESIS): fprintf(dest, ";\n"); break;
+			case (is_AE_NONE): fprintf(dest, ";\n"); break;	
 		}
 		
 		/* Make sure we are not printing garbage. */
@@ -1106,8 +1065,8 @@ int translateUnaryExpression(is_UnaryExpression* uE, environmentList *environmen
 	
 	if (uE->element->disc_d == is_ID)
 		return -(searchSymbolLocal(uE->element->data_BasicElement.name, environment)->offset + 1);
-	else
-		return 0;
+	
+	return 0;
 }
 
 
@@ -1129,26 +1088,21 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 			switch (search->type)
 			{
 				/* Now, we have to print the right type. */
-				case (s_BOOLEAN): fprintf(dest, "(*(int*) "); strcpy(globalType, "*(int*) "); break;
-				case (s_CHAR): fprintf(dest, "(*(char*) "); strcpy(globalType, "*(char*) ");break;
-				case (s_BYTE): fprintf(dest, "(*(int*) "); strcpy(globalType, "*(int*) ");break;
-				case (s_SHORT): fprintf(dest, "(*(short*) "); strcpy(globalType, "*(short*) ");break;
-				case (s_INT): fprintf(dest, "(*(int*) "); strcpy(globalType, "*(int*) ");break;
-				case (s_LONG): fprintf(dest, "(*(long*) "); strcpy(globalType, "*(long*) ");break;
-				case (s_FLOAT): fprintf(dest, "(*(float*) "); strcpy(globalType, "*(float*) ");break;
-				case (s_DOUBLE): fprintf(dest, "(*(double*) "); strcpy(globalType, "*(double*) ");break;
-				//TODO: Confirm this.
-				case (s_VOID): break;
-				//TODO: Confirm this.
-				case (s_STRING): fprintf(dest, ", ((char*) "); strcpy(globalType, "*(char*) ");break;
-				//TODO: Confirm this.
-				case (s_STRING_ARRAY): break;
-				/* We shouldn't get here. */
-				case (s_METHOD): break;
+				case (s_BOOLEAN): 	strcpy(globalType, "*(int*) "); break;
+				case (s_CHAR): 		strcpy(globalType, "*(char*) ");break;
+				case (s_BYTE): 		strcpy(globalType, "*(int*) ");break;
+				case (s_SHORT): 	strcpy(globalType, "*(short*) ");break;
+				case (s_INT): 		strcpy(globalType, "*(int*) ");break;
+				case (s_LONG): 		strcpy(globalType, "*(long*) ");break;
+				case (s_FLOAT): 	strcpy(globalType, "*(float*) ");break;
+				case (s_DOUBLE): 	strcpy(globalType, "*(double*) ");break;
+				case (s_STRING): 	strcpy(globalType, "*(char*) "); break;
+				/* Goes for s_VOID, s_STRING_ARRAY and s_METHOD. */
+				default: break;
 			}
 
 			/* Print the variable name, meaning its offset in locals of the sp. */
-			fprintf(dest, " sp->locals[%d]))", offset);
+			fprintf(dest, "(%s sp->locals[%d])", globalType, offset);
 			
 			break;
 			
@@ -1224,11 +1178,7 @@ int translateMethodCall(is_MethodCall* mC, environmentList *environment)
 			case(is_LONG): strcpy(mType, "long "); break;
 			case(is_FLOAT): strcpy(mType, "float "); break;
 			case(is_DOUBLE): strcpy(mType, "double "); break;
-			//TODO: We are limiting strings to 255 characters.
-			case(is_STRING): strcpy(mType, "char "); break;
-			//TODO: Confirm this.
-			case(is_STRING_ARRAY): break;
-			/* Shouldn't get here. */
+			/* Goes for is_STRING and is_STRING_ARRAY. */
 			default: break;
 		}
 		
@@ -1237,7 +1187,7 @@ int translateMethodCall(is_MethodCall* mC, environmentList *environment)
 		else
 		{
 			int tOne = tempCounter++;
-			fprintf(dest, "%s temp%d[1024];\nstrcpy(temp%d, ((%s*) sp->returnValue))", mType, tOne, tOne, mType);
+			fprintf(dest, "char temp%d[1024];\nstrcpy(temp%d, ((char *) sp->returnValue))", tOne, tOne);
 		}
 	}
 	
@@ -1261,26 +1211,24 @@ void translatePassParameters(is_MethodCall* mC, environmentList *environment)
 		/* First, print the type of the variable. */
 		switch(aux->exp->primType)
 		{
-			case(is_BOOLEAN): fprintf(dest, "sp->outgoing[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
-			case(is_CHAR): fprintf(dest, "sp->outgoing[%d] = (char*) malloc(sizeof(char));\n", parCounter); strcpy(typeInString, "(char*)"); break;
-			case(is_BYTE): fprintf(dest, "sp->outgoing[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
-			case(is_SHORT): fprintf(dest, "sp->outgoing[%d] = (short*) malloc(sizeof(short));\n", parCounter); strcpy(typeInString, "(short*)"); break;
-			case(is_INT): fprintf(dest, "sp->outgoing[%d] = (int*) malloc(sizeof(int));\n", parCounter); strcpy(typeInString, "(int*)"); break;
-			case(is_LONG): fprintf(dest, "sp->outgoing[%d] = (long*) malloc(sizeof(long));\n", parCounter); strcpy(typeInString, "(long*)"); break;
-			case(is_FLOAT): fprintf(dest, "sp->outgoing[%d] = (float*) malloc(sizeof(float));\n", parCounter); strcpy(typeInString, "(float*)"); break;
-			case(is_DOUBLE): fprintf(dest, "sp->outgoing[%d] = (double*) malloc(sizeof(double));\n", parCounter); strcpy(typeInString, "(double*)"); break;
-			//TODO: Confirm this.
-			case(is_VOID): break;
-			//TODO: We are limiting strings to 1024 characters.
-			case(is_STRING): fprintf(dest, "sp->outgoing[%d] = (char*) malloc(sizeof(char)*1024);\n", parCounter); strcpy(typeInString, "(char*)"); break;
-			//TODO: Confirm this.
-			case(is_STRING_ARRAY): break;
+			case(is_BOOLEAN): strcpy(typeInString, "int "); break;
+			case(is_CHAR): strcpy(typeInString, "char "); break;
+			case(is_BYTE): strcpy(typeInString, "int "); break;
+			case(is_SHORT): strcpy(typeInString, "short "); break;
+			case(is_INT): strcpy(typeInString, "int "); break;
+			case(is_LONG): strcpy(typeInString, "long "); break;
+			case(is_FLOAT): strcpy(typeInString, "float "); break;
+			case(is_DOUBLE): strcpy(typeInString, "double "); break;
+			/* Goes for is_VOID, is_STRING and is_STRING_ARRAY. */
+			default: break;
 		}
 		
 		if (aux->exp->primType != is_STRING)
-			fprintf(dest, "(*(%s sp->outgoing[%d])) = temp%d;\n", typeInString, parCounter, tOne);
+			fprintf(dest, "sp->outgoing[%d] = (%s *) malloc(sizeof(%s));\n"
+						"(*((%s *) sp->outgoing[%d])) = temp%d;\n", parCounter, typeInString, typeInString, typeInString, parCounter, tOne);
 		else
-			fprintf(dest, "strcpy((%s sp->outgoing[%d]), temp%d);\n", typeInString, parCounter, tOne);
+			fprintf(dest, "sp->outgoing[%d] = (char*) malloc(sizeof(char)*1024);\n"
+						"strcpy(((char *) sp->outgoing[%d]), temp%d);\n", parCounter, parCounter, tOne);
 		
 		parCounter++;
 	}
@@ -1295,7 +1243,7 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 	
 	int helpTemp, tOne, tTwo;
 	/* For printing the control caracters on the final code file. */
-	char strTemp[4], strTemp2[4];
+	char strTemp[10];
 	
 	/* Initiates the print. */
 	
@@ -1342,19 +1290,15 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 					switch (search->type)
 					{
 						/* Now, we have to print the right type. */
-						case(is_BOOLEAN): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; strcpy(mType, "int* "); break;
-						case(is_CHAR): strTemp[0] = '%'; strTemp[1] = 'c'; strTemp[2] = '\0'; strcpy(mType, "char* "); break;
-						case(is_BYTE): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; strcpy(mType, "int* "); break;
-						case(is_SHORT): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; strcpy(mType, "short* "); break;
-						case(is_INT): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; strcpy(mType, "int* "); break;
-						case(is_LONG): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'u'; strTemp[3] = '\0'; strcpy(mType, "long* "); break;
-						case(is_FLOAT): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; strcpy(mType, "float* "); break;
-						case(is_DOUBLE): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; strcpy(mType, "double* "); break;
-						//TODO: We are limiting strings to 255 characters.
-						case(is_STRING): strTemp[0] = '%'; strTemp[1] = 's'; strTemp[2] = '\0'; strcpy(mType, "char* "); break;
-						//TODO: Confirm this.
-						case(is_STRING_ARRAY): break;
-						/* Shouldn't get here. */
+						case(is_BOOLEAN): strcpy(strTemp, "%d"); strcpy(mType, "int* "); break;
+						case(is_CHAR): strcpy(strTemp, "%c"); strcpy(mType, "char* "); break;
+						case(is_BYTE): strcpy(strTemp, "%d"); strcpy(mType, "int* "); break;
+						case(is_SHORT): strcpy(strTemp, "%d"); strcpy(mType, "short* "); break;
+						case(is_INT): strcpy(strTemp, "%d"); strcpy(mType, "int* "); break;
+						case(is_LONG): strcpy(strTemp, "%lu"); strcpy(mType, "long* "); break;
+						case(is_FLOAT): strcpy(strTemp, "%lf"); strcpy(mType, "float* "); break;
+						case(is_DOUBLE): strcpy(strTemp, "%lf"); strcpy(mType, "double* "); break;
+						/* Goes for is_STRING and is_STRING_ARRAY. */
 						default: break;
 					}
 					
@@ -1363,7 +1307,7 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 					if (search->type != is_STRING)
 						fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%s\", *((%s) sp->locals[%d]));\n", tTwo, tTwo, strTemp, mType, offset);
 					else
-						fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%s\", ((%s) sp->locals[%d]));\n", tTwo, tTwo, strTemp, mType, offset);
+						fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%%s\", ((char *) sp->locals[%d]));\n", tTwo, tTwo, offset);
 					
 					fprintf(dest, "strcat(temp%d, temp%d);\n", helpTemp, tTwo);
 					
@@ -1384,16 +1328,16 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 					{
 						switch(element->type)
 						{
-							case(is_BOOLEAN): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; break;
-							case(is_CHAR): strTemp[0] = '%'; strTemp[1] = 'c'; strTemp[2] = '\0'; break;
-							case(is_BYTE): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; break;
-							case(is_SHORT): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; break;
-							case(is_INT): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; break;
-							case(is_LONG): strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; break;
-							case(is_FLOAT): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; break;
-							case(is_DOUBLE): strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; break;
-							case(is_STRING): strTemp[0] = '%'; strTemp[1] = 's'; strTemp[2] = '\0'; break;
-							//TODO: Confirm this.
+							case(is_BOOLEAN): strcpy(strTemp, "%d"); break;
+							case(is_CHAR): strcpy(strTemp, "%c"); break;
+							case(is_BYTE): strcpy(strTemp, "%d"); break;
+							case(is_SHORT): strcpy(strTemp, "%d"); break;
+							case(is_INT): strcpy(strTemp, "%d"); break;
+							case(is_LONG): strcpy(strTemp, "%lu"); break;
+							case(is_FLOAT): strcpy(strTemp, "%lf"); break;
+							case(is_DOUBLE): strcpy(strTemp, "%lf"); break;
+							case(is_STRING): strcpy(strTemp, "%s"); break;
+							/* Shouldn't be used. */
 							case(is_STRING_ARRAY): break;
 							/* Shouldn't get here. */
 							default: break;
@@ -1414,8 +1358,7 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 					fprintf(dest, "int temp%d = ", tOne);
 					translateBasicElement(exps->bE, environment);
 					fprintf(dest, ";\n");
-					strTemp[0] = '%'; strTemp[1] = 'd'; strTemp[2] = '\0'; 					
-					fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%s\", temp%d);\n", tTwo, tTwo, strTemp, tOne);
+					fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%%d\", temp%d);\n", tTwo, tTwo, tOne);
 					fprintf(dest, "strcat(temp%d, temp%d);\n", helpTemp, tTwo);
 					break;
 				case is_FLOATPOINT:
@@ -1423,9 +1366,8 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 					tTwo = tempCounter++;
 					fprintf(dest, "double temp%d = ", tOne);
 					translateBasicElement(exps->bE, environment);
-					fprintf(dest, ";\n");
-					strTemp[0] = '%'; strTemp[1] = 'l'; strTemp[2] = 'f'; strTemp[3] = '\0'; 					
-					fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%s\", temp%d);\n", tTwo, tTwo, strTemp, tOne);
+					fprintf(dest, ";\n");					
+					fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%%lf\", temp%d);\n", tTwo, tTwo, tOne);
 					fprintf(dest, "strcat(temp%d, temp%d);\n", helpTemp, tTwo);
 					break;
 				/* Should never be this. */
@@ -1438,9 +1380,7 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 		
 		}
 		/* Ends the print. */
-		strTemp[0] = '%'; strTemp[1] = 's'; strTemp[2] = '\0'; 
-		strTemp2[0] = '\\'; strTemp2[1] = 'n'; strTemp2[2] = '\0'; 
-		fprintf(dest, "printf(\"%s%s\", temp%d);", strTemp, strTemp2, helpTemp);
+		fprintf(dest, "printf(\"%%s\\n\", temp%d);", helpTemp);
 	}
 }
 
@@ -1461,6 +1401,7 @@ void translateTypeSpecifier(is_PrimitiveType type, bool isPointer)
 			case (is_DOUBLE): fprintf(dest, "double *"); break;
 			case (is_VOID): fprintf(dest, "void *"); break;
 			case (is_STRING): fprintf(dest, "char *"); break;
+			/* Shouldn't be used. */
 			case (is_STRING_ARRAY): break;
 		}
 	}
@@ -1479,6 +1420,7 @@ void translateTypeSpecifier(is_PrimitiveType type, bool isPointer)
 			case (is_DOUBLE): fprintf(dest, "double "); break;
 			case (is_VOID): fprintf(dest, "void "); break;
 			case (is_STRING): fprintf(dest, "char "); break;
+			/* Shouldn't be used. */
 			case (is_STRING_ARRAY): break;
 		}
 
