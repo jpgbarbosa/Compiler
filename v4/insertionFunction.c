@@ -712,6 +712,16 @@ is_BasicElement* insert_BasicElement_FLOATPOINT(double d, int line)
 	return bE;
 }
 
+is_BasicElement* insert_BasicElement_ARGS(int i, int line)
+{
+	is_BasicElement* bE = malloc(sizeof(is_BasicElement));
+	bE->disc_d = is_ARGS;
+	bE->data_BasicElement.i = i;
+	bE->line = line;
+	
+	return bE;
+}
+
 /* - - - - - - is_Cast_Expression - - - - - -  */
 
 is_CastExpression* insert_CastExpression_UnaryExpression(is_TypeSpecifier* castType, is_UnaryExpression *unaryExpression, int line)

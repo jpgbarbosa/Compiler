@@ -22,6 +22,7 @@ is_ProgramFile* myProgram;
 
 %}
 
+%token ARGS
 %token BOOLEAN BREAK BYTE
 %token CASE CHAR CLASS CONTINUE
 %token DEFAULT DO DOUBLE
@@ -168,17 +169,17 @@ TypeSpecifier
 
 TypeName
 	/* The primitive types. */
-	: BOOLEAN		{$$ = insert_Typename(is_BOOLEAN);}
-	| CHAR			{$$ = insert_Typename(is_CHAR);}
-	| BYTE			{$$ = insert_Typename(is_BYTE);}
-	| SHORT			{$$ = insert_Typename(is_SHORT);}
-	| INT			{$$ = insert_Typename(is_INT);}
-	| LONG			{$$ = insert_Typename(is_LONG);}
-	| FLOAT			{$$ = insert_Typename(is_FLOAT);}
-	| DOUBLE		{$$ = insert_Typename(is_DOUBLE);}
-	| VOID			{$$ = insert_Typename(is_VOID);}
-	| STRING		{$$ = insert_Typename(is_STRING);}
-	| STRING '['']'		{$$ = insert_Typename(is_STRING_ARRAY);}
+	: BOOLEAN				{$$ = insert_Typename(is_BOOLEAN);}
+	| CHAR					{$$ = insert_Typename(is_CHAR);}
+	| BYTE					{$$ = insert_Typename(is_BYTE);}
+	| SHORT					{$$ = insert_Typename(is_SHORT);}
+	| INT					{$$ = insert_Typename(is_INT);}
+	| LONG					{$$ = insert_Typename(is_LONG);}
+	| FLOAT					{$$ = insert_Typename(is_FLOAT);}
+	| DOUBLE				{$$ = insert_Typename(is_DOUBLE);}
+	| VOID					{$$ = insert_Typename(is_VOID);}
+	| STRING				{$$ = insert_Typename(is_STRING);}
+	| STRING '['']'     	{$$ = insert_Typename(is_STRING_ARRAY);}
 	;
 
 /* We can have imports or only a class. */
@@ -235,6 +236,7 @@ ParameterList
 
 Parameter
 	: TypeSpecifier ID		{$$ = insert_Parameter($2, $1, line_no);}
+	| TypeSpecifier ARGS	{$$ = insert_Parameter("args", $1, line_no);}
 	;
 
 Block
@@ -354,8 +356,9 @@ BasicElement
 	| ID					{$$ = insert_BasicElement_ID($1, line_no);}
 	| TRUE					{$$ = insert_BasicElement_TRUE($1, line_no);}
 	| FALSE					{$$ = insert_BasicElement_FALSE($1, line_no);}
-	| INTEGER				{$$ = insert_BasicElement_INTEGER(yyval.i, line_no);}
-	| FLOATPOINT			{$$ = insert_BasicElement_FLOATPOINT(yyval.d, line_no);}
+	| INTEGER				{$$ = insert_BasicElement_INTEGER(yylval.i, line_no);}
+	| FLOATPOINT			{$$ = insert_BasicElement_FLOATPOINT(yylval.d, line_no);}
+	| ARGS  '[' INTEGER ']' {$$ = insert_BasicElement_ARGS(yylval.i, line_no);}
 	| SystemOutPrintln		{$$ = insert_BasicElement_PRINTLN($1, line_no);}
 	;
 

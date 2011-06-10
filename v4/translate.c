@@ -100,7 +100,7 @@ void translateHeader()
 	fprintf(dest, "#include <stdlib.h>\n");
 	fprintf(dest, "#include <stdio.h>\n\n");
 	fprintf(dest, "#include <string.h>\n\n");
-	fprintf(dest, "int main()\n{\n");
+	fprintf(dest, "int main(int argc, char *argv[])\n{\n");
 	fprintf(dest, "int _ra;\n");
 	fprintf(dest, "frame* fp = NULL;\n");
 	fprintf(dest, "frame* sp = NULL;\n");
@@ -1173,6 +1173,9 @@ void translateBasicElement(is_BasicElement* bE, environmentList *environment)
 		case (is_PRINTLN):
 			translateSystemOutPrintln(bE->data_BasicElement.print, environment);
 			break;
+		case (is_ARGS):
+			fprintf(dest, "argv[%d] ", bE->data_BasicElement.i);
+			break;
 	}
 	
 	return;
@@ -1425,8 +1428,11 @@ void translateSystemOutPrintln(is_SystemOutPrintln* p, environmentList *environm
 					fprintf(dest, "char temp%d[256];\nsprintf(temp%d, \"%s\", temp%d);\n", tTwo, tTwo, strTemp, tOne);
 					fprintf(dest, "strcat(temp%d, temp%d);\n", helpTemp, tTwo);
 					break;
-				//TODO: Should never be this.
+				/* Should never be this. */
 				case is_PRINTLN:
+					break;
+				case is_ARGS:
+					fprintf(dest, "strcat(temp%d, argv[%d]);\n", helpTemp, exps->bE->data_BasicElement.i);
 					break;
 			}
 		

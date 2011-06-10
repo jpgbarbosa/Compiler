@@ -116,11 +116,12 @@ Literal		({Numeric}|{Character}|{String})
 "default"	{return DEFAULT;}
 "if"		{return IF;}
 "String"	{return STRING;}
+"args"		{printf("There\n"); return ARGS;}
 "System.out.println"	{return PRINTLN;}
 
 {Identifier}	{yylval.id = (char*)strdup(yytext); return ID;}
 
-{IntegerLiteral}	{yylval.i = atoi(yytext); return INTEGER;}
+{IntegerLiteral}	{ yylval.i = atoi(yytext);return INTEGER;}
 
 {FloatingPoint}	{yylval.d = atof(yytext); return FLOATPOINT;}
 

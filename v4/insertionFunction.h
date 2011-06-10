@@ -56,6 +56,7 @@ is_BasicElement* insert_BasicElement_TRUE(char *literal, int line);
 is_BasicElement* insert_BasicElement_FALSE(char *literal, int line);
 is_BasicElement* insert_BasicElement_INTEGER(int i, int line);
 is_BasicElement* insert_BasicElement_FLOATPOINT(double d, int line);
+is_BasicElement* insert_BasicElement_ARGS(int i, int line);
 is_BasicElement* insert_BasicElement_PRINTLN(is_SystemOutPrintln* print, int line);
 is_CastExpression* insert_CastExpression_UnaryExpression(is_TypeSpecifier* castType, is_UnaryExpression *unaryExpression, int line);
 is_CastExpression* insert_CastExpression_AssignmentExpression(is_TypeSpecifier* castType,is_AssignmentExpression *assignmentExpression, int line);

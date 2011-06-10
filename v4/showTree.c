@@ -710,6 +710,9 @@ void showBasicElement(is_BasicElement* bE, bool nextLine, bool isTabs)
 		case (is_PRINTLN):
 			showSystemOutPrintln(bE->data_BasicElement.print, nextLine, isTabs);
 			break;
+		case (is_ARGS):
+			printf("argv[%d] ", bE->data_BasicElement.i);
+			break;
 	}
 	
 	if (nextLine && bE->disc_d != is_METHOD_CALL)

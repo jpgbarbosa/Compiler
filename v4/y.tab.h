@@ -39,123 +39,125 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     BOOLEAN = 258,
-     BREAK = 259,
-     BYTE = 260,
-     CASE = 261,
-     CHAR = 262,
-     CLASS = 263,
-     CONTINUE = 264,
-     DEFAULT = 265,
-     DO = 266,
-     DOUBLE = 267,
-     ELSE = 268,
-     FLOAT = 269,
-     FOR = 270,
-     IF = 271,
-     IMPORT = 272,
-     INT = 273,
-     JNULL = 274,
-     LONG = 275,
-     NEW = 276,
-     OPERATOR = 277,
-     PUBLIC = 278,
-     PRINTLN = 279,
-     RETURN = 280,
-     SHORT = 281,
-     STATIC = 282,
-     STRING = 283,
-     SWITCH = 284,
-     VOID = 285,
-     WHILE = 286,
-     OP_INC = 287,
-     OP_DEC = 288,
-     OP_SHL = 289,
-     OP_SHR = 290,
-     OP_GREATER_EQUAL = 291,
-     OP_LESS_EQUAL = 292,
-     OP_EQUAL = 293,
-     OP_DIFFERENT = 294,
-     OP_AND = 295,
-     OP_OR = 296,
-     OP_DIM = 297,
-     ASS_MUL = 298,
-     ASS_DIV = 299,
-     ASS_ADD = 300,
-     ASS_SUB = 301,
-     ASS_XOR = 302,
-     ASS_MOD = 303,
-     ASS_SHL = 304,
-     ASS_SHR = 305,
-     ASS_AND = 306,
-     ASS_OR = 307,
-     ID = 308,
-     LITERAL = 309,
-     TRUE = 310,
-     FALSE = 311,
-     INTEGER = 312,
-     FLOATPOINT = 313,
-     LOW_PRIORITY = 314
+     ARGS = 258,
+     BOOLEAN = 259,
+     BREAK = 260,
+     BYTE = 261,
+     CASE = 262,
+     CHAR = 263,
+     CLASS = 264,
+     CONTINUE = 265,
+     DEFAULT = 266,
+     DO = 267,
+     DOUBLE = 268,
+     ELSE = 269,
+     FLOAT = 270,
+     FOR = 271,
+     IF = 272,
+     IMPORT = 273,
+     INT = 274,
+     JNULL = 275,
+     LONG = 276,
+     NEW = 277,
+     OPERATOR = 278,
+     PUBLIC = 279,
+     PRINTLN = 280,
+     RETURN = 281,
+     SHORT = 282,
+     STATIC = 283,
+     STRING = 284,
+     SWITCH = 285,
+     VOID = 286,
+     WHILE = 287,
+     OP_INC = 288,
+     OP_DEC = 289,
+     OP_SHL = 290,
+     OP_SHR = 291,
+     OP_GREATER_EQUAL = 292,
+     OP_LESS_EQUAL = 293,
+     OP_EQUAL = 294,
+     OP_DIFFERENT = 295,
+     OP_AND = 296,
+     OP_OR = 297,
+     OP_DIM = 298,
+     ASS_MUL = 299,
+     ASS_DIV = 300,
+     ASS_ADD = 301,
+     ASS_SUB = 302,
+     ASS_XOR = 303,
+     ASS_MOD = 304,
+     ASS_SHL = 305,
+     ASS_SHR = 306,
+     ASS_AND = 307,
+     ASS_OR = 308,
+     ID = 309,
+     LITERAL = 310,
+     TRUE = 311,
+     FALSE = 312,
+     INTEGER = 313,
+     FLOATPOINT = 314,
+     LOW_PRIORITY = 315
    };
 #endif
 /* Tokens.  */
-#define BOOLEAN 258
-#define BREAK 259
-#define BYTE 260
-#define CASE 261
-#define CHAR 262
-#define CLASS 263
-#define CONTINUE 264
-#define DEFAULT 265
-#define DO 266
-#define DOUBLE 267
-#define ELSE 268
-#define FLOAT 269
-#define FOR 270
-#define IF 271
-#define IMPORT 272
-#define INT 273
-#define JNULL 274
-#define LONG 275
-#define NEW 276
-#define OPERATOR 277
-#define PUBLIC 278
-#define PRINTLN 279
-#define RETURN 280
-#define SHORT 281
-#define STATIC 282
-#define STRING 283
-#define SWITCH 284
-#define VOID 285
-#define WHILE 286
-#define OP_INC 287
-#define OP_DEC 288
-#define OP_SHL 289
-#define OP_SHR 290
-#define OP_GREATER_EQUAL 291
-#define OP_LESS_EQUAL 292
-#define OP_EQUAL 293
-#define OP_DIFFERENT 294
-#define OP_AND 295
-#define OP_OR 296
-#define OP_DIM 297
-#define ASS_MUL 298
-#define ASS_DIV 299
-#define ASS_ADD 300
-#define ASS_SUB 301
-#define ASS_XOR 302
-#define ASS_MOD 303
-#define ASS_SHL 304
-#define ASS_SHR 305
-#define ASS_AND 306
-#define ASS_OR 307
-#define ID 308
-#define LITERAL 309
-#define TRUE 310
-#define FALSE 311
-#define INTEGER 312
-#define FLOATPOINT 313
-#define LOW_PRIORITY 314
+#define ARGS 258
+#define BOOLEAN 259
+#define BREAK 260
+#define BYTE 261
+#define CASE 262
+#define CHAR 263
+#define CLASS 264
+#define CONTINUE 265
+#define DEFAULT 266
+#define DO 267
+#define DOUBLE 268
+#define ELSE 269
+#define FLOAT 270
+#define FOR 271
+#define IF 272
+#define IMPORT 273
+#define INT 274
+#define JNULL 275
+#define LONG 276
+#define NEW 277
+#define OPERATOR 278
+#define PUBLIC 279
+#define PRINTLN 280
+#define RETURN 281
+#define SHORT 282
+#define STATIC 283
+#define STRING 284
+#define SWITCH 285
+#define VOID 286
+#define WHILE 287
+#define OP_INC 288
+#define OP_DEC 289
+#define OP_SHL 290
+#define OP_SHR 291
+#define OP_GREATER_EQUAL 292
+#define OP_LESS_EQUAL 293
+#define OP_EQUAL 294
+#define OP_DIFFERENT 295
+#define OP_AND 296
+#define OP_OR 297
+#define OP_DIM 298
+#define ASS_MUL 299
+#define ASS_DIV 300
+#define ASS_ADD 301
+#define ASS_SUB 302
+#define ASS_XOR 303
+#define ASS_MOD 304
+#define ASS_SHL 305
+#define ASS_SHR 306
+#define ASS_AND 307
+#define ASS_OR 308
+#define ID 309
+#define LITERAL 310
+#define TRUE 311
+#define FALSE 312
+#define INTEGER 313
+#define FLOATPOINT 314
+#define LOW_PRIORITY 315
 
 
 
@@ -165,7 +167,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 112 "pJava.y"
+#line 113 "pJava.y"
 
 	int i;
 	double d;
@@ -209,7 +211,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 213 "y.tab.h"
+#line 215 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

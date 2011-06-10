@@ -702,6 +702,8 @@ tableBasicTypes checkBasicElement(is_BasicElement* bE, environmentList *environm
 			return checkMethodCall(bE->data_BasicElement.methodCall, environment);
 		case (is_PRINTLN):
 			return checkSystemOutPrintln(bE->data_BasicElement.print, environment);
+		case (is_ARGS):
+			return s_STRING;
 	}
 	
 	/* We shouldn't get here. */

@@ -80,7 +80,7 @@ struct _t5{
 
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-typedef enum {is_ID, is_LITERAL, is_METHOD_CALL, is_TRUE, is_FALSE, is_INTEGER, is_FLOATPOINT, is_PRINTLN} disc_BasicElement;
+typedef enum {is_ID, is_LITERAL, is_METHOD_CALL, is_TRUE, is_FALSE, is_INTEGER, is_FLOATPOINT, is_PRINTLN, is_ARGS} disc_BasicElement;
 typedef enum {is_BOOLEAN, is_CHAR, is_BYTE, is_SHORT, is_INT, is_LONG, is_FLOAT, is_DOUBLE, is_VOID, is_STRING, is_STRING_ARRAY} is_PrimitiveType;
 
 struct _a20{
